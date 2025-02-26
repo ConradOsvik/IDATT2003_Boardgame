@@ -1,0 +1,1 @@
+moduleSearchIndex = [{"l":"edu.ntnu.stud.boardgame"}];updateSearchResults();
