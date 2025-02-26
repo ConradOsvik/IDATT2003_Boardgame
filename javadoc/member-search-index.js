@@ -1,1 +1,0 @@
-memberSearchIndex = [{"p":"edu.ntnu.stud.boardgame","c":"App","l":"App()","u":"%3Cinit%3E()"},{"p":"edu.ntnu.stud.boardgame","c":"App","l":"launchTerminal()"},{"p":"edu.ntnu.stud.boardgame","c":"App","l":"main(String[])","u":"main(java.lang.String[])"},{"p":"edu.ntnu.stud.boardgame","c":"App","l":"start(Stage)","u":"start(javafx.stage.Stage)"}];updateSearchResults();
