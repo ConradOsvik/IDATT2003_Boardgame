@@ -2,9 +2,9 @@ name: Java CI
 
 on:
     push:
-        branches: [main, dev]
+        branches: [main]
     pull_request:
-        branches: [main, dev]
+        branches: [main]
 
 jobs:
     build:
@@ -41,3 +41,4 @@ jobs:
                   java-version: 21
                   target-folder: javadoc
                   project: maven
+                  javadoc-source-folder: target/reports/apidocs
