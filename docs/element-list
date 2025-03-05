@@ -1,2 +1,4 @@
 module:edu.ntnu.stud.boardgame
 edu.ntnu.stud.boardgame
+edu.ntnu.stud.boardgame.core.action
+edu.ntnu.stud.boardgame.core.model
