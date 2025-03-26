@@ -1,16 +1,16 @@
 package edu.ntnu.stud.boardgame.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.annotations.SerializedName;
 import edu.ntnu.stud.boardgame.core.model.Board;
 import edu.ntnu.stud.boardgame.core.model.BoardGame;
 import edu.ntnu.stud.boardgame.core.model.Tile;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +19,26 @@ import java.util.List;
  */
 public class BoardFileController {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+    private static class Connection {
+        @SerializedName("direction")
+        String direction;
+        @SerializedName("targetTileId")
+        int targetTileId;
+    }
+
+    private static class TileData {
+        @SerializedName("id")
+        int id;
+        @SerializedName("connections")
+        List<Connection> connections;
+    }
+
+    private static class BoardData {
+        @SerializedName("tiles")
+        List<TileData> tiles;
+    }
 
     /**
      * Saves the current board configuration from a board game to a JSON file.
@@ -29,32 +48,34 @@ public class BoardFileController {
      * @throws IOException If an I/O error occurs during the save operation
      */
     public void saveBoard(BoardGame boardGame, String filePath) throws IOException {
-        ObjectNode rootNode = objectMapper.createObjectNode();
-        ArrayNode tilesArray = rootNode.putArray("tiles");
-        
+        BoardData boardData = new BoardData();
+        boardData.tiles = new ArrayList<>();
+
         // For each tile, we need to save its ID and connections
         for (int i = 1; i <= 90; i++) {
             Tile tile = boardGame.getBoard().getTile(i);
             if (tile != null) {
-                ObjectNode tileNode = objectMapper.createObjectNode();
-                tileNode.put("id", tile.getTileId());
-                
-                ArrayNode connectionsArray = tileNode.putArray("connections");
+                TileData tileData = new TileData();
+                tileData.id = tile.getTileId();
+                tileData.connections = new ArrayList<>();
+
                 for (Tile.Direction direction : Tile.Direction.values()) {
                     List<Tile> connectedTiles = tile.getConnectedTiles(direction);
                     for (Tile connectedTile : connectedTiles) {
-                        ObjectNode connectionNode = objectMapper.createObjectNode();
-                        connectionNode.put("direction", direction.name());
-                        connectionNode.put("targetTileId", connectedTile.getTileId());
-                        connectionsArray.add(connectionNode);
+                        Connection connection = new Connection();
+                        connection.direction = direction.name();
+                        connection.targetTileId = connectedTile.getTileId();
+                        tileData.connections.add(connection);
                     }
                 }
-                
-                tilesArray.add(tileNode);
+
+                boardData.tiles.add(tileData);
             }
         }
-        
-        objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(filePath), rootNode);
+
+        try (FileWriter writer = new FileWriter(filePath)) {
+            gson.toJson(boardData, writer);
+        }
     }
 
     /**
@@ -65,35 +86,27 @@ public class BoardFileController {
      * @throws IOException If an I/O error occurs during the load operation
      */
     public void loadBoard(BoardGame boardGame, String filePath) throws IOException {
-        String jsonContent = Files.readString(Paths.get(filePath));
-        ObjectNode rootNode = (ObjectNode) objectMapper.readTree(jsonContent);
-        
+        BoardData boardData;
+        try (FileReader reader = new FileReader(filePath)) {
+            boardData = gson.fromJson(reader, BoardData.class);
+        }
+
         // First create a new board
         boardGame.createEmptyBoard();
-        
+
         // Create tiles
-        ArrayNode tilesArray = (ArrayNode) rootNode.get("tiles");
-        for (int i = 0; i < tilesArray.size(); i++) {
-            ObjectNode tileNode = (ObjectNode) tilesArray.get(i);
-            int tileId = tileNode.get("id").asInt();
-            boardGame.getBoard().addTile(new Tile(tileId));
+        for (TileData tileData : boardData.tiles) {
+            boardGame.getBoard().addTile(new Tile(tileData.id));
         }
-        
+
         // Set up connections
-        for (int i = 0; i < tilesArray.size(); i++) {
-            ObjectNode tileNode = (ObjectNode) tilesArray.get(i);
-            int tileId = tileNode.get("id").asInt();
-            Tile tile = boardGame.getBoard().getTile(tileId);
+        for (TileData tileData : boardData.tiles) {
+            Tile tile = boardGame.getBoard().getTile(tileData.id);
             
-            ArrayNode connectionsArray = (ArrayNode) tileNode.get("connections");
-            if (connectionsArray != null) {
-                for (int j = 0; j < connectionsArray.size(); j++) {
-                    ObjectNode connectionNode = (ObjectNode) connectionsArray.get(j);
-                    String directionStr = connectionNode.get("direction").asText();
-                    int targetTileId = connectionNode.get("targetTileId").asInt();
-                    
-                    Tile.Direction direction = Tile.Direction.valueOf(directionStr);
-                    Tile targetTile = boardGame.getBoard().getTile(targetTileId);
+            if (tileData.connections != null) {
+                for (Connection connection : tileData.connections) {
+                    Tile.Direction direction = Tile.Direction.valueOf(connection.direction);
+                    Tile targetTile = boardGame.getBoard().getTile(connection.targetTileId);
                     
                     if (targetTile != null) {
                         tile.addConnectedTile(direction, targetTile);
