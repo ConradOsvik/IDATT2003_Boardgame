@@ -93,7 +93,13 @@ public class Tile extends BaseModel {
    */
   public void addNextTile(Tile tile) {
     requireNotNull(tile, "Tile cannot be null");
-    connectedTiles.computeIfAbsent(Direction.FORWARD, k -> new ArrayList<>()).add(tile);
+    
+    // Only add if not already connected
+    if (!connectedTiles.get(Direction.FORWARD).contains(tile)) {
+      connectedTiles.get(Direction.FORWARD).add(tile);
+      // Add backward connection to the next tile
+      tile.connectedTiles.get(Direction.BACKWARD).add(this);
+    }
   }
 
   /**
