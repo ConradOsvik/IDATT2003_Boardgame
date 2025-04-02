@@ -73,6 +73,14 @@ public class BoardGame extends BaseModel {
   }
 
   /**
+   * Creates an empty board without any connections between tiles.
+   * This is used when loading a board configuration from a file.
+   */
+  public void createEmptyBoard() {
+    board = new Board();
+  }
+
+  /**
    * Creates dice for the game with the specified number of dice.
    *
    * @param dices The number of dice to use in the game
@@ -135,7 +143,7 @@ public class BoardGame extends BaseModel {
    *
    * @return The game board
    */
-  Board getBoard() {
+  public Board getBoard() {
     return board;
   }
 }

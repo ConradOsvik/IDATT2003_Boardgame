@@ -7,7 +7,7 @@ import java.util.Map;
  * Represents the game board containing the collection of tiles. The board manages a map of tile IDs
  * to tile objects, allowing for tile lookup by ID.
  */
-class Board extends BaseModel {
+public class Board extends BaseModel {
 
   /**
    * Map of tile IDs to tile objects for efficient tile lookup.
@@ -17,7 +17,7 @@ class Board extends BaseModel {
   /**
    * Constructs a new board with an empty tile collection.
    */
-  Board() {
+  public Board() {
     this.tiles = new HashMap<>();
   }
 
@@ -28,7 +28,7 @@ class Board extends BaseModel {
    * @param tile The tile to add to the board
    * @throws IllegalArgumentException if the tile is null
    */
-  void addTile(Tile tile) {
+  public void addTile(Tile tile) {
     requireNotNull(tile, "Tile cannot be null");
     tiles.put(tile.getTileId(), tile);
   }
@@ -39,7 +39,7 @@ class Board extends BaseModel {
    * @param tileId The ID of the tile to retrieve
    * @return The tile with the specified ID, or null if no such tile exists
    */
-  Tile getTile(int tileId) {
+  public Tile getTile(int tileId) {
     return tiles.get(tileId);
   }
 }

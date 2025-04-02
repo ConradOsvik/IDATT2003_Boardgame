@@ -19,18 +19,25 @@ public class Player extends BaseModel {
   private final String name;
 
   /**
+   * The token/piece this player uses on the board.
+   */
+  private final String token;
+
+  /**
    * The tile this player is currently on, or null if not placed on any tile.
    */
   private Tile currentTile;
 
   /**
-   * Constructs a new player with the specified name in the specified board game.
+   * Constructs a new player with the specified name and token in the specified board game.
    *
    * @param name      The name of the player
+   * @param token     The token/piece this player uses
    * @param boardGame The board game this player is part of
    */
-  public Player(String name, BoardGame boardGame) {
+  public Player(String name, String token, BoardGame boardGame) {
     this.name = name;
+    this.token = token;
     this.boardGame = boardGame;
   }
 
@@ -41,7 +48,7 @@ public class Player extends BaseModel {
    * @param tile The tile to place this player on
    * @throws IllegalArgumentException if the tile is null
    */
-  void placeOnTile(Tile tile) {
+  public void placeOnTile(Tile tile) {
     requireNotNull(tile, "Tile cannot be null");
 
     if (currentTile != null) {
@@ -61,7 +68,7 @@ public class Player extends BaseModel {
    * @param direction The direction to move in
    * @param steps     The number of steps to move
    */
-  void move(Tile.Direction direction, int steps) {
+  public void move(Tile.Direction direction, int steps) {
     if (steps <= 0 || currentTile == null) {
       return;
     }
@@ -105,5 +112,14 @@ public class Player extends BaseModel {
    */
   public String getName() {
     return name;
+  }
+
+  /**
+   * Gets the token/piece this player uses.
+   *
+   * @return The player's token
+   */
+  public String getToken() {
+    return token;
   }
 }

@@ -65,7 +65,7 @@ class BoardGameTest {
 
   @Test
   void addPlayer_placesPlayerOnFirstTile() {
-    Player player = new Player("Player", boardGame);
+    Player player = new Player("Player", "Token", boardGame);
     boardGame.addPlayer(player);
 
     assertEquals(1, player.getCurrentTile().getTileId());
@@ -76,7 +76,7 @@ class BoardGameTest {
     BoardGame game = new BoardGame();
     game.createBoard();
     game.createDice(1);
-    Player player = new Player("Player", game);
+    Player player = new Player("Player", "Token", game);
 
     game.addPlayer(player);
     player.placeOnTile(game.getBoard().getTile(89));
@@ -89,8 +89,8 @@ class BoardGameTest {
   @Test
   void play_noPlayerReachesLastTile_gameNotFinished() {
     boardGame.createDice(1);
-    Player player = new Player("Player", boardGame);
-    Player player2 = new Player("Player2", boardGame);
+    Player player = new Player("Player", "Token1", boardGame);
+    Player player2 = new Player("Player2", "Token2", boardGame);
 
     boardGame.addPlayer(player);
     boardGame.addPlayer(player2);
