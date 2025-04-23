@@ -1,0 +1,14 @@
+package edu.ntnu.stud.boardgame.core.observer;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public interface BoardGameObservable {
+  List<BoardGameObserver> observers = new ArrayList<>();
+
+  public void addObserver(BoardGameObserver observer);
+
+  public void removeObserver(BoardGameObserver observer);
+
+  public void notifyObservers(GameEvent event);
+}

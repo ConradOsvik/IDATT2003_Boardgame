@@ -1,8 +1,9 @@
 package edu.ntnu.stud.boardgame.core.model;
 
-import edu.ntnu.stud.boardgame.core.action.TileAction;
+import edu.ntnu.stud.boardgame.core.model.action.TileAction;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -23,18 +24,7 @@ public class Tile extends BaseModel {
    */
   private TileAction landAction;
 
-  /**
-   * Map of directions to lists of connected tiles.
-   */
-  private final Map<Direction, List<Tile>> connectedTiles;
-
-  /**
-   * Enum of possible directions for tile connections.
-   */
-  public enum Direction {
-    FORWARD,
-    BACKWARD
-  }
+  private Map<Integer, Tile> connectedTiles;
 
   /**
    * Constructs a new tile with the specified ID. The tile will initially have no connections or
@@ -44,10 +34,7 @@ public class Tile extends BaseModel {
    */
   public Tile(int tileId) {
     this.tileId = tileId;
-    this.connectedTiles = new EnumMap<>(Direction.class);
-
-    this.connectedTiles.put(Direction.FORWARD, new ArrayList<>());
-    this.connectedTiles.put(Direction.BACKWARD, new ArrayList<>());
+    this.connectedTiles = new HashMap<>();
   }
 
   /**
@@ -85,44 +72,23 @@ public class Tile extends BaseModel {
   }
 
   /**
-   * Adds a tile as a forward connection to this tile. This is a convenience method for adding a tile
-   * in the FORWARD direction.
+   * Adds a tile as a connection.
    *
    * @param tile The tile to connect to this one
    * @throws IllegalArgumentException if the tile is null
    */
-  public void addNextTile(Tile tile) {
+  public void addConnectedTile(Tile tile) {
     requireNotNull(tile, "Tile cannot be null");
-    
-    // Only add if not already connected
-    if (!connectedTiles.get(Direction.FORWARD).contains(tile)) {
-      connectedTiles.get(Direction.FORWARD).add(tile);
-      // Add backward connection to the next tile
-      tile.connectedTiles.get(Direction.BACKWARD).add(this);
-    }
+    connectedTiles.put(tile.getTileId(), tile);
   }
 
   /**
-   * Adds a tile as a connection in the specified direction.
+   * Gets the list of tiles connected to this tile.
    *
-   * @param direction The direction of the connection
-   * @param tile The tile to connect to this one
-   * @throws IllegalArgumentException if the tile or direction is null
+   * @return A list of connected tiles
    */
-  public void addConnectedTile(Direction direction, Tile tile) {
-    requireNotNull(direction, "Direction cannot be null");
-    requireNotNull(tile, "Tile cannot be null");
-    connectedTiles.computeIfAbsent(direction, k -> new ArrayList<>()).add(tile);
-  }
-
-  /**
-   * Gets the list of tiles connected to this tile in the specified direction.
-   *
-   * @param direction The direction to get connections for
-   * @return A list of connected tiles in the specified direction
-   */
-  public List<Tile> getConnectedTiles(Direction direction) {
-    return connectedTiles.get(direction);
+  public List<Tile> getConnectedTiles() {
+    return connectedTiles.values().stream().toList();
   }
 
   /**
@@ -162,11 +128,17 @@ public class Tile extends BaseModel {
    */
   @Override
   public String toString() {
+//    return "Tile{" +
+//        "id=" + tileId +
+//        ", forwardConnectedTiles=" + connectedTiles.get(Direction.FORWARD).stream()
+//        .map(Tile::getTileId).toList() +
+//        ", backwardConnectedTiles=" + connectedTiles.get(Direction.BACKWARD).stream()
+//        .map(Tile::getTileId).toList() +
+//        '}';
+//  }
     return "Tile{" +
         "id=" + tileId +
-        ", forwardConnectedTiles=" + connectedTiles.get(Direction.FORWARD).stream()
-        .map(Tile::getTileId).toList() +
-        ", backwardConnectedTiles=" + connectedTiles.get(Direction.BACKWARD).stream()
+        ", connectedTiles=" + connectedTiles.values().stream()
         .map(Tile::getTileId).toList() +
         '}';
   }

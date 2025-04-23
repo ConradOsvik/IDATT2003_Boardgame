@@ -11,7 +11,7 @@ public class Player extends BaseModel {
   /**
    * The board game this player is part of.
    */
-  private final BoardGame boardGame;
+  private final _BoardGame boardGame;
 
   /**
    * The name of this player.
@@ -35,7 +35,7 @@ public class Player extends BaseModel {
    * @param token     The token/piece this player uses
    * @param boardGame The board game this player is part of
    */
-  public Player(String name, String token, BoardGame boardGame) {
+  public Player(String name, String token, _BoardGame boardGame) {
     this.name = name;
     this.token = token;
     this.boardGame = boardGame;
@@ -59,31 +59,51 @@ public class Player extends BaseModel {
     tile.landPlayer(this);
   }
 
+  public void move(List<Integer> steps) {
+      if(steps == null || steps.isEmpty() || currentTile == null) {
+          return;
+      }
+
+      Tile targetTile = currentTile;
+      for(int i = 0; i < steps.size(); i++) {
+          int step = steps.get(i);
+          List<Tile> nextTiles = targetTile.getConnectedTiles();
+
+          if (nextTiles.isEmpty()) {
+              break;
+          }
+
+          targetTile = nextTiles.get(step);
+
+          if (targetTile.getTileId() == 90) {
+              break;
+          }
+      }
+
+      placeOnTile(targetTile);
+  }
+
   /**
-   * Moves the player in the specified direction by the specified number of steps. The player will
-   * follow connected tiles in the given direction. If there are multiple connected tiles, the
+   * Moves the player by the specified number of steps. The player will
+   * follow the connected tiles. If there are multiple connected tiles, the
    * player will take the first one. Movement stops if there are no more connected tiles in the
    * direction, if the player reaches tile 90, or when all steps have been taken.
    *
-   * @param direction The direction to move in
    * @param steps     The number of steps to move
    */
-  public void move(Tile.Direction direction, int steps) {
+  public void move(int steps) {
     if (steps <= 0 || currentTile == null) {
       return;
     }
 
     Tile targetTile = currentTile;
-    for (int i = 0; i < steps && targetTile != null; i++) {
-      List<Tile> nextTiles = targetTile.getConnectedTiles(direction);
+    for (int i = 0; i < steps; i++) {
+      List<Tile> nextTiles = targetTile.getConnectedTiles();
 
       if (nextTiles.isEmpty()) {
         break;
       }
 
-      if (nextTiles.size() > 1) {
-        // TODO: Implement logic to handle multiple connected tiles
-      }
       targetTile = nextTiles.getFirst();
 
       if (targetTile.getTileId() == 90) {
@@ -91,9 +111,7 @@ public class Player extends BaseModel {
       }
     }
 
-    if (targetTile != null) {
-      placeOnTile(targetTile);
-    }
+    placeOnTile(targetTile);
   }
 
   /**
