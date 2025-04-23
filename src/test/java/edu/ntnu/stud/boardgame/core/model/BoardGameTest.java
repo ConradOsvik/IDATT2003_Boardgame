@@ -13,12 +13,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Test class for {@link BoardGame}
+ * Test class for {@link _BoardGame}
  */
 @ExtendWith(MockitoExtension.class)
 class BoardGameTest {
 
-  private BoardGame boardGame;
+  private _BoardGame boardGame;
 
   @Mock
   private Player player;
@@ -28,13 +28,13 @@ class BoardGameTest {
 
   @BeforeEach
   void setup() {
-    boardGame = new BoardGame();
+    boardGame = new _BoardGame();
     boardGame.createBoard();
   }
 
   @Test
   void createBoard_createsBoard() {
-    boardGame = new BoardGame();
+    boardGame = new _BoardGame();
     boardGame.createBoard();
 
     assertDoesNotThrow(() -> boardGame.addPlayer(player));
@@ -73,7 +73,7 @@ class BoardGameTest {
 
   @Test
   void play_playerReachesLastTile_setsWinnerAndFinishesGame() {
-    BoardGame game = new BoardGame();
+    _BoardGame game = new _BoardGame();
     game.createBoard();
     game.createDice(1);
     Player player = new Player("Player", "Token", game);

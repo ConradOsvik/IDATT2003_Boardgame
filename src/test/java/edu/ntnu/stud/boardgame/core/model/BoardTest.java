@@ -8,16 +8,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test class for {@link Board}
+ * Test class for {@link _Board}
  */
 class BoardTest {
 
-  private Board board;
+  private _Board board;
   private Tile tile;
 
   @BeforeEach
   void setup() {
-    board = new Board();
+    board = new _Board();
     tile = new Tile(1);
   }
 

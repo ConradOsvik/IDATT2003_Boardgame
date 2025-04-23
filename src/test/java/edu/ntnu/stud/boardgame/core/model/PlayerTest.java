@@ -20,7 +20,7 @@ class PlayerTest {
   private Player player;
 
   @Mock
-  private BoardGame boardGame;
+  private _BoardGame boardGame;
 
   @Mock
   private Tile currentTile;
