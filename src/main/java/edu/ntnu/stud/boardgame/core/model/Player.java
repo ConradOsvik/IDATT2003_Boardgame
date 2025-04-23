@@ -3,15 +3,10 @@ package edu.ntnu.stud.boardgame.core.model;
 import java.util.List;
 
 /**
- * Represents a player in the board game. Players have a name, can be placed on tiles, and can move
+ * Represents a player in the board game. Players have a name and token, can be placed on tiles, and can move
  * between connected tiles.
  */
 public class Player extends BaseModel {
-
-  /**
-   * The board game this player is part of.
-   */
-  private final _BoardGame boardGame;
 
   /**
    * The name of this player.
@@ -29,16 +24,14 @@ public class Player extends BaseModel {
   private Tile currentTile;
 
   /**
-   * Constructs a new player with the specified name and token in the specified board game.
+   * Constructs a new player with the specified name and token.
    *
-   * @param name      The name of the player
-   * @param token     The token/piece this player uses
-   * @param boardGame The board game this player is part of
+   * @param name  The name of the player
+   * @param token The token/piece this player uses
    */
-  public Player(String name, String token, _BoardGame boardGame) {
+  public Player(String name, String token) {
     this.name = name;
     this.token = token;
-    this.boardGame = boardGame;
   }
 
   /**
@@ -59,37 +52,37 @@ public class Player extends BaseModel {
     tile.landPlayer(this);
   }
 
+  // TODO: Use and javadoc this method for branching games
   public void move(List<Integer> steps) {
-      if(steps == null || steps.isEmpty() || currentTile == null) {
-          return;
+    if(steps == null || steps.isEmpty() || currentTile == null) {
+      return;
+    }
+
+    Tile targetTile = currentTile;
+    for (int step : steps) {
+      List<Tile> nextTiles = targetTile.getConnectedTiles();
+
+      if (nextTiles.isEmpty()) {
+        break;
       }
 
-      Tile targetTile = currentTile;
-      for(int i = 0; i < steps.size(); i++) {
-          int step = steps.get(i);
-          List<Tile> nextTiles = targetTile.getConnectedTiles();
+      targetTile = nextTiles.get(step);
 
-          if (nextTiles.isEmpty()) {
-              break;
-          }
-
-          targetTile = nextTiles.get(step);
-
-          if (targetTile.getTileId() == 90) {
-              break;
-          }
+      if (targetTile.getTileId() == 90) {
+        break;
       }
+    }
 
-      placeOnTile(targetTile);
+    placeOnTile(targetTile);
   }
 
   /**
    * Moves the player by the specified number of steps. The player will
    * follow the connected tiles. If there are multiple connected tiles, the
-   * player will take the first one. Movement stops if there are no more connected tiles in the
-   * direction, if the player reaches tile 90, or when all steps have been taken.
+   * player will take the first one. Movement stops if there are no more connected tiles,
+   * if the player reaches tile 90, or when all steps have been taken.
    *
-   * @param steps     The number of steps to move
+   * @param steps The number of steps to move
    */
   public void move(int steps) {
     if (steps <= 0 || currentTile == null) {
@@ -106,7 +99,7 @@ public class Player extends BaseModel {
 
       targetTile = nextTiles.getFirst();
 
-      if (targetTile.getTileId() == 90) {
+      if (targetTile.getTileId() == 100) {
         break;
       }
     }

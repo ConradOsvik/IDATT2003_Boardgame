@@ -7,7 +7,7 @@ import java.util.stream.IntStream;
  * Represents a collection of dice used in the board game. This class manages multiple die instances
  * and provides methods to roll them all at once.
  */
-class Dice {
+public class Dice {
 
   /**
    * The collection of individual dice.
@@ -20,7 +20,7 @@ class Dice {
    * @param numberOfDice The number of dice to create
    * @throws IllegalArgumentException if the number of dice is less than 1
    */
-  Dice(int numberOfDice) {
+  public Dice(int numberOfDice) {
     if (numberOfDice < 1) {
       throw new IllegalArgumentException("Number of dice must be at least 1");
     }
@@ -35,7 +35,7 @@ class Dice {
    *
    * @return The total sum of all dice values
    */
-  int roll() {
+  public int roll() {
     return dice.stream().mapToInt(Die::roll).sum();
   }
 

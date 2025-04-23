@@ -2,15 +2,14 @@ package edu.ntnu.stud.boardgame.core.model;
 
 import edu.ntnu.stud.boardgame.core.model.action.TileAction;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 /**
- * Represents a tile on the game board. Tiles have a unique ID, can have connected tiles in
- * different directions, and can trigger actions when players land on them.
+ * Represents a tile on the game board. Tiles have a unique ID, can have connected tiles,
+ * and can trigger actions when players land on them.
  */
 public class Tile extends BaseModel {
 
@@ -24,7 +23,10 @@ public class Tile extends BaseModel {
    */
   private TileAction landAction;
 
-  private Map<Integer, Tile> connectedTiles;
+  /**
+   * The tiles connected to this tile (can be accessed by a player moving from this tile).
+   */
+  private final Map<Integer, Tile> connectedTiles;
 
   /**
    * Constructs a new tile with the specified ID. The tile will initially have no connections or
@@ -47,6 +49,24 @@ public class Tile extends BaseModel {
   }
 
   /**
+   * Sets the action that occurs when a player lands on this tile.
+   *
+   * @param landAction The action to set, or null to remove the action
+   */
+  public void setLandAction(TileAction landAction) {
+    this.landAction = landAction;
+  }
+
+  /**
+   * Gets the action that occurs when a player lands on this tile.
+   *
+   * @return The landing action, or null if no action is set
+   */
+  public TileAction getLandAction() {
+    return landAction;
+  }
+
+  /**
    * Called when a player lands on this tile. Performs the landing action if one is set.
    *
    * @param player The player who landed on this tile
@@ -61,14 +81,14 @@ public class Tile extends BaseModel {
   }
 
   /**
-   * Called when a player leaves this tile. Currently a placeholder for future implementation.
+   * Called when a player leaves this tile.
    *
    * @param player The player who is leaving this tile
    * @throws IllegalArgumentException if the player is null
    */
   public void leavePlayer(Player player) {
     requireNotNull(player, "Player cannot be null");
-    //TODO: Implement
+    // Currently just a placeholder
   }
 
   /**
@@ -88,7 +108,7 @@ public class Tile extends BaseModel {
    * @return A list of connected tiles
    */
   public List<Tile> getConnectedTiles() {
-    return connectedTiles.values().stream().toList();
+    return new ArrayList<>(connectedTiles.values());
   }
 
   /**
@@ -117,29 +137,19 @@ public class Tile extends BaseModel {
    */
   @Override
   public int hashCode() {
-    return Objects.hashCode(tileId);
+    return Objects.hash(tileId);
   }
 
   /**
-   * Returns a string representation of this tile, including its ID and connected tiles in both
-   * directions.
+   * Returns a string representation of this tile, including its ID and connected tiles.
    *
    * @return A string representation of this tile
    */
   @Override
   public String toString() {
-//    return "Tile{" +
-//        "id=" + tileId +
-//        ", forwardConnectedTiles=" + connectedTiles.get(Direction.FORWARD).stream()
-//        .map(Tile::getTileId).toList() +
-//        ", backwardConnectedTiles=" + connectedTiles.get(Direction.BACKWARD).stream()
-//        .map(Tile::getTileId).toList() +
-//        '}';
-//  }
     return "Tile{" +
         "id=" + tileId +
-        ", connectedTiles=" + connectedTiles.values().stream()
-        .map(Tile::getTileId).toList() +
+        ", connectedTiles=" + connectedTiles.keySet() +
         '}';
   }
 }
