@@ -1,29 +1,52 @@
 package edu.ntnu.stud.boardgame;
 
+import edu.ntnu.stud.boardgame.core.factory.BoardGameFactory;
+import edu.ntnu.stud.boardgame.core.model.BoardGame;
 import edu.ntnu.stud.boardgame.core.view.styles.StyleManager;
-import edu.ntnu.stud.boardgame.core.view.ui.Button;
+import edu.ntnu.stud.boardgame.snakesandladders.controller.ControlPanelController;
+import edu.ntnu.stud.boardgame.snakesandladders.controller.GameBoardController;
+import edu.ntnu.stud.boardgame.snakesandladders.view.ControlPanelView;
+import edu.ntnu.stud.boardgame.snakesandladders.view.GameBoardView;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+/**
+ * Main application class for the Snakes and Ladders board game.
+ */
 public class BoardGameApp extends Application {
+
   @Override
   public void start(Stage primaryStage) {
-    VBox root = new VBox();
+    BorderPane mainLayout = new BorderPane();
 
-    Button button = Button.builder().text("button").styleClass("primary").onAction(e -> System.out.println("clicked!")).build();
+    BoardGame game = BoardGameFactory.createSnakesAndLaddersGame();
 
-    root.getChildren().add(button);
+    GameBoardController gameBoardController = new GameBoardController(game);
+    ControlPanelController controlPanelController = new ControlPanelController(gameBoardController);
 
-    Scene scene = new Scene(root, 800, 600);
+    GameBoardView gameBoardView = new GameBoardView(gameBoardController);
+    ControlPanelView controlPanelView = new ControlPanelView(controlPanelController);
+
+    mainLayout.setCenter(gameBoardView);
+    mainLayout.setRight(controlPanelView);
+
+    Scene scene = new Scene(mainLayout, 900, 650);
+
     StyleManager.initializeBaseStyles(scene);
 
-    primaryStage.setTitle("Board Game Application");
+    primaryStage.setTitle("Snakes and Ladders");
     primaryStage.setScene(scene);
+    primaryStage.setResizable(true);
     primaryStage.show();
   }
 
+  /**
+   * Main method to launch the application.
+   *
+   * @param args Command line arguments
+   */
   public static void main(String[] args) {
     launch(args);
   }
