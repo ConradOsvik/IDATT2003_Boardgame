@@ -7,6 +7,7 @@ public class GameEvent {
   public enum EventType {
     GAME_STARTED,
     GAME_ENDED,
+    PLAYER_ADDED,
     PLAYER_MOVED,
     DICE_ROLLED,
     SNAKE_ENCOUNTERED,

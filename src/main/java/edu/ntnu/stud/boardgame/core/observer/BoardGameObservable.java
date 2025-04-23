@@ -11,4 +11,6 @@ public interface BoardGameObservable {
   public void removeObserver(BoardGameObserver observer);
 
   public void notifyObservers(GameEvent event);
+
+  void transferObserversFrom(BoardGameObservable other);
 }
