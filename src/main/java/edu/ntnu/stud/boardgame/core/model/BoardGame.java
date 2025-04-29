@@ -148,7 +148,7 @@ public abstract class BoardGame implements BoardGameObservable {
   public void addObserver(BoardGameObserver observer) {
     if (observer != null && !observers.contains(observer)) {
       observers.add(observer);
-      LOGGER.fine("Observer added, total: " + observers.size());
+      LOGGER.info("Observer added, total: " + observers.size());
     }
   }
 
@@ -157,7 +157,7 @@ public abstract class BoardGame implements BoardGameObservable {
   }
 
   public void notifyObservers(GameEvent event) {
-    LOGGER.fine(
+    LOGGER.info(
         "Notifying " + observers.size() + " observers about event: " + event.getEventType());
     for (BoardGameObserver observer : observers) {
       observer.onGameEvent(event);
