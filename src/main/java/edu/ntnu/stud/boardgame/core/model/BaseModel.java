@@ -18,4 +18,10 @@ abstract class BaseModel {
       throw new IllegalArgumentException(message);
     }
   }
+
+  protected void requireNotEmpty(String str, String message) {
+    if (str == null || str.isEmpty()) {
+      throw new IllegalArgumentException(message);
+    }
+  }
 }
