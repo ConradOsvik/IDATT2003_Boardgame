@@ -19,11 +19,13 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Build with Maven 📦
-        run: mvn -B package --file pom.xml
+      - name: Format code with Google Java Format ✨
+        uses: axel-op/googlejavaformat-action@v4
+        with:
+          commit-message: "refactor: format code with google-java-format"
 
-      - name: Run tests with Maven 🧪
-        run: mvn test
+      - name: Verify with Maven 🔍
+        run: mvn clean verify
 
   javadoc:
     if: github.ref == 'refs/heads/main'
