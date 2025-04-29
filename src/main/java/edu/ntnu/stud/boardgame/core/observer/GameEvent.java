@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GameEvent {
+
   public enum EventType {
+    GAME_CREATED,
+    GAME_RESET,
     GAME_STARTED,
     GAME_ENDED,
     PLAYER_ADDED,
