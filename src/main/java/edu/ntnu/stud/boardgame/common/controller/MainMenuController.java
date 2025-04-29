@@ -2,7 +2,6 @@ package edu.ntnu.stud.boardgame.common.controller;
 
 import edu.ntnu.stud.boardgame.common.view.MainMenuView;
 import edu.ntnu.stud.boardgame.core.controller.BaseController;
-import edu.ntnu.stud.boardgame.core.navigation.ViewControllerFactory.ViewName;
 import javafx.scene.Node;
 
 public class MainMenuController extends BaseController {
@@ -18,13 +17,5 @@ public class MainMenuController extends BaseController {
   @Override
   public Node getView() {
     return view;
-  }
-
-  public void goBack() {
-    navigateBack();
-  }
-
-  public void goToGameSelection() {
-    navigateTo(ViewName.GAME_SELECTION);
   }
 }
