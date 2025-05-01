@@ -34,6 +34,10 @@ public class SlBoard extends Board {
    */
   @Override
   public void initializeBoard() {
+
+    Tile startingTile = new Tile(0);
+    tiles.put(0, startingTile);
+
     for (int row = 0; row < BOARD_ROWS; row++) {
       for (int col = 0; col < BOARD_COLUMNS; col++) {
         int tileId = row * BOARD_COLUMNS + col + 1;
@@ -42,7 +46,7 @@ public class SlBoard extends Board {
       }
     }
 
-    for (int i = 1; i < NUM_TILES; i++) {
+    for (int i = 0; i < NUM_TILES; i++) {
       Tile currentTile = tiles.get(i);
       Tile nextTile = tiles.get(i + 1);
       currentTile.addConnectedTile(nextTile);
@@ -88,7 +92,7 @@ public class SlBoard extends Board {
    */
   @Override
   public Tile getStartingTile() {
-    return tiles.get(1);
+    return tiles.get(0);
   }
 
   /**
@@ -146,6 +150,10 @@ public class SlBoard extends Board {
    * @return An array where [0] is the x coordinate and [1] is the y coordinate
    */
   public int[] getTileCoordinates(int tileId) {
+    if (tileId == 0) {
+      throw new IllegalArgumentException("Tile 0 doesn't have coordinates");
+    }
+
     if (tileId < 1 || tileId > NUM_TILES) {
       throw new IllegalArgumentException("Invalid tile ID: " + tileId);
     }

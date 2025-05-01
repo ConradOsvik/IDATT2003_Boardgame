@@ -69,7 +69,6 @@ public class SlBoardGame extends BoardGame {
     moveEvent.addData("steps", steps);
     notifyObservers(moveEvent);
 
-    //TODO: not using this atm
     if (previousTile != player.getCurrentTile()
         && previousTile.getTileId() + steps != player.getCurrentTile().getTileId()) {
       if (player.getCurrentTile().getTileId() > previousTile.getTileId() + steps) {

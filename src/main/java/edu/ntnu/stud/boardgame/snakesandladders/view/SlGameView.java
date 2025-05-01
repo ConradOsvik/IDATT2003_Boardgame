@@ -134,14 +134,10 @@ public class SlGameView extends HBox implements BaseView, BoardGameObserver {
     playerNameField = TextField.builder().promptText("Player Name").disabled(true).build();
 
     tokenComboBox = ComboBox.<ColorOption>builder()
-        .items(
-            new ColorOption(Color.RED, "Red"),
-            new ColorOption(Color.BLUE, "Blue"),
-            new ColorOption(Color.GREEN, "Green"),
-            new ColorOption(Color.ORANGE, "Orange"),
-            new ColorOption(Color.PURPLE, "Purple")
-        )
-        .promptText("Select token color").disabled(true).build();
+        .items(new ColorOption(Color.RED, "Red"), new ColorOption(Color.BLUE, "Blue"),
+            new ColorOption(Color.GREEN, "Green"), new ColorOption(Color.ORANGE, "Orange"),
+            new ColorOption(Color.PURPLE, "Purple")).promptText("Select token color").disabled(true)
+        .build();
     tokenComboBox.setPrefWidth(200);
 
     Label addPlayerLabel = Label.builder().text("Add new player").build();
@@ -282,7 +278,8 @@ public class SlGameView extends HBox implements BaseView, BoardGameObserver {
         gc.setFill(Color.BLACK);
         gc.setFont(Font.font("Arial", FontWeight.NORMAL, 12)); //TODO: use Inter font
         gc.fillText(String.valueOf(
-                BoardCoordinateConverter.calculateTileIdFromCoordinates(row, col, rows, cols)), x + 5,
+                BoardCoordinateConverter.calculateTileIdFromCoordinates(row, col, rows, cols)),
+            x + 5,
             y + 15);
       }
     }
@@ -297,7 +294,7 @@ public class SlGameView extends HBox implements BaseView, BoardGameObserver {
 
     for (SlPlayer player : players) {
       Tile currentTile = player.getCurrentTile();
-      if (currentTile != null) {
+      if (currentTile != null && currentTile.getTileId() > 0) {
         drawPlayerToken(gc, player, currentTile.getTileId(), rows, cols);
       }
     }
