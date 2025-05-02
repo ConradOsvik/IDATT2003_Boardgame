@@ -160,6 +160,7 @@ public class SlBoard extends Board {
 
     int index = tileId - 1;
 
+    // This is likely the issue - if rows are indexed from 0 at the bottom:
     int row = BOARD_ROWS - 1 - (index / BOARD_COLUMNS);
 
     int col;
@@ -169,6 +170,6 @@ public class SlBoard extends Board {
       col = BOARD_COLUMNS - 1 - (index % BOARD_COLUMNS);
     }
 
-    return new int[]{col, row};
+    return new int[]{row, col};
   }
 }

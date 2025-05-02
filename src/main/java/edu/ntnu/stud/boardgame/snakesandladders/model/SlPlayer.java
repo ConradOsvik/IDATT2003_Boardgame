@@ -9,6 +9,7 @@ public class SlPlayer extends Player {
 
   public SlPlayer(String name, Color color) {
     super(name);
+    requireNotNull(color, "Color cannot be null");
     this.color = color;
   }
 
