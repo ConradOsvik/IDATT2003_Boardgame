@@ -30,7 +30,7 @@ class PlayerTest {
 
   @BeforeEach
   void setup() {
-    player = new Player("Player", boardGame);
+    player = new Player("Player", "Token", boardGame);
   }
 
   @Test
