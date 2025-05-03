@@ -1,0 +1,584 @@
+/* ---------- Base Styles ---------- */
+
+.root {
+  -fx-font-family: 'Inter', sans-serif;
+  -fx-font-size: 14px;
+  -fx-background-color: #f8fafc;
+}
+
+/* ---------- Colors ---------- */
+
+/* Background Colors */
+.bg-white {
+  -fx-background-color: #ffffff;
+}
+
+.bg-black {
+  -fx-background-color: #000000;
+}
+
+.bg-gray {
+  -fx-background-color: #f1f5f9;
+}
+
+.bg-primary {
+  -fx-background-color: #3b82f6;
+}
+
+.bg-secondary {
+  -fx-background-color: #6b7280;
+}
+
+.bg-success {
+  -fx-background-color: #22c55e;
+}
+
+.bg-danger {
+  -fx-background-color: #ef4444;
+}
+
+.bg-warning {
+  -fx-background-color: #facc15;
+}
+
+.bg-info {
+  -fx-background-color: #06b6d4;
+}
+
+.bg-light {
+  -fx-background-color: #f8fafc;
+}
+
+.bg-dark {
+  -fx-background-color: #1e293b;
+}
+
+/* Text Colors */
+.text-white {
+  -fx-text-fill: #ffffff;
+}
+
+.text-black {
+  -fx-text-fill: #000000;
+}
+
+.text-gray {
+  -fx-text-fill: #6b7280;
+}
+
+.text-primary {
+  -fx-text-fill: #3b82f6;
+}
+
+.text-secondary {
+  -fx-text-fill: #6b7280;
+}
+
+.text-success {
+  -fx-text-fill: #22c55e;
+}
+
+.text-danger {
+  -fx-text-fill: #ef4444;
+}
+
+.text-warning {
+  -fx-text-fill: #facc15;
+}
+
+.text-info {
+  -fx-text-fill: #06b6d4;
+}
+
+.text-light {
+  -fx-text-fill: #f8fafc;
+}
+
+.text-dark {
+  -fx-text-fill: #1e293b;
+}
+
+/* ---------- Typography ---------- */
+
+/* Font Sizes */
+.text-xs {
+  -fx-font-size: 10px;
+}
+
+.text-sm {
+  -fx-font-size: 12px;
+}
+
+.text-md {
+  -fx-font-size: 14px;
+}
+
+.text-lg {
+  -fx-font-size: 16px;
+}
+
+.text-xl {
+  -fx-font-size: 18px;
+}
+
+.text-2xl {
+  -fx-font-size: 20px;
+}
+
+.text-3xl {
+  -fx-font-size: 24px;
+}
+
+.text-4xl {
+  -fx-font-size: 30px;
+}
+
+.text-5xl {
+  -fx-font-size: 36px;
+}
+
+/* Font Weights */
+.font-light {
+  -fx-font-weight: 300;
+}
+
+.font-normal {
+  -fx-font-weight: normal;
+}
+
+.font-medium {
+  -fx-font-weight: 500;
+}
+
+.font-bold {
+  -fx-font-weight: bold;
+}
+
+/* Font Styles */
+.italic {
+  -fx-font-style: italic;
+}
+
+.truncate {
+  -fx-text-overflow: ellipsis;
+  -fx-overflow: hidden;
+}
+
+/* Text Alignment */
+.text-left {
+  -fx-text-alignment: left;
+}
+
+.text-center {
+  -fx-text-alignment: center;
+}
+
+.text-right {
+  -fx-text-alignment: right;
+}
+
+/* ---------- Layout ---------- */
+
+/* Padding */
+.p-0 {
+  -fx-padding: 0;
+}
+
+.p-1 {
+  -fx-padding: 4;
+}
+
+.p-2 {
+  -fx-padding: 8;
+}
+
+.p-3 {
+  -fx-padding: 12;
+}
+
+.p-4 {
+  -fx-padding: 16;
+}
+
+.p-5 {
+  -fx-padding: 20;
+}
+
+.p-6 {
+  -fx-padding: 24;
+}
+
+/* Margin */
+.m-0 {
+  -fx-margin: 0;
+}
+
+.m-1 {
+  -fx-margin: 4;
+}
+
+.m-2 {
+  -fx-margin: 8;
+}
+
+.m-3 {
+  -fx-margin: 12;
+}
+
+.m-4 {
+  -fx-margin: 16;
+}
+
+.m-5 {
+  -fx-margin: 20;
+}
+
+.m-6 {
+  -fx-margin: 24;
+}
+
+/* Spacing */
+.space-1 {
+  -fx-spacing: 4;
+}
+
+.space-2 {
+  -fx-spacing: 8;
+}
+
+.space-3 {
+  -fx-spacing: 12;
+}
+
+.space-4 {
+  -fx-spacing: 16;
+}
+
+.space-5 {
+  -fx-spacing: 20;
+}
+
+.space-6 {
+  -fx-spacing: 24;
+}
+
+/* ---------- Effects ---------- */
+
+/* Border Radius */
+.rounded {
+  -fx-background-radius: 8;
+  -fx-border-radius: 8;
+}
+
+.rounded-full {
+  -fx-background-radius: 9999;
+  -fx-border-radius: 9999;
+}
+
+/* Shadow */
+.shadow {
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 4);
+}
+
+.shadow-md {
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 15, 0, 0, 7);
+}
+
+.shadow-lg {
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 20, 0, 0, 10);
+}
+
+/* Borders */
+.bordered {
+  -fx-border-color: #e2e8f0;
+  -fx-border-width: 1;
+  -fx-border-style: solid;
+}
+
+/* ---------- Button Styles ---------- */
+
+.button {
+  -fx-padding: 8 16;
+  -fx-background-color: #f8f9fa;
+  -fx-text-fill: #212529;
+  -fx-border-color: #dee2e6;
+  -fx-border-radius: 4;
+  -fx-background-radius: 4;
+  -fx-cursor: hand;
+  -fx-font-size: 14px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 2, 0, 0, 1);
+  -fx-font-weight: bold;
+}
+
+.button:hover {
+  -fx-background-color: #e9ecef;
+  -fx-border-color: #ced4da;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.15), 3, 0, 0, 1);
+}
+
+.button:pressed {
+  -fx-background-color: #dee2e6;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.05), 1, 0, 0, 0);
+  -fx-translate-y: 1px;
+}
+
+.button:disabled {
+  -fx-opacity: 0.65;
+  -fx-cursor: default;
+}
+
+/* Button Variants */
+.button.primary {
+  -fx-background-color: #3b82f6;
+  -fx-text-fill: white;
+  -fx-border-color: #3b82f6;
+}
+
+.button.primary:hover {
+  -fx-background-color: #2563eb;
+  -fx-border-color: #2563eb;
+}
+
+.button.primary:pressed {
+  -fx-background-color: #1d4ed8;
+  -fx-border-color: #1d4ed8;
+}
+
+.button.secondary {
+  -fx-background-color: #6b7280;
+  -fx-text-fill: white;
+  -fx-border-color: #6b7280;
+}
+
+.button.secondary:hover {
+  -fx-background-color: #4b5563;
+  -fx-border-color: #4b5563;
+}
+
+.button.success {
+  -fx-background-color: #22c55e;
+  -fx-text-fill: white;
+  -fx-border-color: #22c55e;
+}
+
+.button.success:hover {
+  -fx-background-color: #16a34a;
+  -fx-border-color: #16a34a;
+}
+
+.button.danger {
+  -fx-background-color: #ef4444;
+  -fx-text-fill: white;
+  -fx-border-color: #ef4444;
+}
+
+.button.danger:hover {
+  -fx-background-color: #dc2626;
+  -fx-border-color: #dc2626;
+}
+
+.button.warning {
+  -fx-background-color: #facc15;
+  -fx-text-fill: #1e293b;
+  -fx-border-color: #facc15;
+}
+
+.button.warning:hover {
+  -fx-background-color: #eab308;
+  -fx-border-color: #eab308;
+}
+
+.button.info {
+  -fx-background-color: #06b6d4;
+  -fx-text-fill: white;
+  -fx-border-color: #06b6d4;
+}
+
+.button.info:hover {
+  -fx-background-color: #0891b2;
+  -fx-border-color: #0891b2;
+}
+
+/* Button Sizes */
+.button.button-sm {
+  -fx-padding: 4 8;
+  -fx-font-size: 12px;
+}
+
+.button.button-md {
+  -fx-padding: 8 16;
+  -fx-font-size: 14px;
+}
+
+.button.button-lg {
+  -fx-padding: 12 20;
+  -fx-font-size: 16px;
+}
+
+/* Button Outline */
+.button.outline {
+  -fx-background-color: transparent;
+  -fx-text-fill: inherit;
+}
+
+.button.outline.primary {
+  -fx-border-color: #3b82f6;
+  -fx-text-fill: #3b82f6;
+}
+
+.button.outline.primary:hover {
+  -fx-background-color: #3b82f621;
+}
+
+.button.outline.secondary {
+  -fx-border-color: #6b7280;
+  -fx-text-fill: #6b7280;
+}
+
+.button.outline.success {
+  -fx-border-color: #22c55e;
+  -fx-text-fill: #22c55e;
+}
+
+.button.outline.danger {
+  -fx-border-color: #ef4444;
+  -fx-text-fill: #ef4444;
+}
+
+/* ---------- Label Styles ---------- */
+
+.label {
+  -fx-text-fill: #1e293b;
+  -fx-font-size: 14px;
+}
+
+/* ---------- TextField Styles ---------- */
+
+.text-field {
+  -fx-background-color: #ffffff;
+  -fx-border-color: #d1d5db;
+  -fx-border-radius: 4;
+  -fx-background-radius: 4;
+  -fx-padding: 8 12;
+}
+
+.text-field:focused {
+  -fx-border-color: #3b82f6;
+  -fx-border-width: 2;
+}
+
+.text-field:hover {
+  -fx-border-color: #9ca3af;
+}
+
+.text-field:disabled {
+  -fx-opacity: 0.65;
+  -fx-background-color: #f1f5f9;
+}
+
+.text-field.rounded {
+  -fx-border-radius: 9999;
+  -fx-background-radius: 9999;
+}
+
+/* ---------- ComboBox Styles ---------- */
+
+.combo-box {
+  -fx-background-color: #ffffff;
+  -fx-border-color: #d1d5db;
+  -fx-border-radius: 4;
+  -fx-background-radius: 4;
+  -fx-padding: 0;
+}
+
+.combo-box .arrow-button {
+  -fx-padding: 4;
+}
+
+.combo-box:hover {
+  -fx-border-color: #9ca3af;
+}
+
+.combo-box:focused {
+  -fx-border-color: #3b82f6;
+  -fx-border-width: 2;
+}
+
+.combo-box:disabled {
+  -fx-opacity: 0.65;
+  -fx-background-color: #f1f5f9;
+}
+
+.combo-box.rounded {
+  -fx-border-radius: 9999;
+  -fx-background-radius: 9999;
+}
+
+.combo-box .list-cell {
+  -fx-padding: 4 8;
+  -fx-text-fill: #1e293b;
+}
+
+.combo-box .list-view {
+  -fx-background-color: #ffffff;
+  -fx-border-color: #d1d5db;
+}
+
+/* ---------- CheckBox Styles ---------- */
+
+.check-box {
+  -fx-text-fill: #1e293b;
+}
+
+.check-box .box {
+  -fx-background-color: #ffffff;
+  -fx-border-color: #d1d5db;
+  -fx-border-radius: 4;
+  -fx-background-radius: 4;
+}
+
+.check-box:selected .box {
+  -fx-background-color: #3b82f6;
+  -fx-border-color: #3b82f6;
+}
+
+.check-box:selected .mark {
+  -fx-background-color: #ffffff;
+}
+
+.check-box:hover .box {
+  -fx-border-color: #9ca3af;
+}
+
+.check-box:disabled {
+  -fx-opacity: 0.65;
+}
+
+/* Variations */
+.check-box.primary:selected .box {
+  -fx-background-color: #3b82f6;
+  -fx-border-color: #3b82f6;
+}
+
+.check-box.secondary:selected .box {
+  -fx-background-color: #6b7280;
+  -fx-border-color: #6b7280;
+}
+
+.check-box.success:selected .box {
+  -fx-background-color: #22c55e;
+  -fx-border-color: #22c55e;
+}
+
+.check-box.danger:selected .box {
+  -fx-background-color: #ef4444;
+  -fx-border-color: #ef4444;
+}
+
+/* ---------- Panel Styles ---------- */
+
+.panel {
+  -fx-background-color: #ffffff;
+  -fx-padding: 16;
+  -fx-spacing: 12;
+}

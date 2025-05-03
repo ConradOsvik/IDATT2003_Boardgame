@@ -1,55 +1,61 @@
 package edu.ntnu.stud.boardgame;
 
-import edu.ntnu.stud.boardgame.core.model.BoardGame;
-import edu.ntnu.stud.boardgame.core.model.Player;
+import edu.ntnu.stud.boardgame.core.navigation.BoardGameViewControllerFactory;
+import edu.ntnu.stud.boardgame.core.navigation.Navigator;
+import edu.ntnu.stud.boardgame.core.navigation.ViewControllerFactory.ViewName;
+import edu.ntnu.stud.boardgame.core.util.StyleManager;
+import edu.ntnu.stud.boardgame.core.view.ui.Button;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
-public class BoardGameApp {
+public class BoardGameApp extends Application {
 
-  private BoardGame boardGame = new BoardGame();
+  @Override
+  public void start(Stage primaryStage) {
+    BorderPane mainContainer = new BorderPane();
 
-  public void start() {
-    this.boardGame.createBoard();
-    this.boardGame.createDice(2);
+    Scene scene = new Scene(mainContainer, 900, 650);
 
-    this.boardGame.addPlayer(new Player("Arne", this.boardGame));
-    this.boardGame.addPlayer(new Player("Ivar", this.boardGame));
-    this.boardGame.addPlayer(new Player("Majid", this.boardGame));
-    this.boardGame.addPlayer(new Player("Atle", this.boardGame));
+    StyleManager.initializeBaseStyles(scene);
 
-    listPlayers();
+    Navigator navigator = Navigator.getInstance();
+    navigator.setMainContainer(mainContainer);
+    navigator.setViewControllerFactory(new BoardGameViewControllerFactory());
+    navigator.setUseTransitions(true);
 
-    int roundNumber = 1;
-    while (!this.boardGame.isFinished()) {
-      System.out.println("Round number " + roundNumber++);
-      this.boardGame.play();
+    navigator.navigateTo(ViewName.MAIN_MENU);
 
-      if (!this.boardGame.isFinished()) {
-        showPlayerStatus();
-      }
+    ToolBar toolBar = createToolBar(navigator);
 
-      System.out.println();
-    }
+    mainContainer.setTop(toolBar);
 
-    System.out.println("And the winner is: " + this.boardGame.getWinner().getName());
+    primaryStage.setTitle("Board Game");
+    primaryStage.setScene(scene);
+    primaryStage.setMinWidth(800);
+    primaryStage.setMinHeight(600);
+    primaryStage.setResizable(true);
+    primaryStage.show();
   }
 
-  private void listPlayers() {
-    System.out.println("The following players are playing the game:");
-    for (Player player : boardGame.getPlayers()) {
-      System.out.println("Name: " + player.getName());
-    }
-    System.out.println();
-  }
+  private ToolBar createToolBar(Navigator navigator) {
+    ToolBar toolBar = new ToolBar();
 
-  private void showPlayerStatus() {
-    for (Player player : boardGame.getPlayers()) {
-      System.out.println("Player " + player.getName() +
-          " on tile " + player.getCurrentTile().getTileId());
-    }
+    Button goBack = Button.builder().text("Go Back").onAction(event -> {
+      navigator.goBack();
+    }).build();
+    Button exit = Button.builder().text("Exit").styleClass("danger").onAction(event -> {
+      System.exit(0);
+    }).build();
+
+    toolBar.getItems().addAll(goBack, exit);
+
+    return toolBar;
   }
 
   public static void main(String[] args) {
-    BoardGameApp app = new BoardGameApp();
-    app.start();
+    launch(args);
   }
 }

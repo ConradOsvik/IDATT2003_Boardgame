@@ -3,115 +3,112 @@ package edu.ntnu.stud.boardgame.core.model;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import edu.ntnu.stud.boardgame.core.model.action.TileAction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
 
-/**
- * Test class for {@link Tile}
- */
-@ExtendWith(MockitoExtension.class)
 class TileTest {
 
   private Tile tile;
-
-  @Mock
-  private Player player;
+  private final int TILE_ID = 5;
 
   @BeforeEach
-  void setup() {
-    tile = new Tile(1);
+  void setUp() {
+    tile = new Tile(TILE_ID);
   }
 
   @Test
-  void constructor_validTileId_createsTile() {
-    assertEquals(1, tile.getTileId());
+  void getTileId_returnsCorrectId() {
+    assertEquals(TILE_ID, tile.getTileId());
   }
 
   @Test
-  void landPlayer_validPlayer_performsLandAction() {
-    assertDoesNotThrow(() -> tile.landPlayer(player));
+  void setLandAction_validAction_storesAction() {
+    TileAction action = Mockito.mock(TileAction.class);
+    tile.setLandAction(action);
+    assertEquals(action, tile.getLandAction());
   }
 
   @Test
-  void landPlayer_nullPlayer_throwsIllegalArgumentException() {
+  void setLandAction_nullAction_removesAction() {
+    TileAction action = Mockito.mock(TileAction.class);
+    tile.setLandAction(action);
+    tile.setLandAction(null);
+    assertNull(tile.getLandAction());
+  }
+
+  @Test
+  void landPlayer_validPlayer_performsAction() {
+    Player player = Mockito.mock(Player.class);
+    TileAction action = Mockito.mock(TileAction.class);
+
+    tile.setLandAction(action);
+    tile.landPlayer(player);
+
+    Mockito.verify(action).perform(player);
+  }
+
+  @Test
+  void landPlayer_nullPlayer_throwsException() {
     assertThrows(IllegalArgumentException.class, () -> tile.landPlayer(null));
   }
 
   @Test
-  void leavePlayer_validPlayer_performsLeaveAction() {
-    assertDoesNotThrow(() -> tile.leavePlayer(player));
+  void landPlayer_noAction_doesNotThrow() {
+    Player player = Mockito.mock(Player.class);
+    assertDoesNotThrow(() -> tile.landPlayer(player));
   }
 
   @Test
-  void leavePlayer_nullPlayer_throwsIllegalArgumentException() {
+  void leavePlayer_nullPlayer_throwsException() {
     assertThrows(IllegalArgumentException.class, () -> tile.leavePlayer(null));
   }
 
   @Test
-  void addNextTile_validTile_addsToForwardConnections() {
-    Tile nextTile = new Tile(2);
-    tile.addNextTile(nextTile);
-
-    assertTrue(tile.getConnectedTiles(Tile.Direction.FORWARD).contains(nextTile));
+  void leavePlayer_validPlayer_doesNotThrow() {
+    Player player = Mockito.mock(Player.class);
+    assertDoesNotThrow(() -> tile.leavePlayer(player));
   }
 
   @Test
-  void addNextTile_validTile_addsToBackwardConnectionsOfNextTile() {
-    Tile nextTile = new Tile(2);
-    tile.addNextTile(nextTile);
+  void addConnectedTile_validTile_addsToConnections() {
+    Tile connectedTile = new Tile(TILE_ID + 1);
+    tile.addConnectedTile(connectedTile);
 
-    assertTrue(nextTile.getConnectedTiles(Tile.Direction.BACKWARD).contains(tile));
+    assertTrue(tile.getConnectedTiles().contains(connectedTile));
+    assertEquals(1, tile.getConnectedTiles().size());
   }
 
   @Test
-  void addNextTile_nullTile_throwsIllegalArgumentException() {
-    assertThrows(IllegalArgumentException.class, () -> tile.addNextTile(null));
+  void addConnectedTile_nullTile_throwsException() {
+    assertThrows(IllegalArgumentException.class, () -> tile.addConnectedTile(null));
   }
 
   @Test
-  void addNextTile_duplicateTile_doesNotAddDuplicate() {
-    Tile nextTile = new Tile(2);
-    tile.addNextTile(nextTile);
-    tile.addNextTile(nextTile);
-
-    assertEquals(1, tile.getConnectedTiles(Tile.Direction.FORWARD).size());
-  }
-
-  @Test
-  void getConnectedTiles_validDirection_returnsConnectedTiles() {
-    Tile nextTile = new Tile(2);
-    tile.addNextTile(nextTile);
-
-    assertEquals(1, tile.getConnectedTiles(Tile.Direction.FORWARD).size());
-    assertEquals(nextTile, tile.getConnectedTiles(Tile.Direction.FORWARD).get(0));
+  void getConnectedTiles_noConnections_returnsEmptyList() {
+    assertTrue(tile.getConnectedTiles().isEmpty());
   }
 
   @Test
   void equals_sameTileId_returnsTrue() {
-    Tile anotherTile = new Tile(1);
-    assertEquals(tile, anotherTile);
+    Tile otherTile = new Tile(TILE_ID);
+    assertEquals(tile, otherTile);
   }
 
   @Test
   void equals_differentTileId_returnsFalse() {
-    Tile anotherTile = new Tile(2);
-    assertNotEquals(tile, anotherTile);
+    Tile otherTile = new Tile(TILE_ID + 1);
+    assertNotEquals(tile, otherTile);
   }
 
   @Test
   void hashCode_sameTileId_returnsSameHashCode() {
-    Tile anotherTile = new Tile(1);
-    assertEquals(tile.hashCode(), anotherTile.hashCode());
-  }
-
-  @Test
-  void toString_returnsStringWithTileId() {
-    String tileString = tile.toString();
-    assertTrue(tileString.contains("id=1"));
+    Tile otherTile = new Tile(TILE_ID);
+    assertEquals(tile.hashCode(), otherTile.hashCode());
   }
 }

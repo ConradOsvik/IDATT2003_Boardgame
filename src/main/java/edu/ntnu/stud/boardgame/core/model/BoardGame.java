@@ -1,141 +1,175 @@
 package edu.ntnu.stud.boardgame.core.model;
 
+import edu.ntnu.stud.boardgame.core.exception.GameNotInitializedException;
+import edu.ntnu.stud.boardgame.core.exception.GameOverException;
+import edu.ntnu.stud.boardgame.core.exception.IllegalGameStateException;
+import edu.ntnu.stud.boardgame.core.exception.InvalidPlayerException;
+import edu.ntnu.stud.boardgame.core.observer.BoardGameObservable;
+import edu.ntnu.stud.boardgame.core.observer.BoardGameObserver;
+import edu.ntnu.stud.boardgame.core.observer.GameEvent;
+import edu.ntnu.stud.boardgame.core.observer.GameEvent.EventType;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.logging.Logger;
 
 /**
- * Represents the board game with players, a board, and dice. This class manages the game state,
- * player turns, and win conditions.
+ * Interface representing a board game. Provides methods for game management, player interactions,
+ * and game state control.
  */
-public class BoardGame extends BaseModel {
+public abstract class BoardGame implements BoardGameObservable {
 
-  /**
-   * The game board containing tiles.
-   */
-  private Board board;
+  private static final Logger LOGGER = Logger.getLogger(BoardGame.class.getName());
 
-  /**
-   * The player whose turn it currently is.
-   */
-  private Player currentPlayer;
+  protected Board board;
+  protected Dice dice;
+  protected final List<Player> players = new ArrayList<>();
+  protected Player winner;
+  protected boolean finished = false;
+  protected final List<BoardGameObserver> observers = new ArrayList<>();
 
-  /**
-   * List of all players in the game.
-   */
-  private List<Player> players = new ArrayList<>();
-
-  /**
-   * The dice used for determining movement in the game.
-   */
-  private Dice dice;
-
-  /**
-   * The player who has won the game, or null if no winner yet.
-   */
-  private Player winner;
-
-  /**
-   * Flag indicating whether the game has finished.
-   */
-  private boolean finished = false;
-
-  /**
-   * Adds a player to the game and places them on the starting tile (tile ID 1).
-   *
-   * @param player The player to add to the game
-   * @throws IllegalArgumentException if the player is null
-   */
-  public void addPlayer(Player player) {
-    requireNotNull(player, "Player cannot be null");
-    players.add(player);
-    Tile startTile = board.getTile(1);
-    player.placeOnTile(startTile);
+  public void init() {
+    GameEvent event = new GameEvent(EventType.GAME_CREATED);
+    event.addData("board", board);
+    notifyObservers(event);
   }
 
-  /**
-   * Creates the game board with 90 sequentially connected tiles. This method must be called before
-   * players can be added to the game.
-   */
-  public void createBoard() {
-    board = new Board();
+  public abstract void createBoard();
 
-    Tile previousTile = null;
-    for (int i = 1; i <= 90; i++) {
-      Tile tile = new Tile(i);
-      board.addTile(tile);
-
-      if (previousTile != null) {
-        previousTile.addNextTile(tile);
-      }
-
-      previousTile = tile;
+  public void createDice(int numberOfDice) {
+    if (numberOfDice < 1) {
+      throw new IllegalArgumentException("Number of dice must be at least 1");
     }
+    this.dice = new Dice(numberOfDice);
   }
 
-  /**
-   * Creates dice for the game with the specified number of dice.
-   *
-   * @param dices The number of dice to use in the game
-   * @throws IllegalArgumentException if the number of dice is less than 1
-   */
-  public void createDice(int dices) {
-    dice = new Dice(dices);
+  public void addPlayer(Player player) {
+    if (player == null) {
+      throw new InvalidPlayerException("Player cannot be null");
+    }
+
+    players.add(player);
+
+    if (board != null) {
+      Tile startingTile = board.getStartingTile();
+      if (startingTile != null) {
+        player.setStartingTile(startingTile);
+      }
+    }
+
+    GameEvent event = new GameEvent(EventType.PLAYER_ADDED);
+    event.addData("player", player);
+    notifyObservers(event);
   }
 
-  /**
-   * Plays one round of the game, letting each player take a turn. For each player, rolls the dice
-   * and moves the player accordingly. If a player reaches tile 90, they win and the game is
-   * finished.
-   */
-  public void play() {
+  public List<Player> getPlayers() {
+    return Collections.unmodifiableList(players);
+  }
+
+  public Board getBoard() {
+    return board;
+  }
+
+  public abstract void playTurn(Player player);
+
+  public void playOneRound() {
+    if (isFinished()) {
+      throw new GameOverException("Game is already finished");
+    }
+
     for (Player player : players) {
-      currentPlayer = player;
-
-      int steps = dice.roll();
-
-      currentPlayer.move(Tile.Direction.FORWARD, steps);
-
-      if (currentPlayer.getCurrentTile().getTileId() == 90) {
-        winner = currentPlayer;
-        finished = true;
+      if (isFinished()) {
         break;
       }
+      playTurn(player);
     }
   }
 
-  /**
-   * Gets the winner of the game.
-   *
-   * @return The player who has won the game, or null if there is no winner yet
-   */
-  public Player getWinner() {
-    return winner;
+  public void play() {
+    if (players.isEmpty() || dice == null || board == null) {
+      throw new GameNotInitializedException("Game not properly initialized");
+    }
+
+    startGame();
+
+    while (!isFinished()) {
+      playOneRound();
+    }
   }
 
-  /**
-   * Checks if the game has finished.
-   *
-   * @return true if the game has finished, false otherwise
-   */
+  public int rollDice() {
+    if (dice == null) {
+      throw new GameNotInitializedException("Dice have not been initialized");
+    }
+
+    int result = dice.roll();
+
+    // Notify observers about the dice roll
+    GameEvent diceEvent = new GameEvent(EventType.DICE_ROLLED);
+    diceEvent.addData("result", result);
+    notifyObservers(diceEvent);
+
+    return result;
+  }
+
   public boolean isFinished() {
     return finished;
   }
 
-  /**
-   * Gets a defensive copy of the list of players in the game.
-   *
-   * @return A new list containing all players in the game
-   */
-  public List<Player> getPlayers() {
-    return new ArrayList<>(players);
+  public Optional<Player> getWinner() {
+    return Optional.ofNullable(winner);
   }
 
-  /**
-   * Gets the game board.
-   *
-   * @return The game board
-   */
-  Board getBoard() {
-    return board;
+  public void startGame() {
+    if (board == null || dice == null) {
+      throw new GameNotInitializedException("Game board or dice not initialized");
+    }
+
+    if (players.isEmpty()) {
+      throw new IllegalGameStateException("Cannot start a game with no players");
+    }
+
+    GameEvent startEvent = new GameEvent(EventType.GAME_STARTED);
+    startEvent.addData("players", players);
+    notifyObservers(startEvent);
+  }
+
+  public void reset() {
+    this.players.clear();
+    this.winner = null;
+    this.finished = false;
+
+    GameEvent event = new GameEvent(EventType.GAME_RESET);
+    event.addData("board", board);
+    notifyObservers(event);
+  }
+
+  public void addObserver(BoardGameObserver observer) {
+    if (observer != null && !observers.contains(observer)) {
+      observers.add(observer);
+      LOGGER.info("Observer added, total: " + observers.size());
+    }
+  }
+
+  public void removeObserver(BoardGameObserver observer) {
+    observers.remove(observer);
+  }
+
+  public void notifyObservers(GameEvent event) {
+    LOGGER.info(
+        "Notifying " + observers.size() + " observers about event: " + event.getEventType());
+    for (BoardGameObserver observer : observers) {
+      observer.onGameEvent(event);
+    }
+  }
+
+  public void transferObserversFrom(BoardGame other) {
+    if (other != null) {
+      List<BoardGameObserver> observersToTransfer = new ArrayList<>(other.observers);
+      for (BoardGameObserver observer : observersToTransfer) {
+        this.addObserver(observer);
+      }
+    }
   }
 }
