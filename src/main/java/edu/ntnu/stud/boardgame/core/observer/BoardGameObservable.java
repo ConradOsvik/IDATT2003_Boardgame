@@ -8,11 +8,13 @@ public interface BoardGameObservable {
 
   List<BoardGameObserver> observers = new ArrayList<>();
 
-  public void addObserver(BoardGameObserver observer);
+  void addObserver(BoardGameObserver observer);
 
-  public void removeObserver(BoardGameObserver observer);
+  void addObservers(List<BoardGameObserver> observers);
 
-  public void notifyObservers(GameEvent event);
+  void removeObserver(BoardGameObserver observer);
+
+  void notifyObservers(GameEvent event);
 
   void transferObserversFrom(BoardGame other);
 }
