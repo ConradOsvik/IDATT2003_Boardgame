@@ -13,16 +13,22 @@ import edu.ntnu.stud.boardgame.snakesandladders.controller.SlGameController;
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlBoard;
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlPlayer;
 import edu.ntnu.stud.boardgame.snakesandladders.util.BoardCoordinateConverter;
+import edu.ntnu.stud.boardgame.core.filehandling.FileUtil;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.TextInputDialog;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -62,6 +68,10 @@ public class SlGameView extends HBox implements BaseView, BoardGameObserver {
   private Button newGameButton;
   private Button startGameButton;
   private Button rollDiceButton;
+  private Button saveGameButton;
+  private Button loadGameButton;
+  private Button savePlayersButton;
+  private Button loadPlayersButton;
 
   public SlGameView(SlGameController controller) {
     this.controller = controller;
@@ -136,7 +146,8 @@ public class SlGameView extends HBox implements BaseView, BoardGameObserver {
     tokenComboBox = ComboBox.<ColorOption>builder()
         .items(new ColorOption(Color.RED, "Red"), new ColorOption(Color.BLUE, "Blue"),
             new ColorOption(Color.GREEN, "Green"), new ColorOption(Color.ORANGE, "Orange"),
-            new ColorOption(Color.PURPLE, "Purple")).promptText("Select token color").disabled(true)
+            new ColorOption(Color.PURPLE, "Purple"))
+        .promptText("Select token color").disabled(true)
         .build();
     tokenComboBox.setPrefWidth(200);
 
@@ -147,16 +158,44 @@ public class SlGameView extends HBox implements BaseView, BoardGameObserver {
     newGameButton = Button.builder().text("New Game").styleClass("primary").width(200)
         .onAction(e -> newGameButtonHandler()).build();
 
-    startGameButton = Button.builder().text("Start Game").styleClass("success").width(200)
+    startGameButton = Button.builder().text("Start Game").styleClass("primary").width(200)
         .onAction(e -> startGameButtonHandler()).disabled(true).build();
 
     rollDiceButton = Button.builder().text("Roll Dice").styleClass("primary").width(200)
         .onAction(e -> rollDiceButtonHandler()).disabled(true).build();
 
-    controlPanel.getChildren()
-        .addAll(titleLabel, addPlayerLabel, playerNameField, tokenComboBox, addPlayerButton,
-            new javafx.scene.control.Label(""), newGameButton, startGameButton, rollDiceButton,
-            new javafx.scene.control.Label(""), currentPlayerLabel, diceResultLabel, statusLabel);
+    // File operation components
+    Label fileOperationsLabel = Label.builder().text("File Operations").build();
+
+    saveGameButton = Button.builder().text("Save Game").styleClass("secondary").width(200)
+        .onAction(e -> saveGameButtonHandler()).disabled(true).build();
+
+    loadGameButton = Button.builder().text("Load Game").styleClass("secondary").width(200)
+        .onAction(e -> loadGameButtonHandler()).build();
+
+    savePlayersButton = Button.builder().text("Save Players").styleClass("secondary").width(200)
+        .onAction(e -> savePlayersButtonHandler()).disabled(true).build();
+
+    loadPlayersButton = Button.builder().text("Load Players").styleClass("secondary").width(200)
+        .onAction(e -> loadPlayersButtonHandler()).disabled(true).build();
+
+    controlPanel.getChildren().addAll(
+        titleLabel,
+        statusLabel,
+        currentPlayerLabel,
+        diceResultLabel,
+        addPlayerLabel,
+        playerNameField,
+        tokenComboBox,
+        addPlayerButton,
+        newGameButton,
+        startGameButton,
+        rollDiceButton,
+        fileOperationsLabel,
+        saveGameButton,
+        loadGameButton,
+        savePlayersButton,
+        loadPlayersButton);
 
     return controlPanel;
   }
@@ -188,18 +227,14 @@ public class SlGameView extends HBox implements BaseView, BoardGameObserver {
   private void newGameButtonHandler() {
     try {
       controller.createNewGame();
-
       playerNameField.setDisable(false);
       tokenComboBox.setDisable(false);
       addPlayerButton.setDisable(false);
-      startGameButton.setDisable(true);
-      rollDiceButton.setDisable(true);
-
-      playerNameField.clear();
-      tokenComboBox.setValue(null);
+      saveGameButton.setDisable(false);
+      savePlayersButton.setDisable(false);
+      loadPlayersButton.setDisable(false);
     } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, "Error creating new game", e);
-      showAlert("Error creating new game: " + e.getMessage(), AlertType.ERROR);
+      showError("Error creating new game", e.getMessage());
     }
   }
 
@@ -226,9 +261,183 @@ public class SlGameView extends HBox implements BaseView, BoardGameObserver {
     }
   }
 
+  private void saveGameButtonHandler() {
+    try {
+      TextInputDialog dialog = new TextInputDialog("default_game");
+      dialog.setTitle("Save Game");
+      dialog.setHeaderText("Enter a name for the saved game file");
+      dialog.setContentText("File name:");
+
+      Optional<String> result = dialog.showAndWait();
+      if (result.isPresent()) {
+        String fileName = result.get().trim();
+        if (!fileName.isEmpty()) {
+          if (FileUtil.listGameFiles().contains(fileName)) {
+            Alert confirmDialog = new Alert(AlertType.CONFIRMATION);
+            confirmDialog.setTitle("Confirm Overwrite");
+            confirmDialog.setHeaderText("File already exists");
+            confirmDialog.setContentText("A game with the name '" + fileName +
+                "' already exists. Do you want to overwrite it?");
+
+            Optional<ButtonType> confirmResult = confirmDialog.showAndWait();
+            if (confirmResult.isPresent() && confirmResult.get() != ButtonType.OK) {
+              return;
+            }
+          }
+
+          boolean success = controller.saveGame(fileName);
+          if (success) {
+            statusLabel.setText("Status: Game saved successfully as '" + fileName + "'");
+          } else {
+            showError("Error saving game", "Failed to save the game. Check logs for details.");
+          }
+        }
+      }
+    } catch (Exception e) {
+      showError("Error saving game", e.getMessage());
+    }
+  }
+
+  private void loadGameButtonHandler() {
+    try {
+      List<String> gameFiles = FileUtil.listGameFiles();
+
+      List<String> options = new ArrayList<>(gameFiles);
+      String newFileOption = "-- Create New File --";
+      options.add(0, newFileOption);
+
+      ChoiceDialog<String> dialog = new ChoiceDialog<>(options.get(0), options);
+      dialog.setTitle("Load Game");
+      dialog.setHeaderText("Select a game to load or create a new one");
+      dialog.setContentText("Available games:");
+
+      Optional<String> result = dialog.showAndWait();
+      if (result.isPresent()) {
+        String selectedOption = result.get();
+
+        if (selectedOption.equals(newFileOption)) {
+          TextInputDialog newFileDialog = new TextInputDialog("new_game");
+          newFileDialog.setTitle("New Game File");
+          newFileDialog.setHeaderText("Enter a name for the new game file");
+          newFileDialog.setContentText("File name:");
+
+          Optional<String> newFileResult = newFileDialog.showAndWait();
+          if (newFileResult.isPresent() && !newFileResult.get().trim().isEmpty()) {
+            selectedOption = newFileResult.get().trim();
+          } else {
+            return;
+          }
+        }
+
+        boolean success = controller.loadGame(selectedOption);
+        if (success) {
+          statusLabel.setText("Status: Game loaded successfully from '" + selectedOption + "'");
+          playerNameField.setDisable(false);
+          tokenComboBox.setDisable(false);
+          addPlayerButton.setDisable(false);
+          saveGameButton.setDisable(false);
+          savePlayersButton.setDisable(false);
+          loadPlayersButton.setDisable(false);
+        } else {
+          showError("Error loading game", "Failed to load the game. Check logs for details.");
+        }
+      }
+    } catch (Exception e) {
+      showError("Error loading game", e.getMessage());
+    }
+  }
+
+  private void savePlayersButtonHandler() {
+    try {
+      TextInputDialog dialog = new TextInputDialog("default_players");
+      dialog.setTitle("Save Players");
+      dialog.setHeaderText("Enter a name for the saved player list");
+      dialog.setContentText("File name:");
+
+      Optional<String> result = dialog.showAndWait();
+      if (result.isPresent()) {
+        String fileName = result.get().trim();
+        if (!fileName.isEmpty()) {
+          if (FileUtil.listPlayerFiles().contains(fileName)) {
+            Alert confirmDialog = new Alert(AlertType.CONFIRMATION);
+            confirmDialog.setTitle("Confirm Overwrite");
+            confirmDialog.setHeaderText("File already exists");
+            confirmDialog.setContentText("A player list with the name '" + fileName +
+                "' already exists. Do you want to overwrite it?");
+
+            Optional<ButtonType> confirmResult = confirmDialog.showAndWait();
+            if (confirmResult.isPresent() && confirmResult.get() != ButtonType.OK) {
+              return;
+            }
+          }
+
+          boolean success = controller.savePlayers(fileName);
+          if (success) {
+            statusLabel.setText("Status: Players saved successfully as '" + fileName + "'");
+          } else {
+            showError("Error saving players", "Failed to save the players. Check logs for details.");
+          }
+        }
+      }
+    } catch (Exception e) {
+      showError("Error saving players", e.getMessage());
+    }
+  }
+
+  private void loadPlayersButtonHandler() {
+    try {
+      List<String> playerFiles = FileUtil.listPlayerFiles();
+
+      List<String> options = new ArrayList<>(playerFiles);
+      String newFileOption = "-- Create New File --";
+      options.add(0, newFileOption);
+
+      ChoiceDialog<String> dialog = new ChoiceDialog<>(options.get(0), options);
+      dialog.setTitle("Load Players");
+      dialog.setHeaderText("Select a player list to load or create a new one");
+      dialog.setContentText("Available player lists:");
+
+      Optional<String> result = dialog.showAndWait();
+      if (result.isPresent()) {
+        String selectedOption = result.get();
+
+        if (selectedOption.equals(newFileOption)) {
+          TextInputDialog newFileDialog = new TextInputDialog("new_players");
+          newFileDialog.setTitle("New Player List");
+          newFileDialog.setHeaderText("Enter a name for the new player list");
+          newFileDialog.setContentText("File name:");
+
+          Optional<String> newFileResult = newFileDialog.showAndWait();
+          if (newFileResult.isPresent() && !newFileResult.get().trim().isEmpty()) {
+            selectedOption = newFileResult.get().trim();
+          } else {
+            return;
+          }
+        }
+
+        boolean success = controller.loadPlayers(selectedOption);
+        if (success) {
+          statusLabel.setText("Status: Players loaded successfully from '" + selectedOption + "'");
+        } else {
+          showError("Error loading players", "Failed to load the players. Check logs for details.");
+        }
+      }
+    } catch (Exception e) {
+      showError("Error loading players", e.getMessage());
+    }
+  }
+
   private void showAlert(String message, AlertType alertType) {
     Alert alert = new Alert(alertType);
     alert.setTitle(alertType.toString());
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
+  }
+
+  private void showError(String title, String message) {
+    Alert alert = new Alert(AlertType.ERROR);
+    alert.setTitle(title);
     alert.setHeaderText(null);
     alert.setContentText(message);
     alert.showAndWait();
@@ -257,11 +466,11 @@ public class SlGameView extends HBox implements BaseView, BoardGameObserver {
         boolean isSnake = snakes.containsKey(
             BoardCoordinateConverter.calculateTileIdFromCoordinates(row, col, rows, cols))
             || snakes.containsValue(
-            BoardCoordinateConverter.calculateTileIdFromCoordinates(row, col, rows, cols));
+                BoardCoordinateConverter.calculateTileIdFromCoordinates(row, col, rows, cols));
         boolean isLadder = ladders.containsKey(
             BoardCoordinateConverter.calculateTileIdFromCoordinates(row, col, rows, cols))
             || ladders.containsValue(
-            BoardCoordinateConverter.calculateTileIdFromCoordinates(row, col, rows, cols));
+                BoardCoordinateConverter.calculateTileIdFromCoordinates(row, col, rows, cols));
 
         if (isSnake) {
           gc.setFill(Color.LIGHTCORAL);
@@ -276,9 +485,9 @@ public class SlGameView extends HBox implements BaseView, BoardGameObserver {
         gc.strokeRect(x, y, currentCellSize, currentCellSize);
 
         gc.setFill(Color.BLACK);
-        gc.setFont(Font.font("Arial", FontWeight.NORMAL, 12)); //TODO: use Inter font
+        gc.setFont(Font.font("Arial", FontWeight.NORMAL, 12)); // TODO: use Inter font
         gc.fillText(String.valueOf(
-                BoardCoordinateConverter.calculateTileIdFromCoordinates(row, col, rows, cols)),
+            BoardCoordinateConverter.calculateTileIdFromCoordinates(row, col, rows, cols)),
             x + 5,
             y + 15);
       }
@@ -400,7 +609,7 @@ public class SlGameView extends HBox implements BaseView, BoardGameObserver {
     gc.fillOval(x - 10, y - 10, 20, 20);
 
     gc.setFill(Color.BLACK);
-    gc.setFont(Font.font("Arial", FontWeight.NORMAL, 12)); //TODO: use Inter font
+    gc.setFont(Font.font("Arial", FontWeight.NORMAL, 12)); // TODO: use Inter font
     String initial = player.getName().substring(0, 1).toUpperCase();
     gc.fillText(initial, x - 10, y - 15);
   }
@@ -437,6 +646,7 @@ public class SlGameView extends HBox implements BaseView, BoardGameObserver {
         if (player != null) {
           players.add(player);
           startGameButton.setDisable(false);
+          savePlayersButton.setDisable(false);
           statusLabel.setText("Status: Player " + player.getName() + " added");
           draw();
         }
@@ -448,6 +658,9 @@ public class SlGameView extends HBox implements BaseView, BoardGameObserver {
         currentPlayerLabel.setText("Current Player: None");
         diceResultLabel.setText("Dice: ");
         statusLabel.setText("Status: Add players to start the game");
+
+        saveGameButton.setDisable(false);
+        loadPlayersButton.setDisable(false);
 
         draw();
       }

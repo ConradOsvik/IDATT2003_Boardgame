@@ -5,9 +5,11 @@ import edu.ntnu.stud.boardgame.core.exception.GameNotInitializedException;
 import edu.ntnu.stud.boardgame.core.exception.GameOverException;
 import edu.ntnu.stud.boardgame.core.exception.IllegalGameStateException;
 import edu.ntnu.stud.boardgame.core.exception.InvalidPlayerException;
+import edu.ntnu.stud.boardgame.core.model.BoardGame;
 import edu.ntnu.stud.boardgame.core.model.Player;
 import edu.ntnu.stud.boardgame.core.observer.GameEvent;
 import edu.ntnu.stud.boardgame.core.observer.GameEvent.EventType;
+import edu.ntnu.stud.boardgame.core.service.GameSaveService;
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlBoardGame;
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlPlayer;
 import edu.ntnu.stud.boardgame.snakesandladders.view.SlGameView;
@@ -28,9 +30,12 @@ public class SlGameController extends BaseController {
 
   private int currentPlayerIndex = 0;
 
+  private final GameSaveService gameSaveService;
+
   public SlGameController() {
     super();
     this.view = new SlGameView(this);
+    this.gameSaveService = new GameSaveService();
     view.render();
   }
 
@@ -115,6 +120,71 @@ public class SlGameController extends BaseController {
     if (!game.isFinished()) {
       nextPlayer();
     }
+  }
+
+  /**
+   * Saves the current game to a file with the given name.
+   * 
+   * @param gameName the name to save the game as (without extension)
+   * @return true if the game was saved successfully, false otherwise
+   */
+  public boolean saveGame(String gameName) {
+    validateGameInitialized();
+    return gameSaveService.saveGame(game, gameName);
+  }
+
+  /**
+   * Loads a game from a file with the given name.
+   * 
+   * @param gameName the name of the game to load (without extension)
+   * @return true if the game was loaded successfully, false otherwise
+   */
+  public boolean loadGame(String gameName) {
+    BoardGame loadedGame = gameSaveService.loadGame(gameName);
+    if (loadedGame instanceof SlBoardGame slBoardGame) {
+      init(slBoardGame);
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Saves the current list of players to a file with the given name.
+   * 
+   * @param playerListName the name to save the player list as (without extension)
+   * @return true if the players were saved successfully, false otherwise
+   */
+  public boolean savePlayers(String playerListName) {
+    validateGameInitialized();
+    return gameSaveService.savePlayers(game.getPlayers(), playerListName);
+  }
+
+  /**
+   * Loads players from a file with the given name and adds them to the current
+   * game.
+   * 
+   * @param playerListName the name of the player list to load (without extension)
+   * @return true if the players were loaded and added successfully, false
+   *         otherwise
+   */
+  public boolean loadPlayers(String playerListName) {
+    validateGameInitialized();
+    List<Player> players = gameSaveService.loadPlayers(playerListName);
+
+    if (players.isEmpty()) {
+      return false;
+    }
+
+    for (Player player : players) {
+      if (player instanceof SlPlayer slPlayer) {
+        // We need to check if this player already exists in the game
+        if (!game.getPlayers().contains(slPlayer)) {
+          game.addPlayer(slPlayer);
+        }
+      }
+    }
+
+    return true;
   }
 
   private Optional<SlPlayer> getCurrentPlayer() {
