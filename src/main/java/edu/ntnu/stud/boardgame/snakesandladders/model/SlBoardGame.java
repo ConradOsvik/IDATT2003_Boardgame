@@ -6,7 +6,10 @@ import edu.ntnu.stud.boardgame.core.model.BoardGame;
 import edu.ntnu.stud.boardgame.core.model.Player;
 import edu.ntnu.stud.boardgame.core.model.Tile;
 import edu.ntnu.stud.boardgame.core.observer.GameEvent;
-import edu.ntnu.stud.boardgame.core.observer.GameEvent.EventType;
+import edu.ntnu.stud.boardgame.core.observer.events.GameEndedEvent;
+import edu.ntnu.stud.boardgame.core.observer.events.PlayerWonEvent;
+import edu.ntnu.stud.boardgame.snakesandladders.events.SlPlayerMovedEvent;
+import edu.ntnu.stud.boardgame.snakesandladders.events.SlTurnChangedEvent;
 import java.util.logging.Logger;
 
 /**
@@ -53,8 +56,7 @@ public class SlBoardGame extends BoardGame {
       throw new GameOverException("Game is already finished");
     }
 
-    GameEvent turnEvent = new GameEvent(EventType.TURN_CHANGED);
-    turnEvent.addData("player", player);
+    GameEvent turnEvent = new SlTurnChangedEvent((SlPlayer) player);
     notifyObservers(turnEvent);
 
     int steps = rollDice();
@@ -62,26 +64,19 @@ public class SlBoardGame extends BoardGame {
     Tile previousTile = player.getCurrentTile();
     player.move(steps);
 
-    GameEvent moveEvent = new GameEvent(EventType.PLAYER_MOVED);
-    moveEvent.addData("player", player);
-    moveEvent.addData("from", previousTile);
-    moveEvent.addData("to", player.getCurrentTile());
-    moveEvent.addData("steps", steps);
+    GameEvent moveEvent = new SlPlayerMovedEvent((SlPlayer) player, previousTile,
+        player.getCurrentTile(), steps, (SlBoard) board);
     notifyObservers(moveEvent);
 
     if (previousTile != player.getCurrentTile()
         && previousTile.getTileId() + steps != player.getCurrentTile().getTileId()) {
       if (player.getCurrentTile().getTileId() > previousTile.getTileId() + steps) {
-        GameEvent ladderEvent = new GameEvent(EventType.LADDER_CLIMBED);
-        ladderEvent.addData("player", player);
-        ladderEvent.addData("from", previousTile);
-        ladderEvent.addData("to", player.getCurrentTile());
+        GameEvent ladderEvent = new SlPlayerMovedEvent((SlPlayer) player, previousTile,
+            player.getCurrentTile(), steps, (SlBoard) board, false, true);
         notifyObservers(ladderEvent);
       } else if (player.getCurrentTile().getTileId() < previousTile.getTileId() + steps) {
-        GameEvent snakeEvent = new GameEvent(EventType.SNAKE_ENCOUNTERED);
-        snakeEvent.addData("player", player);
-        snakeEvent.addData("from", previousTile);
-        snakeEvent.addData("to", player.getCurrentTile());
+        GameEvent snakeEvent = new SlPlayerMovedEvent((SlPlayer) player, previousTile,
+            player.getCurrentTile(), steps, (SlBoard) board, true, false);
         notifyObservers(snakeEvent);
       }
     }
@@ -90,12 +85,10 @@ public class SlBoardGame extends BoardGame {
       this.winner = player;
       this.finished = true;
 
-      GameEvent winEvent = new GameEvent(EventType.PLAYER_WON);
-      winEvent.addData("player", player);
+      GameEvent winEvent = new PlayerWonEvent(player);
       notifyObservers(winEvent);
 
-      GameEvent endEvent = new GameEvent(EventType.GAME_ENDED);
-      endEvent.addData("winner", player);
+      GameEvent endEvent = new GameEndedEvent(player);
       notifyObservers(endEvent);
     }
   }

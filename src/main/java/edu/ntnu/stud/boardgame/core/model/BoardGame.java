@@ -7,10 +7,15 @@ import edu.ntnu.stud.boardgame.core.exception.InvalidPlayerException;
 import edu.ntnu.stud.boardgame.core.observer.BoardGameObservable;
 import edu.ntnu.stud.boardgame.core.observer.BoardGameObserver;
 import edu.ntnu.stud.boardgame.core.observer.GameEvent;
-import edu.ntnu.stud.boardgame.core.observer.GameEvent.EventType;
+import edu.ntnu.stud.boardgame.core.observer.events.DiceRolledEvent;
+import edu.ntnu.stud.boardgame.core.observer.events.GameCreatedEvent;
+import edu.ntnu.stud.boardgame.core.observer.events.GameResetEvent;
+import edu.ntnu.stud.boardgame.core.observer.events.GameStartedEvent;
+import edu.ntnu.stud.boardgame.core.observer.events.PlayerAddedEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -30,8 +35,7 @@ public abstract class BoardGame implements BoardGameObservable {
   protected final List<BoardGameObserver> observers = new ArrayList<>();
 
   public void init() {
-    GameEvent event = new GameEvent(EventType.GAME_CREATED);
-    event.addData("board", board);
+    GameEvent event = new GameCreatedEvent(board);
     notifyObservers(event);
   }
 
@@ -58,8 +62,7 @@ public abstract class BoardGame implements BoardGameObservable {
       }
     }
 
-    GameEvent event = new GameEvent(EventType.PLAYER_ADDED);
-    event.addData("player", player);
+    GameEvent event = new PlayerAddedEvent(player);
     notifyObservers(event);
   }
 
@@ -106,8 +109,7 @@ public abstract class BoardGame implements BoardGameObservable {
     int result = dice.roll();
 
     // Notify observers about the dice roll
-    GameEvent diceEvent = new GameEvent(EventType.DICE_ROLLED);
-    diceEvent.addData("result", result);
+    GameEvent diceEvent = new DiceRolledEvent(result);
     notifyObservers(diceEvent);
 
     return result;
@@ -130,8 +132,7 @@ public abstract class BoardGame implements BoardGameObservable {
       throw new IllegalGameStateException("Cannot start a game with no players");
     }
 
-    GameEvent startEvent = new GameEvent(EventType.GAME_STARTED);
-    startEvent.addData("players", players);
+    GameEvent startEvent = new GameStartedEvent(players);
     notifyObservers(startEvent);
   }
 
@@ -140,15 +141,21 @@ public abstract class BoardGame implements BoardGameObservable {
     this.winner = null;
     this.finished = false;
 
-    GameEvent event = new GameEvent(EventType.GAME_RESET);
-    event.addData("board", board);
+    GameEvent event = new GameResetEvent(board);
     notifyObservers(event);
   }
 
   public void addObserver(BoardGameObserver observer) {
     if (observer != null && !observers.contains(observer)) {
       observers.add(observer);
-      LOGGER.info("Observer added, total: " + observers.size());
+      LOGGER.info(
+          "Observer " + observer.getClass().getSimpleName() + " added, total: " + observers.size());
+    }
+  }
+
+  public void addObservers(List<BoardGameObserver> observers) {
+    for (BoardGameObserver observer : observers) {
+      addObserver(observer);
     }
   }
 
@@ -171,5 +178,28 @@ public abstract class BoardGame implements BoardGameObservable {
         this.addObserver(observer);
       }
     }
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+
+    if (this == obj) {
+      return true;
+    }
+
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+
+    BoardGame other = (BoardGame) obj;
+
+    return finished == other.finished && Objects.equals(board, other.board) && Objects.equals(dice,
+        other.dice) && Objects.equals(players, other.players) && Objects.equals(winner,
+        other.winner);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(board, dice, players, winner, finished);
   }
 }

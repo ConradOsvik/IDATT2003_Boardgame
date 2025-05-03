@@ -66,8 +66,6 @@ public class Navigator {
       return;
     }
 
-    System.out.println(controller.getClass().getName());
-
     controller.init(args);
 
     Node view = controller.getView();

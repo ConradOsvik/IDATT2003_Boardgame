@@ -20,8 +20,8 @@ import edu.ntnu.stud.boardgame.core.exception.GameNotInitializedException;
 import edu.ntnu.stud.boardgame.core.exception.GameOverException;
 import edu.ntnu.stud.boardgame.core.exception.IllegalGameStateException;
 import edu.ntnu.stud.boardgame.core.exception.InvalidPlayerException;
-import edu.ntnu.stud.boardgame.core.observer.BoardGameObserver;
-import edu.ntnu.stud.boardgame.core.observer.GameEvent;
+import edu.ntnu.stud.boardgame.core.observer._BoardGameObserver;
+import edu.ntnu.stud.boardgame.core.observer._GameEvent;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class BoardGameTest {
       this.board = mock(Board.class);
       createBoardCalled = true;
 
-      GameEvent event = new GameEvent(GameEvent.EventType.GAME_CREATED);
+      _GameEvent event = new _GameEvent(_GameEvent.EventType.GAME_CREATED);
       event.addData("board", board);
       notifyObservers(event);
     }
@@ -51,7 +51,7 @@ class BoardGameTest {
     public void reset() {
       super.reset();
 
-      GameEvent event = new GameEvent(GameEvent.EventType.GAME_RESET);
+      _GameEvent event = new _GameEvent(_GameEvent.EventType.GAME_RESET);
       event.addData("board", board);
       notifyObservers(event);
     }
@@ -69,7 +69,7 @@ class BoardGameTest {
       playTurnCalled = true;
       lastPlayerToPlayTurn = player;
 
-      GameEvent event = new GameEvent(GameEvent.EventType.PLAYER_MOVED);
+      _GameEvent event = new _GameEvent(_GameEvent.EventType.PLAYER_MOVED);
       event.addData("player", player);
       notifyObservers(event);
     }
@@ -238,7 +238,7 @@ class BoardGameTest {
 
   @Test
   void rollDice_withDice_returnsValueAndNotifiesObservers() {
-    BoardGameObserver observer = mock(BoardGameObserver.class);
+    _BoardGameObserver observer = mock(_BoardGameObserver.class);
     game.addObserver(observer);
     game.createDice(1);
 
@@ -246,11 +246,11 @@ class BoardGameTest {
 
     assertTrue(result >= 1 && result <= 6);
 
-    ArgumentCaptor<GameEvent> eventCaptor = ArgumentCaptor.forClass(GameEvent.class);
+    ArgumentCaptor<_GameEvent> eventCaptor = ArgumentCaptor.forClass(_GameEvent.class);
     verify(observer).onGameEvent(eventCaptor.capture());
 
-    GameEvent capturedEvent = eventCaptor.getValue();
-    assertEquals(GameEvent.EventType.DICE_ROLLED, capturedEvent.getEventType());
+    _GameEvent capturedEvent = eventCaptor.getValue();
+    assertEquals(_GameEvent.EventType.DICE_ROLLED, capturedEvent.getEventType());
     assertEquals(result, capturedEvent.getData("result"));
   }
 
@@ -285,7 +285,7 @@ class BoardGameTest {
 
   @Test
   void startGame_validState_notifiesObservers() {
-    BoardGameObserver observer = mock(BoardGameObserver.class);
+    _BoardGameObserver observer = mock(_BoardGameObserver.class);
     game.addObserver(observer);
 
     game.createBoard();
@@ -294,18 +294,18 @@ class BoardGameTest {
 
     game.startGame();
 
-    ArgumentCaptor<GameEvent> eventCaptor = ArgumentCaptor.forClass(GameEvent.class);
+    ArgumentCaptor<_GameEvent> eventCaptor = ArgumentCaptor.forClass(_GameEvent.class);
     verify(observer, atLeastOnce()).onGameEvent(eventCaptor.capture());
 
     boolean gameStartedEventFound = eventCaptor.getAllValues().stream()
-        .anyMatch(event -> event.getEventType() == GameEvent.EventType.GAME_STARTED);
+        .anyMatch(event -> event.getEventType() == _GameEvent.EventType.GAME_STARTED);
 
     assertTrue(gameStartedEventFound);
   }
 
   @Test
   void reset_clearsStateAndNotifiesObservers() {
-    BoardGameObserver observer = mock(BoardGameObserver.class);
+    _BoardGameObserver observer = mock(_BoardGameObserver.class);
     game.addObserver(observer);
 
     Player player = new TestPlayer("Player");
@@ -319,55 +319,55 @@ class BoardGameTest {
     assertEquals(Optional.empty(), game.getWinner());
     assertFalse(game.isFinished());
 
-    ArgumentCaptor<GameEvent> eventCaptor = ArgumentCaptor.forClass(GameEvent.class);
+    ArgumentCaptor<_GameEvent> eventCaptor = ArgumentCaptor.forClass(_GameEvent.class);
     verify(observer, atLeastOnce()).onGameEvent(eventCaptor.capture());
 
-    GameEvent resetEvent = eventCaptor.getAllValues().stream()
-        .filter(event -> event.getEventType() == GameEvent.EventType.GAME_RESET)
+    _GameEvent resetEvent = eventCaptor.getAllValues().stream()
+        .filter(event -> event.getEventType() == _GameEvent.EventType.GAME_RESET)
         .findFirst()
         .orElse(null);
 
     assertNotNull(resetEvent);
-    assertEquals(GameEvent.EventType.GAME_RESET, resetEvent.getEventType());
+    assertEquals(_GameEvent.EventType.GAME_RESET, resetEvent.getEventType());
   }
 
   @Test
   void addObserver_validObserver_addsObserver() {
-    BoardGameObserver observer = mock(BoardGameObserver.class);
+    _BoardGameObserver observer = mock(_BoardGameObserver.class);
     game.addObserver(observer);
 
     game.createBoard();
 
-    verify(observer).onGameEvent(any(GameEvent.class));
+    verify(observer).onGameEvent(any(_GameEvent.class));
   }
 
   @Test
   void addObserver_duplicateObserver_onlyAddsOnce() {
-    BoardGameObserver observer = mock(BoardGameObserver.class);
+    _BoardGameObserver observer = mock(_BoardGameObserver.class);
 
     game.addObserver(observer);
     game.addObserver(observer);
 
     game.createBoard();
 
-    verify(observer, times(1)).onGameEvent(any(GameEvent.class));
+    verify(observer, times(1)).onGameEvent(any(_GameEvent.class));
   }
 
   @Test
   void removeObserver_existingObserver_removesObserver() {
-    BoardGameObserver observer = mock(BoardGameObserver.class);
+    _BoardGameObserver observer = mock(_BoardGameObserver.class);
 
     game.addObserver(observer);
     game.removeObserver(observer);
 
     game.createBoard();
 
-    verify(observer, never()).onGameEvent(any(GameEvent.class));
+    verify(observer, never()).onGameEvent(any(_GameEvent.class));
   }
 
   @Test
   void transferObserversFrom_otherGame_transfersObservers() {
-    BoardGameObserver observer = mock(BoardGameObserver.class);
+    _BoardGameObserver observer = mock(_BoardGameObserver.class);
 
     TestBoardGame otherGame = new TestBoardGame();
     otherGame.addObserver(observer);
@@ -376,6 +376,6 @@ class BoardGameTest {
 
     game.createBoard();
 
-    verify(observer).onGameEvent(any(GameEvent.class));
+    verify(observer).onGameEvent(any(_GameEvent.class));
   }
 }

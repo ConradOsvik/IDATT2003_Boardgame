@@ -14,8 +14,8 @@ import static org.mockito.Mockito.verify;
 import edu.ntnu.stud.boardgame.core.exception.GameOverException;
 import edu.ntnu.stud.boardgame.core.exception.InvalidPlayerException;
 import edu.ntnu.stud.boardgame.core.model.Tile;
-import edu.ntnu.stud.boardgame.core.observer.BoardGameObserver;
-import edu.ntnu.stud.boardgame.core.observer.GameEvent;
+import edu.ntnu.stud.boardgame.core.observer._BoardGameObserver;
+import edu.ntnu.stud.boardgame.core.observer._GameEvent;
 import javafx.scene.paint.Color;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,12 +24,12 @@ import org.mockito.ArgumentCaptor;
 class SlBoardGameTest {
 
   private SlBoardGame game;
-  private BoardGameObserver observer;
+  private _BoardGameObserver observer;
 
   @BeforeEach
   void setUp() {
     game = new SlBoardGame();
-    observer = mock(BoardGameObserver.class);
+    observer = mock(_BoardGameObserver.class);
     game.addObserver(observer);
   }
 
@@ -90,11 +90,11 @@ class SlBoardGameTest {
 
     assertEquals(3, player.getCurrentTile().getTileId());
 
-    ArgumentCaptor<GameEvent> eventCaptor = ArgumentCaptor.forClass(GameEvent.class);
+    ArgumentCaptor<_GameEvent> eventCaptor = ArgumentCaptor.forClass(_GameEvent.class);
     verify(observer, atLeast(3)).onGameEvent(eventCaptor.capture());
 
     boolean moveEventFound = eventCaptor.getAllValues().stream()
-        .anyMatch(event -> event.getEventType() == GameEvent.EventType.PLAYER_MOVED);
+        .anyMatch(event -> event.getEventType() == _GameEvent.EventType.PLAYER_MOVED);
 
     assertTrue(moveEventFound);
   }
@@ -117,11 +117,11 @@ class SlBoardGameTest {
 
     assertEquals(2, player.getCurrentTile().getTileId());
 
-    ArgumentCaptor<GameEvent> eventCaptor = ArgumentCaptor.forClass(GameEvent.class);
+    ArgumentCaptor<_GameEvent> eventCaptor = ArgumentCaptor.forClass(_GameEvent.class);
     verify(observer, atLeast(3)).onGameEvent(eventCaptor.capture());
 
     boolean snakeEventFound = eventCaptor.getAllValues().stream()
-        .anyMatch(event -> event.getEventType() == GameEvent.EventType.SNAKE_ENCOUNTERED);
+        .anyMatch(event -> event.getEventType() == _GameEvent.EventType.SNAKE_ENCOUNTERED);
 
     assertTrue(snakeEventFound);
   }
@@ -144,11 +144,11 @@ class SlBoardGameTest {
 
     assertEquals(10, player.getCurrentTile().getTileId());
 
-    ArgumentCaptor<GameEvent> eventCaptor = ArgumentCaptor.forClass(GameEvent.class);
+    ArgumentCaptor<_GameEvent> eventCaptor = ArgumentCaptor.forClass(_GameEvent.class);
     verify(observer, atLeast(3)).onGameEvent(eventCaptor.capture());
 
     boolean ladderEventFound = eventCaptor.getAllValues().stream()
-        .anyMatch(event -> event.getEventType() == GameEvent.EventType.LADDER_CLIMBED);
+        .anyMatch(event -> event.getEventType() == _GameEvent.EventType.LADDER_CLIMBED);
 
     assertTrue(ladderEventFound);
   }
@@ -178,14 +178,14 @@ class SlBoardGameTest {
     assertTrue(mockedGame.isFinished());
     assertEquals(player, mockedGame.getWinner().orElse(null));
 
-    ArgumentCaptor<GameEvent> eventCaptor = ArgumentCaptor.forClass(GameEvent.class);
+    ArgumentCaptor<_GameEvent> eventCaptor = ArgumentCaptor.forClass(_GameEvent.class);
     verify(observer, atLeast(3)).onGameEvent(eventCaptor.capture());
 
     boolean winEventFound = eventCaptor.getAllValues().stream()
-        .anyMatch(event -> event.getEventType() == GameEvent.EventType.PLAYER_WON);
+        .anyMatch(event -> event.getEventType() == _GameEvent.EventType.PLAYER_WON);
 
     boolean gameEndedEventFound = eventCaptor.getAllValues().stream()
-        .anyMatch(event -> event.getEventType() == GameEvent.EventType.GAME_ENDED);
+        .anyMatch(event -> event.getEventType() == _GameEvent.EventType.GAME_ENDED);
 
     assertTrue(winEventFound);
     assertTrue(gameEndedEventFound);
