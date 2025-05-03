@@ -1,14 +1,15 @@
 package edu.ntnu.stud.boardgame.core.service;
 
 import edu.ntnu.stud.boardgame.core.filehandling.BasicFileHandler;
-import edu.ntnu.stud.boardgame.core.filehandling.BoardGameJsonDeserializer;
-import edu.ntnu.stud.boardgame.core.filehandling.BoardGameJsonSerializer;
-import edu.ntnu.stud.boardgame.core.filehandling.Deserializer;
 import edu.ntnu.stud.boardgame.core.filehandling.FileHandler;
 import edu.ntnu.stud.boardgame.core.filehandling.FileUtil;
-import edu.ntnu.stud.boardgame.core.filehandling.PlayerCsvDeserializer;
-import edu.ntnu.stud.boardgame.core.filehandling.PlayerCsvSerializer;
+import edu.ntnu.stud.boardgame.core.filehandling.GenericBoardGameDeserializer;
+import edu.ntnu.stud.boardgame.core.filehandling.GenericBoardGameSerializer;
+import edu.ntnu.stud.boardgame.core.filehandling.GenericPlayerDeserializer;
+import edu.ntnu.stud.boardgame.core.filehandling.GenericPlayerSerializer;
 import edu.ntnu.stud.boardgame.core.filehandling.Serializer;
+import edu.ntnu.stud.boardgame.core.filehandling.Deserializer;
+import edu.ntnu.stud.boardgame.core.filehandling.SerializerRegistryInitializer;
 import edu.ntnu.stud.boardgame.core.model.BoardGame;
 import edu.ntnu.stud.boardgame.core.model.Player;
 import edu.ntnu.stud.boardgame.snakesandladders.factory.SlBoardGameFactory;
@@ -24,8 +25,6 @@ import java.util.logging.Logger;
 
 /**
  * Service class for saving and loading board games and players.
- * This class provides methods to save and load games to/from JSON files
- * and players to/from CSV files.
  */
 public class GameSaveService {
 
@@ -41,11 +40,13 @@ public class GameSaveService {
      * Constructs a new GameSaveService with default serializers and deserializers.
      */
     public GameSaveService() {
+        SerializerRegistryInitializer.initialize();
+
         this.fileHandler = new BasicFileHandler();
-        this.boardGameSerializer = new BoardGameJsonSerializer();
-        this.boardGameDeserializer = new BoardGameJsonDeserializer();
-        this.playerSerializer = new PlayerCsvSerializer();
-        this.playerDeserializer = new PlayerCsvDeserializer();
+        this.boardGameSerializer = new GenericBoardGameSerializer();
+        this.boardGameDeserializer = new GenericBoardGameDeserializer();
+        this.playerSerializer = new GenericPlayerSerializer();
+        this.playerDeserializer = new GenericPlayerDeserializer();
     }
 
     /**
@@ -87,7 +88,7 @@ public class GameSaveService {
         try {
             Path filePath = FileUtil.getGameFilePath(gameName);
             if (!Files.exists(filePath)) {
-                LOGGER.info("Game file does not exist: " + filePath + ". Creating a new game.");
+                LOGGER.info("Game file does not exist: " + filePath);
                 SlBoardGame newGame = SlBoardGameFactory.createClassicGame();
                 saveGame(newGame, gameName);
                 return newGame;
@@ -104,7 +105,7 @@ public class GameSaveService {
     }
 
     /**
-     * Saves a list of players to a CSV file with the specified name.
+     * Saves a list of players to a JSON file with the specified name.
      *
      * @param players        the list of players to save
      * @param playerListName the name to use for the saved player list file (without
@@ -129,7 +130,7 @@ public class GameSaveService {
     }
 
     /**
-     * Loads a list of players from a CSV file with the specified name.
+     * Loads a list of players from a JSON file with the specified name.
      * If the file doesn't exist, creates a new empty list and saves it.
      *
      * @param playerListName the name of the player list file to load (without
@@ -145,7 +146,7 @@ public class GameSaveService {
         try {
             Path filePath = FileUtil.getPlayerFilePath(playerListName);
             if (!Files.exists(filePath)) {
-                LOGGER.info("Player list file does not exist: " + filePath + ". Creating a new empty list.");
+                LOGGER.info("Player list file does not exist: " + filePath);
                 List<Player> emptyList = new ArrayList<>();
                 savePlayers(emptyList, playerListName);
                 return emptyList;

@@ -9,9 +9,12 @@ import edu.ntnu.stud.boardgame.snakesandladders.model.SlBoard;
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlBoardGame;
 
 /**
- * Deserializer for converting JSON format to BoardGame objects using GSON.
+ * Base deserializer for converting JSON strings to BoardGame objects.
+ * This class provides common functionality for all board game deserializers.
+ * Specific game types should extend this class to provide specialized
+ * deserialization.
  */
-public class BoardGameJsonDeserializer implements Deserializer<BoardGame> {
+public abstract class BoardGameJsonDeserializer implements Deserializer<BoardGame> {
 
     /**
      * Deserializes a JSON string to a BoardGame object.
@@ -25,35 +28,17 @@ public class BoardGameJsonDeserializer implements Deserializer<BoardGame> {
             throw new IllegalArgumentException("Serialized JSON string cannot be null or empty");
         }
 
-        JsonObject boardGameJson = JsonParser.parseString(serialized).getAsJsonObject();
-
-        SlBoardGame boardGame = new SlBoardGame();
-
-        boardGame.createBoard();
-        boardGame.createDice(1);
-
-        if (boardGameJson.has("tiles")) {
-            JsonArray tilesArray = boardGameJson.getAsJsonArray("tiles");
-            SlBoard board = boardGame.getBoard();
-
-            for (JsonElement tileElement : tilesArray) {
-                JsonObject tileJson = tileElement.getAsJsonObject();
-
-                if (tileJson.has("action")) {
-                    JsonObject actionJson = tileJson.getAsJsonObject("action");
-                    String actionType = actionJson.get("type").getAsString();
-                    int tileId = tileJson.get("id").getAsInt();
-                    int destinationId = actionJson.get("destinationTileId").getAsInt();
-
-                    if ("LadderAction".equals(actionType)) {
-                        board.addLadder(tileId, destinationId);
-                    } else if ("SnakeAction".equals(actionType)) {
-                        board.addSnake(tileId, destinationId);
-                    }
-                }
-            }
-        }
-
-        return boardGame;
+        JsonObject jsonObject = JsonParser.parseString(serialized).getAsJsonObject();
+        return createBoardGameFromJson(jsonObject);
     }
+
+    /**
+     * Creates a BoardGame object from a JsonObject.
+     * Subclasses must implement this method to provide game-specific
+     * deserialization.
+     *
+     * @param jsonObject the JSON object to deserialize
+     * @return the deserialized BoardGame object
+     */
+    protected abstract BoardGame createBoardGameFromJson(JsonObject jsonObject);
 }
