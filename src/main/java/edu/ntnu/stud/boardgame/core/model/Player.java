@@ -1,17 +1,14 @@
 package edu.ntnu.stud.boardgame.core.model;
 
+import edu.ntnu.stud.boardgame.core.exception.InvalidMoveException;
 import java.util.List;
+import java.util.Objects;
 
 /**
- * Represents a player in the board game. Players have a name, can be placed on tiles, and can move
- * between connected tiles.
+ * Represents a player in the board game. Players have a name and token, can be placed on tiles, and
+ * can move between connected tiles.
  */
-public class Player extends BaseModel {
-
-  /**
-   * The board game this player is part of.
-   */
-  private final BoardGame boardGame;
+public abstract class Player extends BaseModel {
 
   /**
    * The name of this player.
@@ -19,26 +16,24 @@ public class Player extends BaseModel {
   private final String name;
 
   /**
-   * The token/piece this player uses on the board.
-   */
-  private final String token;
-
-  /**
    * The tile this player is currently on, or null if not placed on any tile.
    */
   private Tile currentTile;
 
   /**
-   * Constructs a new player with the specified name and token in the specified board game.
+   * Constructs a new player with the specified name and token.
    *
-   * @param name      The name of the player
-   * @param token     The token/piece this player uses
-   * @param boardGame The board game this player is part of
+   * @param name The name of the player
    */
-  public Player(String name, String token, BoardGame boardGame) {
+  public Player(String name) {
+    requireNotEmpty(name, "Name cannot be empty");
     this.name = name;
-    this.token = token;
-    this.boardGame = boardGame;
+  }
+
+  public void setStartingTile(Tile tile) {
+    requireNotNull(tile, "Tile cannot be null");
+
+    this.currentTile = tile;
   }
 
   /**
@@ -51,49 +46,83 @@ public class Player extends BaseModel {
   public void placeOnTile(Tile tile) {
     requireNotNull(tile, "Tile cannot be null");
 
-    if (currentTile != null) {
-      currentTile.leavePlayer(this);
+    Tile previousTile = currentTile;
+
+    if (previousTile != null) {
+      previousTile.leavePlayer(this);
     }
 
-    currentTile = tile;
+    this.currentTile = tile;
     tile.landPlayer(this);
   }
 
-  /**
-   * Moves the player in the specified direction by the specified number of steps. The player will
-   * follow connected tiles in the given direction. If there are multiple connected tiles, the
-   * player will take the first one. Movement stops if there are no more connected tiles in the
-   * direction, if the player reaches tile 90, or when all steps have been taken.
-   *
-   * @param direction The direction to move in
-   * @param steps     The number of steps to move
-   */
-  public void move(Tile.Direction direction, int steps) {
-    if (steps <= 0 || currentTile == null) {
+  // TODO: Use and javadoc this method for branching games
+  public void move(List<Integer> steps) {
+    if (steps == null || steps.isEmpty() || currentTile == null) {
       return;
     }
 
     Tile targetTile = currentTile;
-    for (int i = 0; i < steps && targetTile != null; i++) {
-      List<Tile> nextTiles = targetTile.getConnectedTiles(direction);
+    for (int step : steps) {
+      List<Tile> nextTiles = targetTile.getConnectedTiles();
 
       if (nextTiles.isEmpty()) {
         break;
       }
 
-      if (nextTiles.size() > 1) {
-        // TODO: Implement logic to handle multiple connected tiles
-      }
-      targetTile = nextTiles.getFirst();
+      targetTile = nextTiles.get(step);
 
       if (targetTile.getTileId() == 90) {
         break;
       }
     }
 
+    placeOnTile(targetTile);
+  }
+
+  /**
+   * Moves the player by the specified number of steps. The player will follow the connected tiles.
+   * If there are multiple connected tiles, the player will take the first one. Movement stops if
+   * there are no more connected tiles, if the player reaches tile 90, or when all steps have been
+   * taken.
+   *
+   * @param steps The number of steps to move
+   */
+  public void move(int steps) {
+    if (steps < 0) {
+      throw new InvalidMoveException("Cannot move a negative number of steps");
+    }
+
+    if (currentTile == null) {
+      throw new InvalidMoveException("Player is not on any tile");
+    }
+
+    if (steps == 0) {
+      return;
+    }
+
+    Tile targetTile = getTargetTile(steps);
+
     if (targetTile != null) {
       placeOnTile(targetTile);
     }
+
+  }
+
+  protected Tile getTargetTile(int steps) {
+    Tile targetTile = currentTile;
+
+    for (int i = 0; i < steps; i++) {
+      List<Tile> connectedTiles = targetTile.getConnectedTiles();
+
+      if (connectedTiles.isEmpty()) {
+        break;
+      }
+
+      targetTile = connectedTiles.getFirst();
+    }
+
+    return targetTile;
   }
 
   /**
@@ -114,12 +143,27 @@ public class Player extends BaseModel {
     return name;
   }
 
-  /**
-   * Gets the token/piece this player uses.
-   *
-   * @return The player's token
-   */
-  public String getToken() {
-    return token;
+  @Override
+  public String toString() {
+    return "Player{name='" + name + "', currentTile=" + (currentTile != null
+        ? currentTile.getTileId() : "none") + "}";
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+
+    Player player = (Player) obj;
+    return Objects.equals(name, player.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name);
   }
 }

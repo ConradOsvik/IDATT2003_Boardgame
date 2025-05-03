@@ -1,143 +1,61 @@
 package edu.ntnu.stud.boardgame;
 
-import edu.ntnu.stud.boardgame.controller.BoardFileController;
-import edu.ntnu.stud.boardgame.controller.PlayerFileController;
-import edu.ntnu.stud.boardgame.core.model.BoardGame;
-import edu.ntnu.stud.boardgame.core.model.Player;
+import edu.ntnu.stud.boardgame.core.navigation.BoardGameViewControllerFactory;
+import edu.ntnu.stud.boardgame.core.navigation.Navigator;
+import edu.ntnu.stud.boardgame.core.navigation.ViewControllerFactory.ViewName;
+import edu.ntnu.stud.boardgame.core.util.StyleManager;
+import edu.ntnu.stud.boardgame.core.view.ui.Button;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+public class BoardGameApp extends Application {
 
-public class BoardGameApp {
+  @Override
+  public void start(Stage primaryStage) {
+    BorderPane mainContainer = new BorderPane();
 
-  private BoardGame boardGame = new BoardGame();
-  private final PlayerFileController playerFileController = new PlayerFileController();
-  private final BoardFileController boardFileController = new BoardFileController();
+    Scene scene = new Scene(mainContainer, 900, 650);
 
-  public void start() {
-    createDataDirectory(); 
-    setupGameFromScratch();
-    saveGameDataToFiles();
-    
-    // Reset the game
-    this.boardGame = new BoardGame();
-    
-    // 2. Load from files
-    loadGameDataFromFiles();
-    
-    // Start playing the game
-    startGameplay();
-  }
-  
-  private void createDataDirectory() {
-    Path dataDir = Paths.get("data");
-    if (!Files.exists(dataDir)) {
-      try {
-        Files.createDirectory(dataDir);
-      } catch (IOException e) {
-        System.err.println("Failed to create data directory: " + e.getMessage());
-      }
-    }
-  }
-  
-  private void setupGameFromScratch() {
-    System.out.println("Setting up a new game from scratch...");
-    
-    this.boardGame.createBoard();
-    this.boardGame.createDice(2);
+    StyleManager.initializeBaseStyles(scene);
 
-    this.boardGame.addPlayer(new Player("Arne", "TopHat", this.boardGame));
-    this.boardGame.addPlayer(new Player("Ivar", "RaceCar", this.boardGame));
-    this.boardGame.addPlayer(new Player("Majid", "Cat", this.boardGame));
-    this.boardGame.addPlayer(new Player("Atle", "Thimble", this.boardGame));
-    
-    System.out.println("Game setup completed.");
-    listPlayers();
-  }
-  
-  private void saveGameDataToFiles() {
-    System.out.println("\nSaving game data to files...");
-    
-    try {
-      // Save players to CSV
-      playerFileController.savePlayers(boardGame, "data/players.csv");
-      System.out.println("Players saved to data/players.csv");
-      
-      // Save board to JSON
-      boardFileController.saveBoard(boardGame, "data/board.json");
-      System.out.println("Board saved to data/board.json");
-    } catch (IOException e) {
-      System.err.println("Error saving game data: " + e.getMessage());
-    }
-  }
-  
-  private void loadGameDataFromFiles() {
-    System.out.println("\nLoading game data from files...");
-    
-    try {
-      // Check if files exist
-      File playersFile = new File("data/players.csv");
-      File boardFile = new File("data/board.json");
-      
-      if (!playersFile.exists() || !boardFile.exists()) {
-        System.err.println("Game data files not found. Run the game once to create them.");
-        return;
-      }
-      
-      // Load board from JSON
-      boardFileController.loadBoard(boardGame, "data/board.json");
-      System.out.println("Board loaded from data/board.json");
-      
-      // Load players from CSV
-      this.boardGame.createDice(2);
-      playerFileController.loadPlayers(boardGame, "data/players.csv");
-      System.out.println("Players loaded from data/players.csv");
-      
-      System.out.println("Game data loaded successfully.");
-      listPlayers();
-    } catch (IOException e) {
-      System.err.println("Error loading game data: " + e.getMessage());
-    }
-  }
-  
-  private void startGameplay() {
-    System.out.println("\nStarting the game...");
-    
-    int roundNumber = 1;
-    while (!this.boardGame.isFinished()) {
-      System.out.println("Round number " + roundNumber++);
-      this.boardGame.play();
+    Navigator navigator = Navigator.getInstance();
+    navigator.setMainContainer(mainContainer);
+    navigator.setViewControllerFactory(new BoardGameViewControllerFactory());
+    navigator.setUseTransitions(true);
 
-      if (!this.boardGame.isFinished()) {
-        showPlayerStatus();
-      }
+    navigator.navigateTo(ViewName.MAIN_MENU);
 
-      System.out.println();
-    }
+    ToolBar toolBar = createToolBar(navigator);
 
-    System.out.println("And the winner is: " + this.boardGame.getWinner().getName());
+    mainContainer.setTop(toolBar);
+
+    primaryStage.setTitle("Board Game");
+    primaryStage.setScene(scene);
+    primaryStage.setMinWidth(800);
+    primaryStage.setMinHeight(600);
+    primaryStage.setResizable(true);
+    primaryStage.show();
   }
 
-  private void listPlayers() {
-    System.out.println("The following players are playing the game:");
-    for (Player player : boardGame.getPlayers()) {
-      System.out.println("Name: " + player.getName() + ", Token: " + player.getToken());
-    }
-    System.out.println();
-  }
+  private ToolBar createToolBar(Navigator navigator) {
+    ToolBar toolBar = new ToolBar();
 
-  private void showPlayerStatus() {
-    for (Player player : boardGame.getPlayers()) {
-      System.out.println("Player " + player.getName() +
-          " on tile " + player.getCurrentTile().getTileId());
-    }
+    Button goBack = Button.builder().text("Go Back").onAction(event -> {
+      navigator.goBack();
+    }).build();
+    Button exit = Button.builder().text("Exit").styleClass("danger").onAction(event -> {
+      System.exit(0);
+    }).build();
+
+    toolBar.getItems().addAll(goBack, exit);
+
+    return toolBar;
   }
 
   public static void main(String[] args) {
-    BoardGameApp app = new BoardGameApp();
-    app.start();
+    launch(args);
   }
 }

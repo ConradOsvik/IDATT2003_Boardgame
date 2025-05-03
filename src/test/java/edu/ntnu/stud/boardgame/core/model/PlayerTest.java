@@ -1,143 +1,169 @@
 package edu.ntnu.stud.boardgame.core.model;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import edu.ntnu.stud.boardgame.core.exception.InvalidMoveException;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import static org.mockito.Mockito.verify;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.Mockito;
 
-/**
- * Test class for {@link Player}
- */
-@ExtendWith(MockitoExtension.class)
 class PlayerTest {
 
-  private Player player;
+  private TestPlayer player;
+  private final String PLAYER_NAME = "TestPlayer";
 
-  @Mock
-  private BoardGame boardGame;
+  private static class TestPlayer extends Player {
 
-  @Mock
-  private Tile currentTile;
-
-  @Mock
-  private Tile nextTile;
+    public TestPlayer(String name) {
+      super(name);
+    }
+  }
 
   @BeforeEach
-  void setup() {
-    player = new Player("Player", "Token", boardGame);
+  void setUp() {
+    player = new TestPlayer(PLAYER_NAME);
   }
 
   @Test
-  void constructor_validNameAndGame_createsPlayer() {
-    assertEquals("Player", player.getName());
+  void constructor_validName_createsPlayer() {
+    assertEquals(PLAYER_NAME, player.getName());
+    assertNull(player.getCurrentTile());
   }
 
   @Test
-  void placeOnTile_validTile_updatesCurrentTile() {
-    player.placeOnTile(currentTile);
-    assertEquals(currentTile, player.getCurrentTile());
+  void constructor_nullName_throwsException() {
+    assertThrows(IllegalArgumentException.class, () -> new TestPlayer(null));
   }
 
   @Test
-  void placeOnTile_nullTile_throwsIllegalArgumentException() {
+  void constructor_emptyName_throwsException() {
+    assertThrows(IllegalArgumentException.class, () -> new TestPlayer(""));
+  }
+
+  @Test
+  void setStartingTile_validTile_setsTile() {
+    Tile tile = new Tile(1);
+    player.setStartingTile(tile);
+    assertEquals(tile, player.getCurrentTile());
+  }
+
+  @Test
+  void setStartingTile_nullTile_throwsException() {
+    assertThrows(IllegalArgumentException.class, () -> player.setStartingTile(null));
+  }
+
+  @Test
+  void placeOnTile_validTile_placePlayerOnTile() {
+    Tile tile = Mockito.mock(Tile.class);
+    player.placeOnTile(tile);
+
+    assertEquals(tile, player.getCurrentTile());
+    Mockito.verify(tile).landPlayer(player);
+  }
+
+  @Test
+  void placeOnTile_validTileAfterPrevious_leavesOldTile() {
+    Tile oldTile = Mockito.mock(Tile.class);
+    Tile newTile = Mockito.mock(Tile.class);
+
+    player.placeOnTile(oldTile);
+    player.placeOnTile(newTile);
+
+    Mockito.verify(oldTile).leavePlayer(player);
+    Mockito.verify(newTile).landPlayer(player);
+    assertEquals(newTile, player.getCurrentTile());
+  }
+
+  @Test
+  void placeOnTile_nullTile_throwsException() {
     assertThrows(IllegalArgumentException.class, () -> player.placeOnTile(null));
   }
 
   @Test
-  void placeOnTile_validTile_callsLandPlayer() {
-    player.placeOnTile(currentTile);
-    verify(currentTile).landPlayer(player);
+  void move_negativeSteps_throwsException() {
+    Tile tile = Mockito.mock(Tile.class);
+    player.placeOnTile(tile);
+
+    assertThrows(InvalidMoveException.class, () -> player.move(-1));
   }
 
   @Test
-  void placeOnTile_validTileAfterPreviousTile_callsLeavePlayerOnPreviousTile() {
-    player.placeOnTile(currentTile);
-
-    player.placeOnTile(nextTile);
-
-    verify(currentTile).leavePlayer(player);
+  void move_noCurrentTile_throwsException() {
+    assertThrows(InvalidMoveException.class, () -> player.move(1));
   }
 
   @Test
   void move_zeroSteps_doesNotMove() {
-    player.placeOnTile(currentTile);
-    player.move(Tile.Direction.FORWARD, 0);
+    Tile tile = Mockito.mock(Tile.class);
+    player.placeOnTile(tile);
 
-    assertEquals(currentTile, player.getCurrentTile());
+    player.move(0);
+
+    assertEquals(tile, player.getCurrentTile());
   }
 
   @Test
-  void move_negativeSteps_doesNotMove() {
-    player.placeOnTile(currentTile);
-    player.move(Tile.Direction.FORWARD, -1);
+  void move_validSteps_movesToCorrectTile() {
+    Tile startTile = new Tile(1);
+    Tile middleTile = new Tile(2);
+    Tile endTile = new Tile(3);
 
-    assertEquals(currentTile, player.getCurrentTile());
+    startTile.addConnectedTile(middleTile);
+    middleTile.addConnectedTile(endTile);
+
+    player.placeOnTile(startTile);
+    player.move(2);
+
+    assertEquals(endTile, player.getCurrentTile());
   }
 
   @Test
-  void move_nullCurrentTile_doesNotThrowException() {
-    assertDoesNotThrow(() -> player.move(Tile.Direction.FORWARD, 1));
+  void move_stepsExceedConnections_movesToLastConnectedTile() {
+    Tile startTile = new Tile(1);
+    Tile endTile = new Tile(2);
+
+    startTile.addConnectedTile(endTile);
+
+    player.placeOnTile(startTile);
+    player.move(5);
+
+    assertEquals(endTile, player.getCurrentTile());
   }
 
   @Test
-  void move_validStepsWithConnectedTiles_movesToCorrectTile() {
+  void move_withListOfSteps_followsPath() {
     Tile tile1 = new Tile(1);
     Tile tile2 = new Tile(2);
     Tile tile3 = new Tile(3);
 
-    tile1.addNextTile(tile2);
-    tile2.addNextTile(tile3);
+    tile1.addConnectedTile(tile2);
+    tile2.addConnectedTile(tile3);
 
     player.placeOnTile(tile1);
-
-    player.move(Tile.Direction.FORWARD, 2);
+    player.move(List.of(0, 0));
 
     assertEquals(tile3, player.getCurrentTile());
   }
 
   @Test
-  void move_validStepsWithNoMoreConnectedTiles_movesToLastPossibleTile() {
-    Tile tile1 = new Tile(1);
-    Tile tile2 = new Tile(2);
-
-    tile1.addNextTile(tile2);
-
-    player.placeOnTile(tile1);
-
-    player.move(Tile.Direction.FORWARD, 3);
-
-    assertEquals(tile2, player.getCurrentTile());
+  void equals_sameName_returnsTrue() {
+    Player otherPlayer = new TestPlayer(PLAYER_NAME);
+    assertEquals(player, otherPlayer);
   }
 
   @Test
-  void move_toTileIdNinety_stopsAtTileNinety() {
-    Tile tile1 = new Tile(1);
-    Tile tile2 = new Tile(90);
-    Tile tile3 = new Tile(3);
-
-    tile1.addNextTile(tile2);
-    tile2.addNextTile(tile3);
-
-    player.placeOnTile(tile1);
-
-    player.move(Tile.Direction.FORWARD, 3);
-
-    assertEquals(tile2, player.getCurrentTile());
+  void equals_differentName_returnsFalse() {
+    Player otherPlayer = new TestPlayer("OtherPlayer");
+    assertNotEquals(player, otherPlayer);
   }
 
   @Test
-  void getCurrentTile_beforePlacement_returnsNull() {
-    assertNull(player.getCurrentTile());
-  }
-
-  @Test
-  void getName_returnsPlayerName() {
-    assertEquals("Player", player.getName());
+  void hashCode_sameName_returnsSameHashCode() {
+    Player otherPlayer = new TestPlayer(PLAYER_NAME);
+    assertEquals(player.hashCode(), otherPlayer.hashCode());
   }
 }
