@@ -5,8 +5,8 @@ import edu.ntnu.stud.boardgame.core.filehandling.FileHandler;
 import edu.ntnu.stud.boardgame.core.filehandling.FileUtil;
 import edu.ntnu.stud.boardgame.core.filehandling.GenericBoardGameDeserializer;
 import edu.ntnu.stud.boardgame.core.filehandling.GenericBoardGameSerializer;
-import edu.ntnu.stud.boardgame.core.filehandling.GenericPlayerDeserializer;
-import edu.ntnu.stud.boardgame.core.filehandling.GenericPlayerSerializer;
+import edu.ntnu.stud.boardgame.core.filehandling.GenericPlayerCsvDeserializer;
+import edu.ntnu.stud.boardgame.core.filehandling.GenericPlayerCsvSerializer;
 import edu.ntnu.stud.boardgame.core.filehandling.Serializer;
 import edu.ntnu.stud.boardgame.core.filehandling.Deserializer;
 import edu.ntnu.stud.boardgame.core.filehandling.SerializerRegistryInitializer;
@@ -45,8 +45,8 @@ public class GameSaveService {
         this.fileHandler = new BasicFileHandler();
         this.boardGameSerializer = new GenericBoardGameSerializer();
         this.boardGameDeserializer = new GenericBoardGameDeserializer();
-        this.playerSerializer = new GenericPlayerSerializer();
-        this.playerDeserializer = new GenericPlayerDeserializer();
+        this.playerSerializer = new GenericPlayerCsvSerializer();
+        this.playerDeserializer = new GenericPlayerCsvDeserializer();
     }
 
     /**
@@ -105,7 +105,7 @@ public class GameSaveService {
     }
 
     /**
-     * Saves a list of players to a JSON file with the specified name.
+     * Saves a list of players to a CSV file with the specified name.
      *
      * @param players        the list of players to save
      * @param playerListName the name to use for the saved player list file (without
@@ -130,7 +130,7 @@ public class GameSaveService {
     }
 
     /**
-     * Loads a list of players from a JSON file with the specified name.
+     * Loads a list of players from a CSV file with the specified name.
      * If the file doesn't exist, creates a new empty list and saves it.
      *
      * @param playerListName the name of the player list file to load (without

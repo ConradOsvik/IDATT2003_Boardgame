@@ -17,6 +17,7 @@ public class FileUtil {
     private static final String DATA_DIR = "user_data";
     private static final String GAMES_DIR = "games";
     private static final String PLAYERS_DIR = "players";
+    private static final String CSV_EXTENSION = ".csv";
     private static final String JSON_EXTENSION = ".json";
 
     private FileUtil() {
@@ -72,7 +73,7 @@ public class FileUtil {
      * @return the path to the player file
      */
     public static Path getPlayerFilePath(String playerListName) {
-        return getPlayersDirectory().resolve(playerListName + JSON_EXTENSION);
+        return getPlayersDirectory().resolve(playerListName + CSV_EXTENSION);
     }
 
     /**
@@ -107,7 +108,7 @@ public class FileUtil {
         List<String> playerFiles = new ArrayList<>();
 
         if (playersDir.exists() && playersDir.isDirectory()) {
-            File[] files = playersDir.listFiles((dir, name) -> name.toLowerCase().endsWith(JSON_EXTENSION));
+            File[] files = playersDir.listFiles((dir, name) -> name.toLowerCase().endsWith(CSV_EXTENSION));
             if (files != null) {
                 for (File file : files) {
                     String fileName = file.getName();

@@ -4,8 +4,8 @@ import edu.ntnu.stud.boardgame.snakesandladders.model.SlBoardGame;
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlPlayer;
 import edu.ntnu.stud.boardgame.snakesandladders.serialization.SlBoardGameDeserializer;
 import edu.ntnu.stud.boardgame.snakesandladders.serialization.SlBoardGameSerializer;
-import edu.ntnu.stud.boardgame.snakesandladders.serialization.SlPlayerDeserializer;
-import edu.ntnu.stud.boardgame.snakesandladders.serialization.SlPlayerSerializer;
+import edu.ntnu.stud.boardgame.snakesandladders.serialization.SlPlayerCsvDeserializer;
+import edu.ntnu.stud.boardgame.snakesandladders.serialization.SlPlayerCsvSerializer;
 
 /**
  * Initializer for registering all game serializers.
@@ -29,8 +29,7 @@ public class SerializerRegistryInitializer {
 
         PlayerSerializerRegistry.register(
                 SlPlayer.class.getSimpleName(),
-                new SlPlayerSerializer(),
-                new SlPlayerDeserializer());
-
+                new SlPlayerCsvSerializer(),
+                new SlPlayerCsvDeserializer());
     }
 }
