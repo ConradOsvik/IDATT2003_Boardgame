@@ -4,24 +4,10 @@ target/
 !**/src/test/**/target/
 
 ### IntelliJ IDEA ###
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/usage.statistics.xml
-.idea/dictionaries/
-.idea/shelf/
-.idea/dataSources/
-.idea/dataSources.local.xml
-.idea/httpRequests/
-.idea/libraries/
-.idea/misc.xml
-.idea/modules.xml
+.idea/
 *.iws
 *.iml
 *.ipr
-
-# Project file
-*.iml
-Boardgame.iml
 
 ### Eclipse ###
 .apt_generated
