@@ -15,6 +15,8 @@ public abstract class Player extends BaseModel {
    */
   private final String name;
 
+  private final int tokenId;
+
   /**
    * The tile this player is currently on, or null if not placed on any tile.
    */
@@ -25,9 +27,10 @@ public abstract class Player extends BaseModel {
    *
    * @param name The name of the player
    */
-  public Player(String name) {
+  public Player(String name, int tokenId) {
     requireNotEmpty(name, "Name cannot be empty");
     this.name = name;
+    this.tokenId = tokenId;
   }
 
   public void setStartingTile(Tile tile) {
@@ -135,12 +138,29 @@ public abstract class Player extends BaseModel {
   }
 
   /**
+   * Sets the current tile of this player. This method is used for testing purposes only.
+   *
+   * @param tile The tile to set as the current tile
+   */
+  public void setCurrentTile(Tile tile) {
+    this.currentTile = tile;
+
+    if (tile != null) {
+      tile.landPlayer(this);
+    }
+  }
+
+  /**
    * Gets the name of this player.
    *
    * @return The player's name
    */
   public String getName() {
     return name;
+  }
+
+  public int getTokenId() {
+    return tokenId;
   }
 
   @Override
