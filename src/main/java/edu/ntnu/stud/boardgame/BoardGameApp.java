@@ -5,6 +5,8 @@ import edu.ntnu.stud.boardgame.core.navigation.Navigator;
 import edu.ntnu.stud.boardgame.core.navigation.ViewControllerFactory.ViewName;
 import edu.ntnu.stud.boardgame.core.util.StyleManager;
 import edu.ntnu.stud.boardgame.core.view.ui.Button;
+import edu.ntnu.stud.boardgame.core.view.ui.Label;
+import edu.ntnu.stud.boardgame.core.view.ui.Modal;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.ToolBar;
@@ -28,19 +30,19 @@ public class BoardGameApp extends Application {
 
     navigator.navigateTo(ViewName.MAIN_MENU);
 
-    ToolBar toolBar = createToolBar(navigator);
-
-    mainContainer.setTop(toolBar);
-
     primaryStage.setTitle("Board Game");
     primaryStage.setScene(scene);
     primaryStage.setMinWidth(800);
     primaryStage.setMinHeight(600);
     primaryStage.setResizable(true);
     primaryStage.show();
+
+    ToolBar toolBar = createToolBar(navigator, primaryStage);
+
+    mainContainer.setTop(toolBar);
   }
 
-  private ToolBar createToolBar(Navigator navigator) {
+  private ToolBar createToolBar(Navigator navigator, Stage primaryStage) {
     ToolBar toolBar = new ToolBar();
 
     Button goBack = Button.builder().text("Go Back").onAction(event -> {
@@ -50,7 +52,22 @@ public class BoardGameApp extends Application {
       System.exit(0);
     }).build();
 
-    toolBar.getItems().addAll(goBack, exit);
+    Label content = Label.builder()
+        .text("This is a modal dialog")
+        .fontSize("lg")
+        .build();
+
+    Modal confirmDialog = Modal.builder()
+        .title("Confirm Action")
+        .description("Are you sure you want to proceed?")
+        .owner(primaryStage)
+        .content(content)
+        .addCancelButton("Cancel", null)
+        .build();
+
+    Button modal = Button.builder().text("Modal").onAction(e -> confirmDialog.show()).build();
+
+    toolBar.getItems().addAll(goBack, exit, modal);
 
     return toolBar;
   }
