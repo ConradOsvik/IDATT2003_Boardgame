@@ -33,21 +33,25 @@ public class SlBoardGame extends BoardGame {
   }
 
   @Override
-  public void playOneRound() {
-    if (isFinished()) {
-      return;
+  public void playTurn(Player player) {
+    validatePlayerAndGameState(player);
+    notifyTurnChanged(player);
+
+    int steps = rollDice();
+    Tile previousTile = player.getCurrentTile();
+    int previousTileId = previousTile != null ? previousTile.getTileId() : 0;
+    int rawDestination = previousTileId + steps;
+
+    if (isBounceBackMove(rawDestination)) {
+      handleBounceBackMove(player, previousTile, steps, rawDestination);
+    } else {
+      handleRegularMove(player, previousTile, steps, rawDestination);
     }
 
-    for (Player player : players) {
-      if (isFinished()) {
-        break;
-      }
-      playTurn(player);
-    }
+    checkWinCondition(player);
   }
 
-  @Override
-  public void playTurn(Player player) {
+  private void validatePlayerAndGameState(Player player) {
     if (player == null) {
       throw new InvalidPlayerException("Player cannot be null");
     }
@@ -55,42 +59,115 @@ public class SlBoardGame extends BoardGame {
     if (isFinished()) {
       throw new GameOverException("Game is already finished");
     }
+  }
 
+  private void notifyTurnChanged(Player player) {
     GameEvent turnEvent = new SlTurnChangedEvent((SlPlayer) player);
     notifyObservers(turnEvent);
+  }
 
-    int steps = rollDice();
+  private boolean isBounceBackMove(int rawDestination) {
+    return rawDestination > SlBoard.NUM_TILES;
+  }
 
-    Tile previousTile = player.getCurrentTile();
+  private void handleRegularMove(Player player, Tile previousTile, int steps, int rawDestination) {
     player.move(steps);
+    Tile currentTile = player.getCurrentTile();
+    SlBoard slBoard = getBoard();
 
-    GameEvent moveEvent = new SlPlayerMovedEvent((SlPlayer) player, previousTile,
-        player.getCurrentTile(), steps, (SlBoard) board);
-    notifyObservers(moveEvent);
-
-    if (previousTile != player.getCurrentTile()
-        && previousTile.getTileId() + steps != player.getCurrentTile().getTileId()) {
-      if (player.getCurrentTile().getTileId() > previousTile.getTileId() + steps) {
-        GameEvent ladderEvent = new SlPlayerMovedEvent((SlPlayer) player, previousTile,
-            player.getCurrentTile(), steps, (SlBoard) board, false, true);
-        notifyObservers(ladderEvent);
-      } else if (player.getCurrentTile().getTileId() < previousTile.getTileId() + steps) {
-        GameEvent snakeEvent = new SlPlayerMovedEvent((SlPlayer) player, previousTile,
-            player.getCurrentTile(), steps, (SlBoard) board, true, false);
-        notifyObservers(snakeEvent);
-      }
+    if (rawDestination != currentTile.getTileId()) {
+      handleSpecialTileMove(player, previousTile, steps, rawDestination, currentTile);
+    } else {
+      notifyRegularMove(player, previousTile, currentTile, steps);
     }
+  }
 
+  private void handleSpecialTileMove(Player player, Tile previousTile, int steps,
+      int rawDestination,
+      Tile currentTile) {
+    SlBoard slBoard = getBoard();
+    Tile intermediateTile = slBoard.getTile(rawDestination);
+
+    GameEvent intermediateMoveEvent = new SlPlayerMovedEvent(
+        (SlPlayer) player, previousTile, intermediateTile, steps, slBoard);
+    notifyObservers(intermediateMoveEvent);
+
+    boolean isSnake = currentTile.getTileId() < rawDestination;
+    boolean isLadder = currentTile.getTileId() > rawDestination;
+
+    GameEvent specialMoveEvent = new SlPlayerMovedEvent(
+        (SlPlayer) player, intermediateTile, currentTile, steps, slBoard, isSnake, isLadder);
+    notifyObservers(specialMoveEvent);
+  }
+
+  private void notifyRegularMove(Player player, Tile previousTile, Tile currentTile, int steps) {
+    GameEvent moveEvent = new SlPlayerMovedEvent(
+        (SlPlayer) player, previousTile, currentTile, steps, getBoard());
+    notifyObservers(moveEvent);
+  }
+
+  private void handleBounceBackMove(Player player, Tile previousTile, int steps,
+      int rawDestination) {
+    SlBoard slBoard = getBoard();
+    int actualDestination = calculateBounceBackDestination(rawDestination);
+
+    // Animate to final tile
+    Tile finalTile = slBoard.getTile(SlBoard.NUM_TILES);
+    notifyMoveToFinalTile(player, previousTile, finalTile, steps);
+
+    // Handle bounce back
+    Tile bounceDestination = slBoard.getTile(actualDestination);
+    player.setCurrentTile(bounceDestination);
+    notifyBounceBackMove(player, finalTile, bounceDestination);
+
+    // Check if landed on special tile after bounce back
+    checkForSpecialTileAfterBounce(player, bounceDestination, actualDestination);
+  }
+
+  private int calculateBounceBackDestination(int rawDestination) {
+    return SlBoard.NUM_TILES - (rawDestination - SlBoard.NUM_TILES);
+  }
+
+  private void notifyMoveToFinalTile(Player player, Tile previousTile, Tile finalTile, int steps) {
+    GameEvent moveToFinalEvent = new SlPlayerMovedEvent(
+        (SlPlayer) player, previousTile, finalTile, steps, getBoard());
+    notifyObservers(moveToFinalEvent);
+  }
+
+  private void notifyBounceBackMove(Player player, Tile finalTile, Tile bounceDestination) {
+    GameEvent bounceBackEvent = new SlPlayerMovedEvent(
+        (SlPlayer) player, finalTile, bounceDestination, 0, getBoard(), false, false);
+    notifyObservers(bounceBackEvent);
+  }
+
+  private void checkForSpecialTileAfterBounce(Player player, Tile bounceDestination,
+      int expectedTileId) {
+    Tile currentTile = player.getCurrentTile();
+    if (currentTile.getTileId() != expectedTileId) {
+      boolean isSnake = currentTile.getTileId() < expectedTileId;
+      boolean isLadder = currentTile.getTileId() > expectedTileId;
+
+      GameEvent specialMoveEvent = new SlPlayerMovedEvent(
+          (SlPlayer) player, bounceDestination, currentTile, 0, getBoard(), isSnake, isLadder);
+      notifyObservers(specialMoveEvent);
+    }
+  }
+
+  private void checkWinCondition(Player player) {
     if (board.isLastTile(player.getCurrentTile())) {
       this.winner = player;
       this.finished = true;
 
-      GameEvent winEvent = new PlayerWonEvent(player);
-      notifyObservers(winEvent);
-
-      GameEvent endEvent = new GameEndedEvent(player);
-      notifyObservers(endEvent);
+      notifyWinAndGameEnd(player);
     }
+  }
+
+  private void notifyWinAndGameEnd(Player player) {
+    GameEvent winEvent = new PlayerWonEvent(player);
+    notifyObservers(winEvent);
+
+    GameEvent endEvent = new GameEndedEvent(player);
+    notifyObservers(endEvent);
   }
 
   @Override
