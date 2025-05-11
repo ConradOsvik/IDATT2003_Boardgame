@@ -2,7 +2,11 @@ package edu.ntnu.stud.boardgame.core.view.ui;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 
 /**
  * A customized JavaFX Button with enhanced styling options and a builder API. This class extends
@@ -45,6 +49,7 @@ public class Button extends javafx.scene.control.Button {
    */
   private void initialize() {
     setCursor(Cursor.HAND);
+    getStyleClass().add("button");
   }
 
   /**
@@ -73,6 +78,9 @@ public class Button extends javafx.scene.control.Button {
     private boolean outline;
     private String size;
     private EventHandler<ActionEvent> onAction;
+    private Node icon;
+    private String iconPosition = "left";
+    private boolean fullWidth = false;
 
     /**
      * Creates a new builder instance with default settings.
@@ -187,9 +195,9 @@ public class Button extends javafx.scene.control.Button {
     }
 
     /**
-     * Sets the size of the button.
+     * Sets the size of the button (sm, md, lg).
      *
-     * @param size the size identifier (e.g., "sm", "md", "lg")
+     * @param size the size identifier
      * @return this builder for method chaining
      */
     public Builder size(String size) {
@@ -209,27 +217,84 @@ public class Button extends javafx.scene.control.Button {
     }
 
     /**
+     * Sets an icon to display on the button.
+     *
+     * @param icon the icon node
+     * @return this builder for method chaining
+     */
+    public Builder icon(Node icon) {
+      this.icon = icon;
+      return this;
+    }
+
+    /**
+     * Sets the position of the icon relative to the text ("left" or "right").
+     *
+     * @param position the icon position
+     * @return this builder for method chaining
+     */
+    public Builder iconPosition(String position) {
+      this.iconPosition = position;
+      return this;
+    }
+
+    /**
+     * Sets whether the button should use full width of its container.
+     *
+     * @param fullWidth true for full width button
+     * @return this builder for method chaining
+     */
+    public Builder fullWidth(boolean fullWidth) {
+      this.fullWidth = fullWidth;
+      return this;
+    }
+
+    /**
      * Builds a new Button instance with the configured properties.
      *
      * @return a new Button instance
      */
     public Button build() {
-      Button button = new Button(text);
+      Button button;
+
+      // If there's an icon, create a HBox to hold both the icon and text
+      if (icon != null) {
+        HBox content = new HBox();
+        content.setAlignment(Pos.CENTER);
+        content.setSpacing(8);
+
+        // Set icon position
+        if ("right".equals(iconPosition)) {
+          content.getChildren().addAll(new javafx.scene.control.Label(text), icon);
+        } else {
+          content.getChildren().addAll(icon, new javafx.scene.control.Label(text));
+        }
+
+        button = new Button();
+        button.setGraphic(content);
+        button.getStyleClass().add("button-with-icon");
+      } else {
+        button = new Button(text);
+      }
 
       if (id != null) {
         button.setId(id);
       }
 
+      // Add custom style class
       if (styleClass != null) {
         button.getStyleClass().add(styleClass);
       }
 
+      // Add size class
       button.getStyleClass().add("button-" + size);
 
+      // Add rounded class if needed
       if (rounded) {
         button.getStyleClass().add("rounded");
       }
 
+      // Add outline class if needed
       if (outline) {
         button.getStyleClass().add("outline");
       }
@@ -244,6 +309,11 @@ public class Button extends javafx.scene.control.Button {
 
       if (height > 0) {
         button.setPrefHeight(height);
+      }
+
+      if (fullWidth) {
+        button.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(button, Priority.ALWAYS);
       }
 
       if (onAction != null) {

@@ -1,6 +1,7 @@
 package edu.ntnu.stud.boardgame.core.view.ui;
 
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -24,8 +25,7 @@ import javafx.scene.paint.Color;
  * <pre>
  * Panel loginPanel = Panel.builder()
  *     .children(usernameField, passwordField, loginButton)
- *     .bg("light")
- *     .bordered(true)
+ *     .styleClass("card")
  *     .rounded(true)
  *     .shadow(true)
  *     .build();
@@ -56,8 +56,8 @@ public class Panel extends VBox {
    */
   private void initialize() {
     getStyleClass().add("panel");
-    setPadding(new Insets(10));
-    setSpacing(10);
+    setPadding(new Insets(16));
+    setSpacing(12);
   }
 
   /**
@@ -87,6 +87,7 @@ public class Panel extends VBox {
     private boolean shadow;
     private boolean bordered;
     private String bg;
+    private Pos alignment;
 
     /**
      * Creates a new builder instance with default settings.
@@ -95,12 +96,13 @@ public class Panel extends VBox {
       this.children = new Node[0];
       this.width = -1;
       this.height = -1;
-      this.spacing = 10;
-      this.padding = new Insets(10);
+      this.spacing = 12;
+      this.padding = new Insets(16);
       this.rounded = false;
       this.shadow = false;
-      this.bordered = false;
+      this.bordered = true;
       this.bg = "white";
+      this.alignment = null;
     }
 
     /**
@@ -237,13 +239,24 @@ public class Panel extends VBox {
 
     /**
      * Sets the background color of the panel. Predefined colors include: "primary", "secondary",
-     * "success", "danger", "warning", "info", "light", "dark", "black", "gray", and "white".
+     * "white", "light", "dark", etc.
      *
      * @param bg the background color identifier
      * @return this builder for method chaining
      */
     public Builder bg(String bg) {
       this.bg = bg;
+      return this;
+    }
+
+    /**
+     * Sets the alignment of children within the panel.
+     *
+     * @param alignment the alignment value
+     * @return this builder for method chaining
+     */
+    public Builder alignment(Pos alignment) {
+      this.alignment = alignment;
       return this;
     }
 
@@ -265,27 +278,48 @@ public class Panel extends VBox {
         panel.getStyleClass().add(styleClass);
       }
 
-      panel.getStyleClass().add("bg-" + bg);
-
-      if (rounded) {
-        panel.getStyleClass().add("rounded");
-        panel.setBackground(new Background(new BackgroundFill(
-            getBackgroundColor(bg), new CornerRadii(8), Insets.EMPTY)));
-      } else {
-        panel.setBackground(new Background(new BackgroundFill(
-            getBackgroundColor(bg), CornerRadii.EMPTY, Insets.EMPTY)));
+      // Add background class
+      if (bg != null) {
+        panel.getStyleClass().add("bg-" + bg);
       }
 
+      // Add rounded class
+      if (rounded) {
+        panel.getStyleClass().add("rounded");
+      }
+
+      // Add shadow class
       if (shadow) {
         panel.getStyleClass().add("shadow");
       }
 
+      // Add border class
       if (bordered) {
-        panel.getStyleClass().add("bordered");
-        panel.setBorder(new Border(new BorderStroke(
-            Color.LIGHTGRAY, BorderStrokeStyle.SOLID,
-            rounded ? new CornerRadii(8) : CornerRadii.EMPTY,
-            BorderWidths.DEFAULT)));
+        panel.getStyleClass().add("border");
+      }
+
+      // Apply explicit background and border if needed
+      if (rounded) {
+        Color bgColor = getBackgroundColor(bg);
+        panel.setBackground(new Background(new BackgroundFill(
+            bgColor, new CornerRadii(8), Insets.EMPTY)));
+
+        if (bordered) {
+          panel.setBorder(new Border(new BorderStroke(
+              Color.LIGHTGRAY, BorderStrokeStyle.SOLID,
+              new CornerRadii(8), BorderWidths.DEFAULT)));
+        }
+      } else if (bg != null) {
+        // Apply background without rounded corners
+        Color bgColor = getBackgroundColor(bg);
+        panel.setBackground(new Background(new BackgroundFill(
+            bgColor, CornerRadii.EMPTY, Insets.EMPTY)));
+
+        if (bordered) {
+          panel.setBorder(new Border(new BorderStroke(
+              Color.LIGHTGRAY, BorderStrokeStyle.SOLID,
+              CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        }
       }
 
       if (style != null) {
@@ -303,6 +337,10 @@ public class Panel extends VBox {
       panel.setSpacing(spacing);
       panel.setPadding(padding);
 
+      if (alignment != null) {
+        panel.setAlignment(alignment);
+      }
+
       return panel;
     }
 
@@ -313,13 +351,16 @@ public class Panel extends VBox {
      * @return the corresponding Color object
      */
     private Color getBackgroundColor(String bg) {
+      if (bg == null) {
+        return Color.WHITE;
+      }
+
       return switch (bg) {
-        case "primary" -> Color.rgb(59, 130, 246);
-        case "secondary" -> Color.rgb(107, 114, 128);
-        case "success" -> Color.rgb(34, 197, 94);
-        case "danger" -> Color.rgb(239, 68, 68);
-        case "warning" -> Color.rgb(250, 204, 21);
-        case "info" -> Color.rgb(6, 182, 212);
+        case "primary" -> Color.rgb(24, 24, 27);
+        case "secondary" -> Color.rgb(244, 244, 245);
+        case "destructive", "danger" -> Color.rgb(239, 68, 68);
+        case "muted" -> Color.rgb(244, 244, 245);
+        case "accent" -> Color.rgb(244, 244, 245);
         case "light" -> Color.rgb(248, 250, 252);
         case "dark" -> Color.rgb(30, 41, 59);
         case "black" -> Color.BLACK;

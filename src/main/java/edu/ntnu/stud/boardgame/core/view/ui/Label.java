@@ -10,7 +10,8 @@ import javafx.scene.text.TextAlignment;
  * standard JavaFX Label to provide additional functionality and easier configuration through a
  * builder pattern.
  *
- * <p>Labels are UI components that display non-editable text to the user.</p>
+ * <p>Labels are UI components that display non-editable text to the user in a shadcn-ui inspired
+ * style.</p>
  *
  * <p>Example usage:</p>
  * <pre>
@@ -30,6 +31,7 @@ public class Label extends javafx.scene.control.Label {
    */
   public Label(String text) {
     super(text);
+    initialize();
   }
 
   /**
@@ -37,6 +39,14 @@ public class Label extends javafx.scene.control.Label {
    */
   public Label() {
     super();
+    initialize();
+  }
+
+  /**
+   * Initializes the label with default settings.
+   */
+  private void initialize() {
+    getStyleClass().add("label");
   }
 
   /**
@@ -77,7 +87,7 @@ public class Label extends javafx.scene.control.Label {
       this.text = "";
       this.width = -1;
       this.height = -1;
-      this.fontSize = "md";
+      this.fontSize = "base";
       this.fontWeight = FontWeight.NORMAL;
       this.fontFamily = "System";
       this.truncate = false;
@@ -187,8 +197,8 @@ public class Label extends javafx.scene.control.Label {
     }
 
     /**
-     * Sets the font size of the label text. Values typically include "xs", "sm", "md", "lg", "xl",
-     * etc.
+     * Sets the font size of the label text. Values include "xs", "sm", "base", "lg", "xl", "2xl",
+     * "3xl", "4xl", "5xl", and "6xl".
      *
      * @param fontSize the font size identifier
      * @return this builder for method chaining
@@ -269,14 +279,19 @@ public class Label extends javafx.scene.control.Label {
         label.getStyleClass().add(styleClass);
       }
 
-      label.getStyleClass().add("text-" + fontSize);
+      // Add style class before setting properties
+      String fontSizeClass = "text-" + fontSize;
+      label.getStyleClass().add(fontSizeClass);
 
+      // Set font weight using style classes
       if (fontWeight == FontWeight.BOLD) {
         label.getStyleClass().add("font-bold");
       } else if (fontWeight == FontWeight.LIGHT) {
         label.getStyleClass().add("font-light");
       } else if (fontWeight == FontWeight.MEDIUM) {
         label.getStyleClass().add("font-medium");
+      } else if (fontWeight == FontWeight.SEMI_BOLD) {
+        label.getStyleClass().add("font-semibold");
       }
 
       if (italic) {
@@ -287,8 +302,19 @@ public class Label extends javafx.scene.control.Label {
         label.getStyleClass().add("truncate");
       }
 
+      // Apply inline styles if needed
+      StringBuilder styleBuilder = new StringBuilder();
+
+      if (fontFamily != null && !fontFamily.equals("System")) {
+        styleBuilder.append("-fx-font-family: '").append(fontFamily).append("'; ");
+      }
+
       if (style != null) {
-        label.setStyle(style);
+        styleBuilder.append(style);
+      }
+
+      if (styleBuilder.length() > 0) {
+        label.setStyle(styleBuilder.toString());
       }
 
       if (width > 0) {
