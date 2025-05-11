@@ -37,4 +37,9 @@ class Die {
   int getValue() {
     return this.lastRolledValue;
   }
+
+  @Override
+  public String toString() {
+    return "Die{value=" + lastRolledValue + "}";
+  }
 }

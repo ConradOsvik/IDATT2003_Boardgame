@@ -1,6 +1,7 @@
 package edu.ntnu.stud.boardgame.core.model;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 /**
@@ -48,5 +49,43 @@ public class Dice {
    */
   int getDie(int dieNumber) {
     return dice.get(dieNumber).getValue();
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("Dice{count=").append(dice.size());
+
+    if (!dice.isEmpty()) {
+      builder.append(", values=[");
+      for (int i = 0; i < dice.size(); i++) {
+        builder.append(dice.get(i).getValue());
+        if (i < dice.size() - 1) {
+          builder.append(", ");
+        }
+      }
+      builder.append("]");
+    }
+
+    builder.append("}");
+    return builder.toString();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+
+    Dice other = (Dice) obj;
+    return Objects.equals(dice, other.dice);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(dice);
   }
 }

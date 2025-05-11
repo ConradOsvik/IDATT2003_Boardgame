@@ -2,8 +2,10 @@ package edu.ntnu.stud.boardgame.core.model;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class Board extends BaseModel {
+
   protected Map<Integer, Tile> tiles;
 
   public Tile getTile(int tileId) {
@@ -15,6 +17,37 @@ public abstract class Board extends BaseModel {
   }
 
   public abstract void initializeBoard();
+
   public abstract Tile getStartingTile();
+
   public abstract boolean isLastTile(Tile tile);
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Board{");
+    for (Tile tile : tiles.values()) {
+      sb.append(tile).append(", ");
+    }
+    sb.append("}");
+    return sb.toString();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+
+    Board board = (Board) obj;
+    return Objects.equals(tiles, board.tiles);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(tiles);
+  }
 }

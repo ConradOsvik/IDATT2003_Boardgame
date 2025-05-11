@@ -10,6 +10,7 @@ import edu.ntnu.stud.boardgame.core.observer.GameEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.DiceRolledEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.GameCreatedEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.GameResetEvent;
+import edu.ntnu.stud.boardgame.core.observer.events.GameRestartedEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.GameStartedEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.PlayerAddedEvent;
 import java.util.ArrayList;
@@ -26,13 +27,12 @@ import java.util.logging.Logger;
 public abstract class BoardGame implements BoardGameObservable {
 
   private static final Logger LOGGER = Logger.getLogger(BoardGame.class.getName());
-
+  protected final List<Player> players = new ArrayList<>();
+  protected final List<BoardGameObserver> observers = new ArrayList<>();
   protected Board board;
   protected Dice dice;
-  protected final List<Player> players = new ArrayList<>();
   protected Player winner;
   protected boolean finished = false;
-  protected final List<BoardGameObserver> observers = new ArrayList<>();
 
   public void init() {
     GameEvent event = new GameCreatedEvent(board);
@@ -74,6 +74,10 @@ public abstract class BoardGame implements BoardGameObservable {
     return board;
   }
 
+  public Dice getDice() {
+    return dice;
+  }
+
   public abstract void playTurn(Player player);
 
   public void playOneRound() {
@@ -94,7 +98,7 @@ public abstract class BoardGame implements BoardGameObservable {
       throw new GameNotInitializedException("Game not properly initialized");
     }
 
-    startGame();
+    start();
 
     while (!isFinished()) {
       playOneRound();
@@ -123,7 +127,7 @@ public abstract class BoardGame implements BoardGameObservable {
     return Optional.ofNullable(winner);
   }
 
-  public void startGame() {
+  public void start() {
     if (board == null || dice == null) {
       throw new GameNotInitializedException("Game board or dice not initialized");
     }
@@ -142,6 +146,18 @@ public abstract class BoardGame implements BoardGameObservable {
     this.finished = false;
 
     GameEvent event = new GameResetEvent(board);
+    notifyObservers(event);
+  }
+
+  public void restart() {
+    this.winner = null;
+    this.finished = false;
+
+    for (Player player : players) {
+      player.setStartingTile(board.getStartingTile());
+    }
+
+    GameEvent event = new GameRestartedEvent();
     notifyObservers(event);
   }
 
@@ -171,15 +187,6 @@ public abstract class BoardGame implements BoardGameObservable {
     }
   }
 
-  public void transferObserversFrom(BoardGame other) {
-    if (other != null) {
-      List<BoardGameObserver> observersToTransfer = new ArrayList<>(other.observers);
-      for (BoardGameObserver observer : observersToTransfer) {
-        this.addObserver(observer);
-      }
-    }
-  }
-
   @Override
   public boolean equals(Object obj) {
 
@@ -193,13 +200,25 @@ public abstract class BoardGame implements BoardGameObservable {
 
     BoardGame other = (BoardGame) obj;
 
-    return finished == other.finished && Objects.equals(board, other.board) && Objects.equals(dice,
-        other.dice) && Objects.equals(players, other.players) && Objects.equals(winner,
-        other.winner);
+    if (finished != other.finished) {
+      return false;
+    }
+    if (!Objects.equals(board, other.board)) {
+      return false;
+    }
+    if (!Objects.equals(getPlayers(), other.getPlayers())) {
+      return false;
+    }
+    return Objects.equals(winner, other.winner);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(board, dice, players, winner, finished);
+    int result = board != null ? board.hashCode() : 0;
+    result = 31 * result + (finished ? 1 : 0);
+    result = 31 * result + (winner != null ? winner.hashCode() : 0);
+    result = 31 * result + getPlayers().hashCode();
+    result = 31 * result + (dice != null ? dice.hashCode() : 0);
+    return result;
   }
 }

@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Represents a tile on the game board. Tiles have a unique ID, can have connected tiles,
- * and can trigger actions when players land on them.
+ * Represents a tile on the game board. Tiles have a unique ID, can have connected tiles, and can
+ * trigger actions when players land on them.
  */
 public class Tile extends BaseModel {
 
@@ -111,6 +111,28 @@ public class Tile extends BaseModel {
     return new ArrayList<>(connectedTiles.values());
   }
 
+  @Override
+  public String toString() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("Tile{")
+        .append("id=").append(tileId);
+
+    if (landAction != null) {
+      builder.append(", action=").append(landAction.getClass().getSimpleName());
+    }
+
+    if (!connectedTiles.isEmpty()) {
+      builder.append(", connectedTiles=").append(connectedTiles.size())
+          .append(" [").append(String.join(", ",
+              connectedTiles.keySet().stream()
+                  .map(String::valueOf)
+                  .toList())).append("]");
+    }
+
+    builder.append("}");
+    return builder.toString();
+  }
+
   /**
    * Compares this tile to another object for equality. Tiles are considered equal if they have the
    * same ID.
@@ -138,18 +160,5 @@ public class Tile extends BaseModel {
   @Override
   public int hashCode() {
     return Objects.hash(tileId);
-  }
-
-  /**
-   * Returns a string representation of this tile, including its ID and connected tiles.
-   *
-   * @return A string representation of this tile
-   */
-  @Override
-  public String toString() {
-    return "Tile{" +
-        "id=" + tileId +
-        ", connectedTiles=" + connectedTiles.keySet() +
-        '}';
   }
 }

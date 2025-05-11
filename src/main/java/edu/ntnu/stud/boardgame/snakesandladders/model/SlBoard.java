@@ -6,6 +6,7 @@ import edu.ntnu.stud.boardgame.snakesandladders.model.action.LadderAction;
 import edu.ntnu.stud.boardgame.snakesandladders.model.action.SnakeAction;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Implementation of the Board class for the Snakes and Ladders game. It creates a 10x10 board with
@@ -160,7 +161,6 @@ public class SlBoard extends Board {
 
     int index = tileId - 1;
 
-    // This is likely the issue - if rows are indexed from 0 at the bottom:
     int row = BOARD_ROWS - 1 - (index / BOARD_COLUMNS);
 
     int col;
@@ -171,5 +171,27 @@ public class SlBoard extends Board {
     }
 
     return new int[]{row, col};
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+    if (!super.equals(obj)) {
+      return false;
+    }
+
+    SlBoard slBoard = (SlBoard) obj;
+    return Objects.equals(snakes, slBoard.snakes) &&
+        Objects.equals(ladders, slBoard.ladders);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), snakes, ladders);
   }
 }
