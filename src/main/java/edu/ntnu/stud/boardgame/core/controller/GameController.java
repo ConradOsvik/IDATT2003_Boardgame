@@ -28,7 +28,8 @@ public abstract class GameController extends BaseController {
     BoardGame oldGame = this.boardGame;
     this.boardGame = newGame;
 
-    if (newGame != oldGame) {
+    if (oldGame == null || (newGame.getBoard() != oldGame.getBoard()
+        || oldGame.getDice() != newGame.getDice())) {
       newGame.addObservers(observers);
       newGame.init();
     }
