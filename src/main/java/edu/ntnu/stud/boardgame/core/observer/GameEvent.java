@@ -6,6 +6,7 @@ public abstract class GameEvent {
     GAME_CREATED,
     GAME_RESET,
     GAME_STARTED,
+    GAME_RESTARTED,
     GAME_ENDED,
 
     TURN_CHANGED,
