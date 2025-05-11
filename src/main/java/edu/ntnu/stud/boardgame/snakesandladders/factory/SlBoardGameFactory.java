@@ -11,6 +11,18 @@ public class SlBoardGameFactory implements BoardGameFactory {
     boardGame.createBoard();
     boardGame.createDice(1);
 
+    return setupClassicGame(boardGame);
+  }
+
+  public static SlBoardGame createDiceGame() {
+    SlBoardGame boardGame = new SlBoardGame();
+    boardGame.createBoard();
+    boardGame.createDice(2);
+
+    return setupClassicGame(boardGame);
+  }
+
+  private static SlBoardGame setupClassicGame(SlBoardGame boardGame) {
     SlBoard board = boardGame.getBoard();
     board.addLadder(1, 40);
     board.addLadder(8, 10);
