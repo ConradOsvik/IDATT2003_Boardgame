@@ -1,8 +1,8 @@
 package edu.ntnu.stud.boardgame.snakesandladders.factory;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlBoard;
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlBoardGame;
@@ -17,7 +17,7 @@ class SlBoardGameFactoryTest {
 
     assertNotNull(game);
     assertNotNull(game.getBoard());
-    assertTrue(game.getBoard() instanceof SlBoard);
+    assertInstanceOf(SlBoard.class, game.getBoard());
 
     assertFalse(board.getLadders().isEmpty());
     assertFalse(board.getSnakes().isEmpty());
