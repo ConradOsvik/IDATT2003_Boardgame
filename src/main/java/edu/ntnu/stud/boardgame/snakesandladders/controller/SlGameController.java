@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 import javafx.scene.Node;
-import javafx.scene.paint.Color;
 
 public class SlGameController extends GameController {
 
@@ -39,24 +38,20 @@ public class SlGameController extends GameController {
     currentPlayerIndex = 0;
   }
 
-  public void addPlayer(String name, Color color) {
+  public void addPlayer(String name, int tokenId) {
     validateGameInitialized();
 
     if (name == null || name.trim().isEmpty()) {
       throw new IllegalArgumentException("Player name cannot be null or empty");
     }
 
-    if (color == null) {
-      throw new IllegalArgumentException("Player color cannot be null");
-    }
-
-    SlPlayer player = new SlPlayer(name, color);
+    SlPlayer player = new SlPlayer(name, tokenId);
     boardGame.addPlayer(player);
   }
 
   public void startGame() {
     validateGameInitialized();
-    boardGame.startGame();
+    boardGame.start();
     currentPlayerIndex = 0;
 
     if (boardGame.getPlayers().isEmpty()) {
@@ -70,6 +65,12 @@ public class SlGameController extends GameController {
       GameEvent turnEvent = new TurnChangedEvent(currentPlayer);
       boardGame.notifyObservers(turnEvent);
     }
+  }
+
+  public void restartGame() {
+    validateGameInitialized();
+    boardGame.restart();
+    currentPlayerIndex = 0;
   }
 
   public void rollDiceAndTakeTurn() {
