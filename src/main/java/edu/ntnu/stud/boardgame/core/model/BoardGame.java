@@ -1,7 +1,6 @@
 package edu.ntnu.stud.boardgame.core.model;
 
 import edu.ntnu.stud.boardgame.core.exception.GameNotInitializedException;
-import edu.ntnu.stud.boardgame.core.exception.GameOverException;
 import edu.ntnu.stud.boardgame.core.exception.IllegalGameStateException;
 import edu.ntnu.stud.boardgame.core.exception.InvalidPlayerException;
 import edu.ntnu.stud.boardgame.core.observer.BoardGameObservable;
@@ -24,7 +23,7 @@ import java.util.logging.Logger;
  * Interface representing a board game. Provides methods for game management, player interactions,
  * and game state control.
  */
-public abstract class BoardGame implements BoardGameObservable {
+public abstract class BoardGame extends BaseModel implements BoardGameObservable {
 
   private static final Logger LOGGER = Logger.getLogger(BoardGame.class.getName());
   protected final List<Player> players = new ArrayList<>();
@@ -33,10 +32,19 @@ public abstract class BoardGame implements BoardGameObservable {
   protected Dice dice;
   protected Player winner;
   protected boolean finished = false;
+  protected int currentPlayerIndex = 0;
 
   public void init() {
     GameEvent event = new GameCreatedEvent(board);
     notifyObservers(event);
+  }
+
+  public void notifyObservers(GameEvent event) {
+    LOGGER.info(
+        "Notifying " + observers.size() + " observers about event: " + event.getEventType());
+    for (BoardGameObserver observer : observers) {
+      observer.onGameEvent(event);
+    }
   }
 
   public abstract void createBoard();
@@ -66,10 +74,6 @@ public abstract class BoardGame implements BoardGameObservable {
     notifyObservers(event);
   }
 
-  public List<Player> getPlayers() {
-    return Collections.unmodifiableList(players);
-  }
-
   public Board getBoard() {
     return board;
   }
@@ -78,32 +82,28 @@ public abstract class BoardGame implements BoardGameObservable {
     return dice;
   }
 
+  public void playCurrentTurn() {
+    Player currentPlayer = getCurrentPlayer();
+    if (currentPlayer == null) {
+      throw new IllegalGameStateException("No current player to take a turn");
+    }
+
+    playTurn(currentPlayer);
+  }
+
+  protected Player getCurrentPlayer() {
+    if (players.isEmpty()) {
+      throw new IllegalGameStateException("No players in the game");
+    }
+
+    if (currentPlayerIndex >= players.size()) {
+      currentPlayerIndex = 0;
+    }
+
+    return players.get(currentPlayerIndex);
+  }
+
   public abstract void playTurn(Player player);
-
-  public void playOneRound() {
-    if (isFinished()) {
-      throw new GameOverException("Game is already finished");
-    }
-
-    for (Player player : players) {
-      if (isFinished()) {
-        break;
-      }
-      playTurn(player);
-    }
-  }
-
-  public void play() {
-    if (players.isEmpty() || dice == null || board == null) {
-      throw new GameNotInitializedException("Game not properly initialized");
-    }
-
-    start();
-
-    while (!isFinished()) {
-      playOneRound();
-    }
-  }
 
   public int rollDice() {
     if (dice == null) {
@@ -144,6 +144,7 @@ public abstract class BoardGame implements BoardGameObservable {
     this.players.clear();
     this.winner = null;
     this.finished = false;
+    this.currentPlayerIndex = 0;
 
     GameEvent event = new GameResetEvent(board);
     notifyObservers(event);
@@ -152,6 +153,7 @@ public abstract class BoardGame implements BoardGameObservable {
   public void restart() {
     this.winner = null;
     this.finished = false;
+    this.currentPlayerIndex = 0;
 
     for (Player player : players) {
       player.setStartingTile(board.getStartingTile());
@@ -159,6 +161,12 @@ public abstract class BoardGame implements BoardGameObservable {
 
     GameEvent event = new GameRestartedEvent();
     notifyObservers(event);
+  }
+
+  public void addObservers(List<BoardGameObserver> observers) {
+    for (BoardGameObserver observer : observers) {
+      addObserver(observer);
+    }
   }
 
   public void addObserver(BoardGameObserver observer) {
@@ -169,22 +177,8 @@ public abstract class BoardGame implements BoardGameObservable {
     }
   }
 
-  public void addObservers(List<BoardGameObserver> observers) {
-    for (BoardGameObserver observer : observers) {
-      addObserver(observer);
-    }
-  }
-
   public void removeObserver(BoardGameObserver observer) {
     observers.remove(observer);
-  }
-
-  public void notifyObservers(GameEvent event) {
-    LOGGER.info(
-        "Notifying " + observers.size() + " observers about event: " + event.getEventType());
-    for (BoardGameObserver observer : observers) {
-      observer.onGameEvent(event);
-    }
   }
 
   @Override
@@ -210,6 +204,10 @@ public abstract class BoardGame implements BoardGameObservable {
       return false;
     }
     return Objects.equals(winner, other.winner);
+  }
+
+  public List<Player> getPlayers() {
+    return Collections.unmodifiableList(players);
   }
 
   @Override

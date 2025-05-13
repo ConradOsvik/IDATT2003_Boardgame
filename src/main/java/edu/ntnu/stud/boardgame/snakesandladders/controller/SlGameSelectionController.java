@@ -11,7 +11,6 @@ public class SlGameSelectionController extends BaseController {
   public SlGameSelectionController() {
     super();
     this.view = new SlGameSelectionView(this);
-    view.render();
   }
 
   @Override

@@ -11,9 +11,8 @@ import java.util.logging.Logger;
 public abstract class GameController extends BaseController {
 
   protected final static Logger LOGGER = Logger.getLogger(GameController.class.getName());
-
-  protected BoardGame boardGame;
   private final List<BoardGameObserver> observers;
+  protected BoardGame boardGame;
 
   public GameController() {
     super();
@@ -32,6 +31,8 @@ public abstract class GameController extends BaseController {
         || oldGame.getDice() != newGame.getDice())) {
       newGame.addObservers(observers);
       newGame.init();
+
+      observers.forEach(BoardGameObserver::init);
     }
   }
 

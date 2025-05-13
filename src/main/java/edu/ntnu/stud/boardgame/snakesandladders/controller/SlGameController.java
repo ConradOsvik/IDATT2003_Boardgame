@@ -1,16 +1,8 @@
 package edu.ntnu.stud.boardgame.snakesandladders.controller;
 
 import edu.ntnu.stud.boardgame.core.controller.GameController;
-import edu.ntnu.stud.boardgame.core.exception.GameOverException;
-import edu.ntnu.stud.boardgame.core.exception.IllegalGameStateException;
-import edu.ntnu.stud.boardgame.core.exception.InvalidPlayerException;
-import edu.ntnu.stud.boardgame.core.model.Player;
-import edu.ntnu.stud.boardgame.core.observer.GameEvent;
-import edu.ntnu.stud.boardgame.core.observer.events.TurnChangedEvent;
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlPlayer;
 import edu.ntnu.stud.boardgame.snakesandladders.view.SlGameView;
-import java.util.List;
-import java.util.Optional;
 import java.util.logging.Logger;
 import javafx.scene.Node;
 
@@ -19,8 +11,6 @@ public class SlGameController extends GameController {
   private static final Logger LOGGER = Logger.getLogger(SlGameController.class.getName());
 
   private final SlGameView view;
-
-  private int currentPlayerIndex = 0;
 
   public SlGameController() {
     super();
@@ -32,85 +22,68 @@ public class SlGameController extends GameController {
     return view.getNode();
   }
 
-  public void createNewGame() {
-    validateGameInitialized();
-    boardGame.reset();
-    currentPlayerIndex = 0;
-  }
-
-  public void addPlayer(String name, int tokenId) {
-    validateGameInitialized();
-
-    if (name == null || name.trim().isEmpty()) {
-      throw new IllegalArgumentException("Player name cannot be null or empty");
-    }
-
-    SlPlayer player = new SlPlayer(name, tokenId);
-    boardGame.addPlayer(player);
-  }
-
-  public void startGame() {
-    validateGameInitialized();
-    boardGame.start();
-    currentPlayerIndex = 0;
-
-    if (boardGame.getPlayers().isEmpty()) {
-      throw new InvalidPlayerException("No players have been added");
-    }
-
-    SlPlayer currentPlayer = getCurrentPlayer().orElseThrow(
-        () -> new IllegalGameStateException("No current player available"));
-
-    if (currentPlayer != null) {
-      GameEvent turnEvent = new TurnChangedEvent(currentPlayer);
-      boardGame.notifyObservers(turnEvent);
+  public boolean resetGame() {
+    try {
+      validateGameInitialized();
+      boardGame.reset();
+      return true;
+    } catch (Exception e) {
+      LOGGER.severe("Failed to reset game: " + e.getMessage());
+      errorDialog.showError("An error occurred", "Failed to reset game: " + e.getMessage());
+      return false;
     }
   }
 
-  public void restartGame() {
-    validateGameInitialized();
-    boardGame.restart();
-    currentPlayerIndex = 0;
-  }
-
-  public void rollDiceAndTakeTurn() {
-    validateGameInitialized();
-
-    if (boardGame.isFinished()) {
-      throw new GameOverException("Game is already finished");
-    }
-
-    SlPlayer currentPlayer = getCurrentPlayer().orElseThrow(
-        () -> new IllegalGameStateException("No current player available"));
-
-    boardGame.playTurn(currentPlayer);
-
-    if (!boardGame.isFinished()) {
-      nextPlayer();
+  public boolean startGame() {
+    try {
+      validateGameInitialized();
+      boardGame.start();
+      return true;
+    } catch (Exception e) {
+      LOGGER.severe("Failed to start game: " + e.getMessage());
+      errorDialog.showError("An error occurred", "Failed to start game: " + e.getMessage());
+      return false;
     }
   }
 
-  private Optional<SlPlayer> getCurrentPlayer() {
-    validateGameInitialized();
-
-    List<Player> players = boardGame.getPlayers();
-    if (players.isEmpty()) {
-      return Optional.empty();
+  public boolean restartGame() {
+    try {
+      validateGameInitialized();
+      boardGame.restart();
+      return true;
+    } catch (Exception e) {
+      LOGGER.severe("Failed to restart game: " + e.getMessage());
+      errorDialog.showError("An error occurred", "Failed to restart game: " + e.getMessage());
+      return false;
     }
-
-    if (currentPlayerIndex >= players.size()) {
-      currentPlayerIndex = 0;
-    }
-
-    return Optional.of((SlPlayer) players.get(currentPlayerIndex));
   }
 
-  private void nextPlayer() {
-    validateGameInitialized();
+  public boolean addPlayer(String name, int tokenId) {
+    try {
+      validateGameInitialized();
+      if (name == null || name.trim().isEmpty()) {
+        throw new IllegalArgumentException("Player name cannot be null or empty");
+      }
+      SlPlayer player = new SlPlayer(name, tokenId);
+      boardGame.addPlayer(player);
+      return true;
+    } catch (Exception e) {
+      LOGGER.severe("Failed to add player: " + e.getMessage());
+      errorDialog.showError("An error occurred", "Failed to add player: " + e.getMessage());
+      return false;
+    }
+  }
 
-    List<Player> players = boardGame.getPlayers();
-    if (!players.isEmpty()) {
-      currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+  public boolean playCurrentTurn() {
+    try {
+      validateGameInitialized();
+      boardGame.playCurrentTurn();
+      return true;
+    } catch (Exception e) {
+      LOGGER.severe("Failed to play current turn: " + e.getMessage());
+      errorDialog.showError("An error occurred",
+          "Failed to roll dice and take turn: " + e.getMessage());
+      return false;
     }
   }
 }

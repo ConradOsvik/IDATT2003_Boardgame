@@ -30,6 +30,8 @@ public class SlGameSelectionView extends GridPane implements BaseView {
     availableGames.add(SlBoardGameFactory.createDiceGame());
 
     configureLayout();
+
+    render();
   }
 
   private void configureLayout() {
@@ -39,8 +41,7 @@ public class SlGameSelectionView extends GridPane implements BaseView {
     setAlignment(Pos.CENTER);
   }
 
-  @Override
-  public void render() {
+  private void render() {
     getChildren().clear();
 
     Label headerLabel = Label.builder().text("Select a Game").build();
@@ -117,5 +118,9 @@ public class SlGameSelectionView extends GridPane implements BaseView {
     VBox.setVgrow(placeholder, Priority.ALWAYS);
 
     return cell;
+  }
+
+  @Override
+  public void init() {
   }
 }

@@ -5,9 +5,12 @@ import edu.ntnu.stud.boardgame.core.observer.events.GameCreatedEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.GameResetEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.GameRestartedEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.PlayerAddedEvent;
+import edu.ntnu.stud.boardgame.core.observer.events.PlayerMovedEvent;
 import edu.ntnu.stud.boardgame.core.view.GameComponent;
 import edu.ntnu.stud.boardgame.snakesandladders.controller.SlGameController;
-import edu.ntnu.stud.boardgame.snakesandladders.events.SlPlayerMovedEvent;
+import edu.ntnu.stud.boardgame.snakesandladders.events.BounceBackEvent;
+import edu.ntnu.stud.boardgame.snakesandladders.events.LadderClimbedEvent;
+import edu.ntnu.stud.boardgame.snakesandladders.events.SnakeEncounteredEvent;
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlBoard;
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlPlayer;
 import edu.ntnu.stud.boardgame.snakesandladders.view.components.token.TokenManager;
@@ -17,7 +20,7 @@ public class BoardGame extends GameComponent<StackPane> {
 
   private final ResizableBoard resizableBoard;
   private final TokenManager tokenManager;
-  
+
   public BoardGame(SlGameController controller) {
     super(controller, new StackPane());
     this.resizableBoard = new ResizableBoard();
@@ -44,22 +47,6 @@ public class BoardGame extends GameComponent<StackPane> {
     tokenManager.prefHeightProperty().bind(this.getNode().heightProperty());
   }
 
-  private void updateTokenLayout() {
-    if (resizableBoard.getBoard() != null) {
-      tokenManager.updateLayout(
-          resizableBoard.getBoard(),
-          resizableBoard.getCurrentCellSize(),
-          resizableBoard.getCurrentPadding()
-      );
-    }
-  }
-
-  private void resetBoard(SlBoard newBoard) {
-    resizableBoard.setBoard(newBoard);
-    tokenManager.clear();
-    updateTokenLayout();
-  }
-
   @Override
   public void onGameEvent(GameEvent e) {
     switch (e) {
@@ -73,10 +60,35 @@ public class BoardGame extends GameComponent<StackPane> {
         tokenManager.addPlayer((SlPlayer) event.getPlayer());
         updateTokenLayout();
       }
-      case SlPlayerMovedEvent event -> {
+      case SnakeEncounteredEvent event -> {
+        tokenManager.playerMoved(event);
+      }
+      case LadderClimbedEvent event -> {
+        tokenManager.playerMoved(event);
+      }
+      case BounceBackEvent event -> {
+        tokenManager.playerMoved(event);
+      }
+      case PlayerMovedEvent event -> {
         tokenManager.playerMoved(event);
       }
       default -> { /* No action needed */ }
+    }
+  }
+
+  private void resetBoard(SlBoard newBoard) {
+    resizableBoard.setBoard(newBoard);
+    tokenManager.clear();
+    updateTokenLayout();
+  }
+
+  private void updateTokenLayout() {
+    if (resizableBoard.getBoard() != null) {
+      tokenManager.updateLayout(
+          resizableBoard.getBoard(),
+          resizableBoard.getCurrentCellSize(),
+          resizableBoard.getCurrentPadding()
+      );
     }
   }
 }
