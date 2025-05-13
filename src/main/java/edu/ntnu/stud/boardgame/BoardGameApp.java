@@ -4,9 +4,8 @@ import edu.ntnu.stud.boardgame.core.navigation.BoardGameViewControllerFactory;
 import edu.ntnu.stud.boardgame.core.navigation.Navigator;
 import edu.ntnu.stud.boardgame.core.navigation.ViewControllerFactory.ViewName;
 import edu.ntnu.stud.boardgame.core.util.StyleManager;
+import edu.ntnu.stud.boardgame.core.view.component.ErrorDialog;
 import edu.ntnu.stud.boardgame.core.view.ui.Button;
-import edu.ntnu.stud.boardgame.core.view.ui.Label;
-import edu.ntnu.stud.boardgame.core.view.ui.Modal;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.ToolBar;
@@ -15,6 +14,10 @@ import javafx.stage.Stage;
 
 public class BoardGameApp extends Application {
 
+  public static void main(String[] args) {
+    launch(args);
+  }
+
   @Override
   public void start(Stage primaryStage) {
     BorderPane mainContainer = new BorderPane();
@@ -22,6 +25,9 @@ public class BoardGameApp extends Application {
     Scene scene = new Scene(mainContainer, 900, 650);
 
     StyleManager.initializeBaseStyles(scene);
+
+    ErrorDialog errorDialog = ErrorDialog.getInstance();
+    errorDialog.initialize(primaryStage);
 
     Navigator navigator = Navigator.getInstance();
     navigator.setMainContainer(mainContainer);
@@ -52,27 +58,11 @@ public class BoardGameApp extends Application {
       System.exit(0);
     }).build();
 
-    Label content = Label.builder()
-        .text("This is a modal dialog")
-        .fontSize("lg")
-        .build();
+    Button error = Button.builder().text("Error")
+        .onAction(e -> ErrorDialog.getInstance().showError("test", "error")).build();
 
-    Modal confirmDialog = Modal.builder()
-        .title("Confirm Action")
-        .description("Are you sure you want to proceed?")
-        .owner(primaryStage)
-        .content(content)
-        .addCancelButton("Cancel", null)
-        .build();
-
-    Button modal = Button.builder().text("Modal").onAction(e -> confirmDialog.show()).build();
-
-    toolBar.getItems().addAll(goBack, exit, modal);
+    toolBar.getItems().addAll(goBack, exit, error);
 
     return toolBar;
-  }
-
-  public static void main(String[] args) {
-    launch(args);
   }
 }
