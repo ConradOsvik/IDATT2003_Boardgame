@@ -1,7 +1,10 @@
 package edu.ntnu.stud.boardgame.snakesandladders.view.components.token;
 
 import edu.ntnu.stud.boardgame.core.model.Tile;
-import edu.ntnu.stud.boardgame.snakesandladders.events.SlPlayerMovedEvent;
+import edu.ntnu.stud.boardgame.core.observer.events.PlayerMovedEvent;
+import edu.ntnu.stud.boardgame.snakesandladders.events.BounceBackEvent;
+import edu.ntnu.stud.boardgame.snakesandladders.events.LadderClimbedEvent;
+import edu.ntnu.stud.boardgame.snakesandladders.events.SnakeEncounteredEvent;
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlBoard;
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlPlayer;
 import java.util.HashMap;
@@ -65,16 +68,14 @@ public class TokenManager extends Pane {
     return "token_" + playerNumber;
   }
 
-  public void playerMoved(SlPlayerMovedEvent event) {
+  public void playerMoved(PlayerMovedEvent event) {
     if (board == null) {
       return;
     }
 
-    SlPlayer player = event.getPlayer();
+    SlPlayer player = (SlPlayer) event.getPlayer();
     Tile fromTile = event.getFromTile();
     Tile toTile = event.getToTile();
-    boolean isSnakeMove = event.isSnakeMove();
-    boolean isLadderMove = event.isLadderMove();
 
     PlayerToken token = playerTokens.get(player);
     if (token == null || toTile == null) {
@@ -87,17 +88,17 @@ public class TokenManager extends Pane {
       return;
     }
 
-    if (fromTile.getTileId() == SlBoard.NUM_TILES && toTile.getTileId() < SlBoard.NUM_TILES) {
-      token.animateBounceBackMove(fromTile.getTileId(), toTile.getTileId(),
-          board, cellSize, padding);
-    } else if (isSnakeMove) {
-      token.animateSnakeMove(fromTile.getTileId(), toTile.getTileId(),
-          board, cellSize, padding);
-    } else if (isLadderMove) {
-      token.animateLadderMove(fromTile.getTileId(), toTile.getTileId(),
-          board, cellSize, padding);
-    } else {
-      token.animateRegularMove(fromTile.getTileId(), toTile.getTileId(),
+    switch (event) {
+      case BounceBackEvent bounceBackEvent ->
+          token.animateBounceBackMove(fromTile.getTileId(), toTile.getTileId(),
+              board, cellSize, padding);
+      case SnakeEncounteredEvent snakeEncounteredEvent ->
+          token.animateSnakeMove(fromTile.getTileId(), toTile.getTileId(),
+              board, cellSize, padding);
+      case LadderClimbedEvent ladderClimbedEvent ->
+          token.animateLadderMove(fromTile.getTileId(), toTile.getTileId(),
+              board, cellSize, padding);
+      default -> token.animateRegularMove(fromTile.getTileId(), toTile.getTileId(),
           board, cellSize, padding);
     }
   }
