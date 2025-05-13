@@ -16,10 +16,7 @@ import edu.ntnu.stud.boardgame.core.view.ui.Label;
 import edu.ntnu.stud.boardgame.core.view.ui.Panel;
 import edu.ntnu.stud.boardgame.snakesandladders.controller.SlGameController;
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlPlayer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 
 public class ControlPanel extends GameComponent<Panel> {
 
@@ -97,55 +94,32 @@ public class ControlPanel extends GameComponent<Panel> {
   }
 
   private void newGameButtonHandler() {
-    try {
-      controller.createNewGame();
+    boolean success = controller.resetGame();
+    if (success) {
       startGameButton.setDisable(true);
       rollDiceButton.setDisable(true);
-    } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, "Error creating new game", e);
-      showAlert("Error creating new game: " + e.getMessage(), AlertType.ERROR);
     }
   }
 
   private void startGameButtonHandler() {
-    try {
-      controller.startGame();
-      // Change button to "Restart Game" after starting
+    boolean success = controller.startGame();
+    if (success) {
       startGameButton.setText("Restart Game");
       startGameButton.setDisable(false);
       startGameButton.getStyleClass().setAll("button", "danger");
-    } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, "Error starting game", e);
-      showAlert("Error starting game: " + e.getMessage(), AlertType.ERROR);
     }
   }
 
   private void restartGameButtonHandler() {
-    try {
-      controller.restartGame();
+    boolean success = controller.restartGame();
+    if (success) {
       statusLabel.setText("Status: Game restarted");
       rollDiceButton.setDisable(false);
-    } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, "Error restarting game", e);
-      showAlert("Error restarting game: " + e.getMessage(), AlertType.ERROR);
     }
   }
 
   private void rollDiceButtonHandler() {
-    try {
-      controller.rollDiceAndTakeTurn();
-    } catch (Exception e) {
-      LOGGER.log(Level.SEVERE, "Error rolling dice", e);
-      showAlert("Error rolling dice: " + e.getMessage(), AlertType.ERROR);
-    }
-  }
-
-  private void showAlert(String message, AlertType alertType) {
-    Alert alert = new Alert(alertType);
-    alert.setTitle(alertType.toString());
-    alert.setHeaderText(null);
-    alert.setContentText(message);
-    alert.showAndWait();
+    controller.playCurrentTurn();
   }
 
   @Override
