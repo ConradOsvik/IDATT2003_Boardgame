@@ -11,6 +11,7 @@ import edu.ntnu.stud.boardgame.core.observer.events.PlayerMovedEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.PlayerWonEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.TurnChangedEvent;
 import edu.ntnu.stud.boardgame.core.view.GameComponent;
+import edu.ntnu.stud.boardgame.core.view.component.ErrorDialog;
 import edu.ntnu.stud.boardgame.core.view.ui.Button;
 import edu.ntnu.stud.boardgame.core.view.ui.Label;
 import edu.ntnu.stud.boardgame.core.view.ui.Panel;
@@ -30,8 +31,8 @@ public class ControlPanel extends GameComponent<Panel> {
   private Button startGameButton;
   private Button rollDiceButton;
 
-  public ControlPanel(SlGameController controller) {
-    super(controller, new Panel());
+  public ControlPanel(SlGameController controller, ErrorDialog errorDialog) {
+    super(controller, new Panel(), errorDialog);
     this.controller = controller;
 
     setupComponents();

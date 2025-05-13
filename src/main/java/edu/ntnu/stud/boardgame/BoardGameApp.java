@@ -31,7 +31,7 @@ public class BoardGameApp extends Application {
 
     Navigator navigator = Navigator.getInstance();
     navigator.setMainContainer(mainContainer);
-    navigator.setViewControllerFactory(new BoardGameViewControllerFactory());
+    navigator.setViewControllerFactory(new BoardGameViewControllerFactory(navigator, errorDialog));
     navigator.setUseTransitions(true);
 
     navigator.navigateTo(ViewName.MAIN_MENU);

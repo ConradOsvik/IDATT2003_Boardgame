@@ -8,12 +8,11 @@ import edu.ntnu.stud.boardgame.core.view.component.ErrorDialog;
 public abstract class BaseController implements ViewController {
 
   protected final Navigator navigator;
-
   protected final ErrorDialog errorDialog;
 
-  public BaseController() {
-    this.navigator = Navigator.getInstance();
-    this.errorDialog = ErrorDialog.getInstance();
+  public BaseController(Navigator navigator, ErrorDialog errorDialog) {
+    this.navigator = navigator;
+    this.errorDialog = errorDialog;
   }
 
   public void init(Object... args) {

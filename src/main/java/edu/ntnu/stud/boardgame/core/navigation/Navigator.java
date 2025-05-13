@@ -13,17 +13,11 @@ import javafx.util.Duration;
 public class Navigator {
 
   private static final Logger logger = Logger.getLogger(Navigator.class.getName());
-
   private static Navigator instance;
-
-  private BorderPane mainContainer;
-
   private final Stack<ViewName> navigationHistory = new Stack<>();
-
   private final Map<ViewName, ViewController> viewControllerCache = new HashMap<>();
-
+  private BorderPane mainContainer;
   private ViewControllerFactory viewControllerFactory;
-
   private boolean useTransitions = true;
 
   private Navigator() {
@@ -81,6 +75,28 @@ public class Navigator {
     logger.info("Navigated to " + viewName);
   }
 
+  private ViewController getViewController(ViewName viewName) {
+    if (viewControllerCache.containsKey(viewName)) {
+      return viewControllerCache.get(viewName);
+    }
+
+    ViewController controller = viewControllerFactory.createViewController(viewName);
+    if (controller != null) {
+      viewControllerCache.put(viewName, controller);
+    }
+
+    return controller;
+  }
+
+  private void applyTransitions(Node newView) {
+    newView.setOpacity(0);
+
+    FadeTransition fadeIn = new FadeTransition(Duration.millis(500), newView);
+    fadeIn.setFromValue(0);
+    fadeIn.setToValue(1);
+    fadeIn.play();
+  }
+
   public boolean goBack(Object... args) {
     if (navigationHistory.size() <= 1) {
       logger.info("Already at the root view. Cannot go back.");
@@ -110,28 +126,6 @@ public class Navigator {
     logger.info("Navigated back to " + previousView);
 
     return true;
-  }
-
-  private ViewController getViewController(ViewName viewName) {
-    if (viewControllerCache.containsKey(viewName)) {
-      return viewControllerCache.get(viewName);
-    }
-
-    ViewController controller = viewControllerFactory.createViewController(viewName);
-    if (controller != null) {
-      viewControllerCache.put(viewName, controller);
-    }
-
-    return controller;
-  }
-
-  private void applyTransitions(Node newView) {
-    newView.setOpacity(0);
-
-    FadeTransition fadeIn = new FadeTransition(Duration.millis(500), newView);
-    fadeIn.setFromValue(0);
-    fadeIn.setToValue(1);
-    fadeIn.play();
   }
 
   public ViewName getCurrentView() {

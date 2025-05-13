@@ -1,6 +1,8 @@
 package edu.ntnu.stud.boardgame.snakesandladders.controller;
 
 import edu.ntnu.stud.boardgame.core.controller.GameController;
+import edu.ntnu.stud.boardgame.core.navigation.Navigator;
+import edu.ntnu.stud.boardgame.core.view.component.ErrorDialog;
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlPlayer;
 import edu.ntnu.stud.boardgame.snakesandladders.view.SlGameView;
 import java.util.logging.Logger;
@@ -9,12 +11,11 @@ import javafx.scene.Node;
 public class SlGameController extends GameController {
 
   private static final Logger LOGGER = Logger.getLogger(SlGameController.class.getName());
-
   private final SlGameView view;
 
-  public SlGameController() {
-    super();
-    this.view = new SlGameView(this);
+  public SlGameController(Navigator navigator, ErrorDialog errorDialog) {
+    super(navigator, errorDialog);
+    this.view = new SlGameView(this, errorDialog);
   }
 
   @Override

@@ -7,6 +7,7 @@ import edu.ntnu.stud.boardgame.core.observer.events.GameRestartedEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.PlayerAddedEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.PlayerMovedEvent;
 import edu.ntnu.stud.boardgame.core.view.GameComponent;
+import edu.ntnu.stud.boardgame.core.view.component.ErrorDialog;
 import edu.ntnu.stud.boardgame.snakesandladders.controller.SlGameController;
 import edu.ntnu.stud.boardgame.snakesandladders.events.BounceBackEvent;
 import edu.ntnu.stud.boardgame.snakesandladders.events.LadderClimbedEvent;
@@ -21,8 +22,8 @@ public class BoardGame extends GameComponent<StackPane> {
   private final ResizableBoard resizableBoard;
   private final TokenManager tokenManager;
 
-  public BoardGame(SlGameController controller) {
-    super(controller, new StackPane());
+  public BoardGame(SlGameController controller, ErrorDialog errorDialog) {
+    super(controller, new StackPane(), errorDialog);
     this.resizableBoard = new ResizableBoard();
     this.tokenManager = new TokenManager();
 

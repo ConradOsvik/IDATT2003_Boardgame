@@ -2,6 +2,7 @@ package edu.ntnu.stud.boardgame.snakesandladders.view;
 
 import edu.ntnu.stud.boardgame.core.observer.GameEvent;
 import edu.ntnu.stud.boardgame.core.view.GameComponent;
+import edu.ntnu.stud.boardgame.core.view.component.ErrorDialog;
 import edu.ntnu.stud.boardgame.snakesandladders.controller.SlGameController;
 import edu.ntnu.stud.boardgame.snakesandladders.view.components.ControlPanel;
 import edu.ntnu.stud.boardgame.snakesandladders.view.components.PlayerPanel;
@@ -13,11 +14,11 @@ import javafx.scene.layout.VBox;
 
 public class SlGameView extends GameComponent<HBox> {
 
-  public SlGameView(SlGameController controller) {
-    super(controller, new HBox());
-    PlayerPanel playerPanel = new PlayerPanel(controller);
-    ControlPanel controlPanel = new ControlPanel(controller);
-    BoardGame canvas = new BoardGame(controller);
+  public SlGameView(SlGameController controller, ErrorDialog errorDialog) {
+    super(controller, new HBox(), errorDialog);
+    PlayerPanel playerPanel = new PlayerPanel(controller, errorDialog);
+    ControlPanel controlPanel = new ControlPanel(controller, errorDialog);
+    BoardGame canvas = new BoardGame(controller, errorDialog);
     HBox.setHgrow(canvas.getNode(), Priority.ALWAYS);
 
     getNode().setPadding(new Insets(10));

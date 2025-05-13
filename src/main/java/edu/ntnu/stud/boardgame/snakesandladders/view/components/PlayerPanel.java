@@ -6,6 +6,7 @@ import edu.ntnu.stud.boardgame.core.observer.events.GameResetEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.GameStartedEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.PlayerAddedEvent;
 import edu.ntnu.stud.boardgame.core.view.GameComponent;
+import edu.ntnu.stud.boardgame.core.view.component.ErrorDialog;
 import edu.ntnu.stud.boardgame.core.view.ui.Button;
 import edu.ntnu.stud.boardgame.core.view.ui.ComboBox;
 import edu.ntnu.stud.boardgame.core.view.ui.Label;
@@ -39,8 +40,8 @@ public class PlayerPanel extends GameComponent<Panel> {
   private ComboBox<TokenOption> tokenComboBox;
   private Button addPlayerButton;
 
-  public PlayerPanel(SlGameController controller) {
-    super(controller, new Panel());
+  public PlayerPanel(SlGameController controller, ErrorDialog errorDialog) {
+    super(controller, new Panel(), errorDialog);
     this.controller = controller;
 
     Label titleLabel = Label.builder().text("Players").build();
@@ -58,49 +59,6 @@ public class PlayerPanel extends GameComponent<Panel> {
         tokenComboBox,
         addPlayerButton
     );
-  }
-
-  private static class TokenOption {
-
-    private final String tokenPath;
-    private final String tokenName;
-    private final int tokenId;
-
-    public TokenOption(int tokenId) {
-      this.tokenId = tokenId;
-      this.tokenPath = "/pieces/snakesandladders/" + tokenId + ".png";
-      this.tokenName = "Token " + tokenId;
-    }
-
-    public String getTokenPath() {
-      return tokenPath;
-    }
-
-    public int getTokenId() {
-      return tokenId;
-    }
-
-    @Override
-    public String toString() {
-      return tokenName;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-      if (this == o) {
-        return true;
-      }
-      if (o == null || getClass() != o.getClass()) {
-        return false;
-      }
-      TokenOption that = (TokenOption) o;
-      return tokenId == that.tokenId;
-    }
-
-    @Override
-    public int hashCode() {
-      return Integer.hashCode(tokenId);
-    }
   }
 
   private void setupAddPlayerControls() {
@@ -260,6 +218,49 @@ public class PlayerPanel extends GameComponent<Panel> {
       }
       default -> {
       }
+    }
+  }
+
+  private static class TokenOption {
+
+    private final String tokenPath;
+    private final String tokenName;
+    private final int tokenId;
+
+    public TokenOption(int tokenId) {
+      this.tokenId = tokenId;
+      this.tokenPath = "/pieces/snakesandladders/" + tokenId + ".png";
+      this.tokenName = "Token " + tokenId;
+    }
+
+    public String getTokenPath() {
+      return tokenPath;
+    }
+
+    public int getTokenId() {
+      return tokenId;
+    }
+
+    @Override
+    public String toString() {
+      return tokenName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      TokenOption that = (TokenOption) o;
+      return tokenId == that.tokenId;
+    }
+
+    @Override
+    public int hashCode() {
+      return Integer.hashCode(tokenId);
     }
   }
 }
