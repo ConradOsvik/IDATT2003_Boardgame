@@ -12,6 +12,7 @@ import edu.ntnu.stud.boardgame.core.observer.events.GameResetEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.GameRestartedEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.GameStartedEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.PlayerAddedEvent;
+import edu.ntnu.stud.boardgame.core.observer.events.TurnChangedEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -89,6 +90,8 @@ public abstract class BoardGame extends BaseModel implements BoardGameObservable
     }
 
     playTurn(currentPlayer);
+
+    currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
   }
 
   protected Player getCurrentPlayer() {
@@ -104,6 +107,12 @@ public abstract class BoardGame extends BaseModel implements BoardGameObservable
   }
 
   public abstract void playTurn(Player player);
+
+  protected Player getNextPlayer() {
+    int currentPlayerIndex = players.indexOf(getCurrentPlayer());
+    int nextPlayerIndex = (currentPlayerIndex + 1) % players.size();
+    return players.get(nextPlayerIndex);
+  }
 
   public int rollDice() {
     if (dice == null) {
@@ -138,6 +147,10 @@ public abstract class BoardGame extends BaseModel implements BoardGameObservable
 
     GameEvent startEvent = new GameStartedEvent(players);
     notifyObservers(startEvent);
+
+    Player firstPlayer = players.getFirst();
+    GameEvent turnEvent = new TurnChangedEvent(firstPlayer);
+    notifyObservers(turnEvent);
   }
 
   public void reset() {

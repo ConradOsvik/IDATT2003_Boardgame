@@ -9,9 +9,9 @@ import edu.ntnu.stud.boardgame.core.observer.GameEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.GameEndedEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.PlayerMovedEvent;
 import edu.ntnu.stud.boardgame.core.observer.events.PlayerWonEvent;
+import edu.ntnu.stud.boardgame.core.observer.events.TurnChangedEvent;
 import edu.ntnu.stud.boardgame.snakesandladders.events.BounceBackEvent;
 import edu.ntnu.stud.boardgame.snakesandladders.events.LadderClimbedEvent;
-import edu.ntnu.stud.boardgame.snakesandladders.events.SlTurnChangedEvent;
 import edu.ntnu.stud.boardgame.snakesandladders.events.SnakeEncounteredEvent;
 import java.util.logging.Logger;
 
@@ -38,7 +38,6 @@ public class SlBoardGame extends BoardGame {
   @Override
   public void playTurn(Player player) {
     validatePlayerAndGameState(player);
-    notifyTurnChanged(player);
 
     int steps = rollDice();
     Tile previousTile = player.getCurrentTile();
@@ -52,6 +51,14 @@ public class SlBoardGame extends BoardGame {
     }
 
     checkWinCondition(player);
+
+    if (!isFinished()) {
+      Player nextPlayer = getNextPlayer();
+      if (nextPlayer != null) {
+        GameEvent turnEvent = new TurnChangedEvent(nextPlayer);
+        notifyObservers(turnEvent);
+      }
+    }
   }
 
   private void validatePlayerAndGameState(Player player) {
@@ -64,13 +71,8 @@ public class SlBoardGame extends BoardGame {
     }
   }
 
-  private void notifyTurnChanged(Player player) {
-    GameEvent turnEvent = new SlTurnChangedEvent((SlPlayer) player);
-    notifyObservers(turnEvent);
-  }
-
   private boolean isBounceBackMove(int rawDestination) {
-    return rawDestination > SlBoard.NUM_TILES;
+    return rawDestination > getBoard().getNumTiles();
   }
 
   private void handleBounceBackMove(Player player, Tile previousTile, int steps,
@@ -79,7 +81,7 @@ public class SlBoardGame extends BoardGame {
     int actualDestination = calculateBounceBackDestination(rawDestination);
 
     // Animate to final tile
-    Tile finalTile = slBoard.getTile(SlBoard.NUM_TILES);
+    Tile finalTile = slBoard.getTile(slBoard.getNumTiles());
     notifyMoveToFinalTile(player, previousTile, finalTile, steps);
 
     // Handle bounce back
@@ -94,7 +96,6 @@ public class SlBoardGame extends BoardGame {
   private void handleRegularMove(Player player, Tile previousTile, int steps, int rawDestination) {
     player.move(steps);
     Tile currentTile = player.getCurrentTile();
-    SlBoard slBoard = getBoard();
 
     if (rawDestination != currentTile.getTileId()) {
       handleSpecialTileMove(player, previousTile, steps, rawDestination, currentTile);
@@ -118,18 +119,18 @@ public class SlBoardGame extends BoardGame {
   }
 
   private int calculateBounceBackDestination(int rawDestination) {
-    return SlBoard.NUM_TILES - (rawDestination - SlBoard.NUM_TILES);
+    return getBoard().getNumTiles() - (rawDestination - getBoard().getNumTiles());
   }
 
   private void notifyMoveToFinalTile(Player player, Tile previousTile, Tile finalTile, int steps) {
-    GameEvent moveToFinalEvent = new PlayerMovedEvent(
-        player, previousTile, finalTile, steps, getBoard());
+    GameEvent moveToFinalEvent = new PlayerMovedEvent(player, previousTile, finalTile, steps,
+        getBoard());
     notifyObservers(moveToFinalEvent);
   }
 
   private void notifyBounceBackMove(Player player, Tile finalTile, Tile bounceDestination) {
-    GameEvent bounceBackEvent = new BounceBackEvent(
-        player, finalTile, bounceDestination, 0, getBoard());
+    GameEvent bounceBackEvent = new BounceBackEvent(player, finalTile, bounceDestination, 0,
+        getBoard());
     notifyObservers(bounceBackEvent);
   }
 
@@ -155,34 +156,33 @@ public class SlBoardGame extends BoardGame {
   }
 
   private void handleSpecialTileMove(Player player, Tile previousTile, int steps,
-      int rawDestination,
-      Tile currentTile) {
+      int rawDestination, Tile currentTile) {
     SlBoard slBoard = getBoard();
     Tile intermediateTile = slBoard.getTile(rawDestination);
 
-    GameEvent intermediateMoveEvent = new PlayerMovedEvent(
-        player, previousTile, intermediateTile, steps, slBoard);
+    GameEvent intermediateMoveEvent = new PlayerMovedEvent(player, previousTile, intermediateTile,
+        steps, slBoard);
     notifyObservers(intermediateMoveEvent);
 
     boolean isSnake = currentTile.getTileId() < rawDestination;
     boolean isLadder = currentTile.getTileId() > rawDestination;
 
     if (isSnake) {
-      GameEvent snakeEvent = new SnakeEncounteredEvent(
-          player, intermediateTile, currentTile, steps, slBoard);
+      GameEvent snakeEvent = new SnakeEncounteredEvent(player, intermediateTile, currentTile, steps,
+          slBoard);
       notifyObservers(snakeEvent);
     }
 
     if (isLadder) {
-      GameEvent ladderEvent = new LadderClimbedEvent(
-          player, intermediateTile, currentTile, steps, slBoard);
+      GameEvent ladderEvent = new LadderClimbedEvent(player, intermediateTile, currentTile, steps,
+          slBoard);
       notifyObservers(ladderEvent);
     }
   }
 
   private void notifyRegularMove(Player player, Tile previousTile, Tile currentTile, int steps) {
-    GameEvent moveEvent = new PlayerMovedEvent(
-        player, previousTile, currentTile, steps, getBoard());
+    GameEvent moveEvent = new PlayerMovedEvent(player, previousTile, currentTile, steps,
+        getBoard());
     notifyObservers(moveEvent);
   }
 
@@ -192,5 +192,10 @@ public class SlBoardGame extends BoardGame {
 
     GameEvent endEvent = new GameEndedEvent(player);
     notifyObservers(endEvent);
+  }
+
+  private void notifyTurnChanged(Player player) {
+    GameEvent turnEvent = new TurnChangedEvent(player);
+    notifyObservers(turnEvent);
   }
 }

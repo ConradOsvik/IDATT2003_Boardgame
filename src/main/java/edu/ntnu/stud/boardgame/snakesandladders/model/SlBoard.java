@@ -14,17 +14,21 @@ import java.util.Objects;
  */
 public class SlBoard extends Board {
 
-  public static final int BOARD_ROWS = 10;
-  public static final int BOARD_COLUMNS = 9;
-  public static final int NUM_TILES = BOARD_ROWS * BOARD_COLUMNS;
+  private final int rows;
+  private final int columns;
+  private final int numTiles;
 
   private final Map<Integer, Integer> snakes;
   private final Map<Integer, Integer> ladders;
 
-  /**
-   * Constructs a new Snakes and Ladders board.
-   */
   public SlBoard() {
+    this(10, 9);
+  }
+
+  public SlBoard(int rows, int columns) {
+    this.rows = rows;
+    this.columns = columns;
+    this.numTiles = rows * columns;
     this.tiles = new HashMap<>();
     this.snakes = new HashMap<>();
     this.ladders = new HashMap<>();
@@ -35,19 +39,18 @@ public class SlBoard extends Board {
    */
   @Override
   public void initializeBoard() {
-
     Tile startingTile = new Tile(0);
     tiles.put(0, startingTile);
 
-    for (int row = 0; row < BOARD_ROWS; row++) {
-      for (int col = 0; col < BOARD_COLUMNS; col++) {
-        int tileId = row * BOARD_COLUMNS + col + 1;
+    for (int row = 0; row < rows; row++) {
+      for (int col = 0; col < columns; col++) {
+        int tileId = row * columns + col + 1;
         Tile tile = new Tile(tileId);
         tiles.put(tileId, tile);
       }
     }
 
-    for (int i = 0; i < NUM_TILES; i++) {
+    for (int i = 0; i < numTiles; i++) {
       Tile currentTile = tiles.get(i);
       Tile nextTile = tiles.get(i + 1);
       currentTile.addConnectedTile(nextTile);
@@ -104,7 +107,7 @@ public class SlBoard extends Board {
    */
   @Override
   public boolean isLastTile(Tile tile) {
-    return tile != null && tile.getTileId() == NUM_TILES;
+    return tile != null && tile.getTileId() == numTiles;
   }
 
   /**
@@ -131,7 +134,7 @@ public class SlBoard extends Board {
    * @return The number of rows
    */
   public int getRows() {
-    return BOARD_ROWS;
+    return rows;
   }
 
   /**
@@ -140,7 +143,11 @@ public class SlBoard extends Board {
    * @return The number of columns
    */
   public int getColumns() {
-    return BOARD_COLUMNS;
+    return columns;
+  }
+
+  public int getNumTiles() {
+    return numTiles;
   }
 
   /**
@@ -155,19 +162,19 @@ public class SlBoard extends Board {
       throw new IllegalArgumentException("Tile 0 doesn't have coordinates");
     }
 
-    if (tileId < 1 || tileId > NUM_TILES) {
+    if (tileId < 1 || tileId > numTiles) {
       throw new IllegalArgumentException("Invalid tile ID: " + tileId);
     }
 
     int index = tileId - 1;
 
-    int row = BOARD_ROWS - 1 - (index / BOARD_COLUMNS);
+    int row = rows - 1 - (index / columns);
 
     int col;
-    if ((BOARD_ROWS - 1 - row) % 2 == 0) {
-      col = index % BOARD_COLUMNS;
+    if ((rows - 1 - row) % 2 == 0) {
+      col = index % columns;
     } else {
-      col = BOARD_COLUMNS - 1 - (index % BOARD_COLUMNS);
+      col = columns - 1 - (index % columns);
     }
 
     return new int[]{row, col};
@@ -186,8 +193,7 @@ public class SlBoard extends Board {
     }
 
     SlBoard slBoard = (SlBoard) obj;
-    return Objects.equals(snakes, slBoard.snakes) &&
-        Objects.equals(ladders, slBoard.ladders);
+    return Objects.equals(snakes, slBoard.snakes) && Objects.equals(ladders, slBoard.ladders);
   }
 
   @Override
