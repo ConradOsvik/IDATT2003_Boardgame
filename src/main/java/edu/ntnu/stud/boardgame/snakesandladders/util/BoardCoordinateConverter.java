@@ -6,12 +6,11 @@ public final class BoardCoordinateConverter {
   }
 
   public static int calculateTileIdFromCoordinates(int row, int col, int rows, int cols) {
-    row = rows - 1 - row;
-
-    if (row % 2 == 0) {
-      return row * cols + col + 1;
+    int rowFromBottom = rows - 1 - row;
+    if (rowFromBottom % 2 == 0) {
+      return rowFromBottom * cols + col + 1;
     } else {
-      return row * cols + (cols - col);
+      return rowFromBottom * cols + (cols - col);
     }
   }
 
@@ -21,17 +20,14 @@ public final class BoardCoordinateConverter {
     }
 
     int index = tileId - 1;
-
-    int row = index / cols;
+    int row = rows - 1 - (index / cols);
 
     int col;
-    if (row % 2 == 0) {
+    if ((rows - 1 - row) % 2 == 0) {
       col = index % cols;
     } else {
       col = cols - 1 - (index % cols);
     }
-
-    row = rows - 1 - row;
 
     return new int[]{row, col};
   }

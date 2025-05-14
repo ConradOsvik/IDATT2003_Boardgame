@@ -9,9 +9,6 @@ import edu.ntnu.stud.boardgame.core.observer.events.PlayerMovedEvent;
 import edu.ntnu.stud.boardgame.core.view.GameComponent;
 import edu.ntnu.stud.boardgame.core.view.component.ErrorDialog;
 import edu.ntnu.stud.boardgame.snakesandladders.controller.SlGameController;
-import edu.ntnu.stud.boardgame.snakesandladders.events.BounceBackEvent;
-import edu.ntnu.stud.boardgame.snakesandladders.events.LadderClimbedEvent;
-import edu.ntnu.stud.boardgame.snakesandladders.events.SnakeEncounteredEvent;
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlBoard;
 import edu.ntnu.stud.boardgame.snakesandladders.model.SlPlayer;
 import edu.ntnu.stud.boardgame.snakesandladders.view.components.token.TokenManager;
@@ -58,20 +55,11 @@ public class BoardGame extends GameComponent<StackPane> {
         updateTokenLayout();
       }
       case PlayerAddedEvent event -> {
-        tokenManager.addPlayer((SlPlayer) event.getPlayer());
+        tokenManager.addToken((SlPlayer) event.getPlayer());
         updateTokenLayout();
       }
-      case SnakeEncounteredEvent event -> {
-        tokenManager.playerMoved(event);
-      }
-      case LadderClimbedEvent event -> {
-        tokenManager.playerMoved(event);
-      }
-      case BounceBackEvent event -> {
-        tokenManager.playerMoved(event);
-      }
       case PlayerMovedEvent event -> {
-        tokenManager.playerMoved(event);
+        tokenManager.handlePlayerMovement(event);
       }
       default -> { /* No action needed */ }
     }
@@ -85,11 +73,8 @@ public class BoardGame extends GameComponent<StackPane> {
 
   private void updateTokenLayout() {
     if (resizableBoard.getBoard() != null) {
-      tokenManager.updateLayout(
-          resizableBoard.getBoard(),
-          resizableBoard.getCurrentCellSize(),
-          resizableBoard.getCurrentPadding()
-      );
+      tokenManager.updateLayout(resizableBoard.getBoard(), resizableBoard.getCurrentCellSize(),
+          resizableBoard.getCurrentPadding());
     }
   }
 }
