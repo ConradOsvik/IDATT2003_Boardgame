@@ -57,7 +57,6 @@ public abstract class BoardGame {
     winner = null;
 
     notifyObservers(new GameStartedEvent());
-    notifyObservers(new TurnChangedEvent());
   }
 
   protected void notifyObservers(GameEvent event) {
