@@ -1,5 +1,5 @@
 package edu.ntnu.stud.boardgame.factory;
 
-public interface BoardGameFactory {
+public class BoardGameFactory {
 
 }
