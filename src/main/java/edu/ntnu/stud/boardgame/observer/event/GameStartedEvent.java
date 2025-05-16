@@ -1,5 +1,10 @@
 package edu.ntnu.stud.boardgame.observer.event;
 
-public class GameStartedEvent {
+import edu.ntnu.stud.boardgame.observer.GameEvent;
 
+public class GameStartedEvent extends GameEvent {
+
+  public GameStartedEvent() {
+    super(EventType.GAME_STARTED);
+  }
 }
