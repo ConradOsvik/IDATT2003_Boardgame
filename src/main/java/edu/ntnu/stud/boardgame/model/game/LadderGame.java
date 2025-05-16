@@ -7,7 +7,7 @@ public class LadderGame extends BoardGame {
   }
 
   @Override
-  public void createBoard(String name, String description) {
+  public void createBoard() {
 
   }
 }
