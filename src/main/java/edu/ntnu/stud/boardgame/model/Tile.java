@@ -6,11 +6,15 @@ public class Tile {
 
   private final int tileId;
   private final TileAction landAction;
+  private final int row;
+  private final int column;
   private Tile nextTile;
 
-  public Tile(int tileId, TileAction landAction) {
+  public Tile(int tileId, TileAction landAction, int row, int column) {
     this.tileId = tileId;
     this.landAction = landAction;
+    this.row = row;
+    this.column = column;
   }
 
   public void landPlayer(Player player) {
@@ -29,5 +33,13 @@ public class Tile {
 
   public int getTileId() {
     return tileId;
+  }
+
+  public int getRow() {
+    return row;
+  }
+
+  public int getColumn() {
+    return column;
   }
 }

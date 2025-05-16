@@ -6,9 +6,13 @@ import java.util.Map;
 public class Board {
 
   private final Map<Integer, Tile> tiles;
+  private final int rows;
+  private final int columns;
 
-  public Board() {
+  public Board(int rows, int columns) {
     this.tiles = new HashMap<>();
+    this.rows = rows;
+    this.columns = columns;
   }
 
   public void addTile(Tile tile) {
