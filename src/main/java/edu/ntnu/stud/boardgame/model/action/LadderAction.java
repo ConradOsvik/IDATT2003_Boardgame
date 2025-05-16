@@ -5,12 +5,17 @@ import edu.ntnu.stud.boardgame.model.Tile;
 
 public class LadderAction implements TileAction {
 
-  private Tile destinationTile;
+  private final Tile destinationTile;
 
   public LadderAction(Tile destinationTile) {
     this.destinationTile = destinationTile;
   }
 
   public void perform(Player player) {
+    player.placeOnTile(destinationTile);
+  }
+
+  public Tile getDestinationTile() {
+    return destinationTile;
   }
 }
