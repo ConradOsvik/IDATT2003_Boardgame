@@ -28,7 +28,7 @@ public abstract class BoardGame {
     this.gameOver = false;
   }
 
-  public abstract void createBoard(String name, String description);
+  public abstract void createBoard();
 
   public void createDice(int numberOfDice) {
     this.dice = new Dice(numberOfDice);
