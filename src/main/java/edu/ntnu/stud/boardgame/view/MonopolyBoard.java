@@ -1,5 +1,5 @@
 package edu.ntnu.stud.boardgame.view;
 
-public class PlayerSetupView {
+public class MonopolyBoard {
 
 }
