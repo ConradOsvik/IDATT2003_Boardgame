@@ -43,4 +43,12 @@ public class Player {
   public boolean shouldSkipNextTurn() {
     return skipNextTurn;
   }
+
+  public String getName() {
+    return name;
+  }
+
+  public PieceType getPiece() {
+    return piece;
+  }
 }
