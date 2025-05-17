@@ -8,16 +8,15 @@ public abstract class GameEvent {
     this.type = type;
   }
 
-  public EventType getType() {
+  public EventType getEventType() {
     return type;
   }
 
   public enum EventType {
-    GAME_STARTED,
-    GAME_OVER,
-    PLAYER_ADDED,
-    PLAYER_MOVED,
-    TURN_CHANGED,
-    DICE_ROLLED
+    GAME_CREATED, GAME_STARTED, GAME_ENDED, GAME_RESET, GAME_RESTARTED,
+
+    TURN_CHANGED, DICE_ROLLED,
+
+    PLAYER_ADDED, PLAYER_MOVED, PLAYER_WON
   }
 }

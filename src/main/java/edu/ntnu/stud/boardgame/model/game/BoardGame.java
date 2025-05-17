@@ -59,12 +59,6 @@ public abstract class BoardGame {
     notifyObservers(new GameStartedEvent());
   }
 
-  protected void notifyObservers(GameEvent event) {
-    for (BoardGameObserver observer : observers) {
-      observer.onGameEvent(event);
-    }
-  }
-
   public abstract void playTurn();
 
   protected void nextTurn() {
@@ -84,9 +78,15 @@ public abstract class BoardGame {
     notifyObservers(new TurnChangedEvent());
   }
 
-  protected void registerObserver(BoardGameObserver observer) {
+  public void registerObserver(BoardGameObserver observer) {
     if (!observers.contains(observer)) {
       observers.add(observer);
+    }
+  }
+
+  protected void notifyObservers(GameEvent event) {
+    for (BoardGameObserver observer : observers) {
+      observer.onGameEvent(event);
     }
   }
 
