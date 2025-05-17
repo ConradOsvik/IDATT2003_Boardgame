@@ -16,9 +16,10 @@ public class Player {
 
   public void placeOnTile(Tile tile) {
     this.currentTile = tile;
+    tile.landPlayer(this);
   }
 
-  public void move(int steps) {
+  public Tile getDestinationTile(int steps) {
     if (steps < 0) {
       throw new IllegalArgumentException("Steps cannot be negative");
     }
@@ -27,13 +28,18 @@ public class Player {
 
     for (int i = 0; i < steps; i++) {
       Tile nextTile = targetTile.getNextTile();
-
       if (nextTile == null) {
         break;
       }
-
       targetTile = nextTile;
     }
+
+    return targetTile;
+  }
+
+  public void move(int steps) {
+    Tile targetTile = getDestinationTile(steps);
+    placeOnTile(targetTile);
   }
 
   public void setSkipNextTurn(boolean skipNextTurn) {
@@ -54,5 +60,9 @@ public class Player {
 
   public Tile getCurrentTile() {
     return currentTile;
+  }
+
+  public void setCurrentTile(Tile tile) {
+    this.currentTile = tile;
   }
 }
