@@ -90,6 +90,14 @@ public abstract class BoardGame {
     }
   }
 
+  public Board getBoard() {
+    return board;
+  }
+
+  public void setBoard(Board board) {
+    this.board = board;
+  }
+
   public List<Player> getPlayers() {
     return new ArrayList<>(players);
   }
@@ -104,10 +112,6 @@ public abstract class BoardGame {
 
   public Player getWinner() {
     return winner;
-  }
-
-  public Board getBoard() {
-    return board;
   }
 
   public Dice getDice() {
