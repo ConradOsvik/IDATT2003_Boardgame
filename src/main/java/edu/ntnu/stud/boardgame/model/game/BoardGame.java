@@ -1,8 +1,10 @@
 package edu.ntnu.stud.boardgame.model.game;
 
+import edu.ntnu.stud.boardgame.exception.InvalidGameStateException;
 import edu.ntnu.stud.boardgame.model.Board;
 import edu.ntnu.stud.boardgame.model.Dice;
 import edu.ntnu.stud.boardgame.model.Player;
+import edu.ntnu.stud.boardgame.model.Tile;
 import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
 import edu.ntnu.stud.boardgame.observer.GameEvent;
 import edu.ntnu.stud.boardgame.observer.event.GameStartedEvent;
@@ -36,19 +38,22 @@ public abstract class BoardGame {
 
   public void addPlayer(Player player) {
     players.add(player);
+    int startTileId = board.getStartTileId();
+    Tile startTile = board.getTile(startTileId);
+    player.placeOnTile(startTile);
   }
 
   public void startGame() {
     if (players.isEmpty()) {
-      throw new IllegalStateException("No players have been added to the game");
+      throw new InvalidGameStateException("No players have been added to the game");
     }
 
     if (board == null) {
-      throw new IllegalStateException("Board has not been created");
+      throw new InvalidGameStateException("Board has not been created");
     }
 
     if (dice == null) {
-      throw new IllegalStateException("Dice has not been created");
+      throw new InvalidGameStateException("Dice has not been created");
     }
 
     currentPlayerIndex = 0;
@@ -59,9 +64,33 @@ public abstract class BoardGame {
     notifyObservers(new GameStartedEvent());
   }
 
+  public void restartGame() {
+    if (players.isEmpty()) {
+      throw new InvalidGameStateException("No players have been added to the game");
+    }
+
+    if (board == null) {
+      throw new InvalidGameStateException("Board has not been created");
+    }
+
+    if (dice == null) {
+      throw new InvalidGameStateException("Dice has not been created");
+    }
+
+    for (Player player : players) {
+      Tile startTile = board.getTile(board.getStartTileId());
+      player.placeOnTile(startTile);
+    }
+
+    currentPlayerIndex = 0;
+    currentPlayer = players.get(currentPlayerIndex);
+    gameOver = false;
+    winner = null;
+  }
+
   public abstract void playTurn();
 
-  protected void nextTurn() {
+  public void nextTurn() {
     if (gameOver) {
       return;
     }
