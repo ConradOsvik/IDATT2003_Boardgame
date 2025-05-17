@@ -10,13 +10,18 @@ public class Board {
   private final int columns;
   private final String name;
   private final String description;
+  private final int startTileId;
+  private final int endTileId;
 
-  public Board(String name, String description, int rows, int columns) {
+  public Board(String name, String description, int rows, int columns, int startTileId,
+      int endTileId) {
     this.tiles = new HashMap<>();
     this.rows = rows;
     this.columns = columns;
     this.name = name;
     this.description = description;
+    this.startTileId = startTileId;
+    this.endTileId = endTileId;
   }
 
   public void addTile(Tile tile) {
@@ -45,5 +50,13 @@ public class Board {
 
   public String getDescription() {
     return description;
+  }
+
+  public int getStartTileId() {
+    return startTileId;
+  }
+
+  public int getEndTileId() {
+    return endTileId;
   }
 }
