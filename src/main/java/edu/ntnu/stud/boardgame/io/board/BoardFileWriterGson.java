@@ -43,6 +43,29 @@ public class BoardFileWriterGson implements BoardFileWriter {
     return actionObject;
   }
 
+  private static JsonObject getTileObject(Tile tile) {
+    JsonObject tileObject = new JsonObject();
+
+    tileObject.addProperty("id", tile.getTileId());
+
+    if (tile.getRow() != null) {
+      tileObject.addProperty("row", tile.getRow());
+    }
+
+    if (tile.getColumn() != null) {
+      tileObject.addProperty("column", tile.getColumn());
+    }
+
+    if (tile.getName() != null) {
+      tileObject.addProperty("name", tile.getName());
+    }
+
+    if (tile.getNextTile() != null) {
+      tileObject.addProperty("nextTile", tile.getNextTile().getTileId());
+    }
+    return tileObject;
+  }
+
   @Override
   public void writeBoard(Path path, Board board) throws BoardWritingException {
     try {
@@ -52,24 +75,14 @@ public class BoardFileWriterGson implements BoardFileWriter {
       boardJson.addProperty("description", board.getDescription());
       boardJson.addProperty("rows", board.getRows());
       boardJson.addProperty("columns", board.getColumns());
+      boardJson.addProperty("startTileId", board.getStartTileId());
+      boardJson.addProperty("endTileId", board.getEndTileId());
 
       JsonArray tilesArray = new JsonArray();
       Collection<Tile> tiles = board.getTiles().values();
 
       for (Tile tile : tiles) {
-        JsonObject tileObject = new JsonObject();
-
-        tileObject.addProperty("id", tile.getTileId());
-        tileObject.addProperty("row", tile.getRow());
-        tileObject.addProperty("column", tile.getColumn());
-
-        if (tile.getName() != null) {
-          tileObject.addProperty("name", tile.getName());
-        }
-
-        if (tile.getNextTile() != null) {
-          tileObject.addProperty("nextTile", tile.getNextTile().getTileId());
-        }
+        JsonObject tileObject = getTileObject(tile);
 
         TileAction action = tile.getLandAction();
         if (action != null) {

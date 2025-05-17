@@ -22,15 +22,22 @@ public class BoardFileReaderGson implements BoardFileReader {
   private static Tile getTile(JsonElement tileElement) throws BoardParsingException {
     JsonObject tileObject = tileElement.getAsJsonObject();
 
-    if (!tileObject.has("id") || !tileObject.has("row") || !tileObject.has("column")) {
+    if (!tileObject.has("id")) {
       throw new BoardParsingException("Tile must have id, row, and column");
     }
 
     int id = tileObject.get("id").getAsInt();
-    int row = tileObject.get("row").getAsInt();
-    int column = tileObject.get("column").getAsInt();
+    Tile tile = new Tile(id);
 
-    Tile tile = new Tile(id, row, column);
+    if (tileObject.has("row")) {
+      int row = tileObject.get("row").getAsInt();
+      tile.setRow(row);
+    }
+
+    if (tileObject.has("column")) {
+      int column = tileObject.get("column").getAsInt();
+      tile.setColumn(column);
+    }
 
     if (tileObject.has("name")) {
       String name = tileObject.get("name").getAsString();
@@ -46,7 +53,8 @@ public class BoardFileReaderGson implements BoardFileReader {
       JsonObject boardJson = JsonParser.parseReader(reader).getAsJsonObject();
 
       if (!boardJson.has("rows") || !boardJson.has("columns") || !boardJson.has("name")
-          || !boardJson.has("description")) {
+          || !boardJson.has("description") || !boardJson.has("startTileId") || !boardJson.has(
+          "endTileId")) {
         throw new BoardParsingException("Board must have name, description, rows, and columns");
       }
 
@@ -54,8 +62,10 @@ public class BoardFileReaderGson implements BoardFileReader {
       String description = boardJson.get("description").getAsString();
       int rows = boardJson.get("rows").getAsInt();
       int cols = boardJson.get("columns").getAsInt();
+      int startTileId = boardJson.get("startTileId").getAsInt();
+      int endTileId = boardJson.get("endTileId").getAsInt();
 
-      Board board = new Board(name, description, rows, cols);
+      Board board = new Board(name, description, rows, cols, startTileId, endTileId);
 
       JsonArray tilesArray = boardJson.getAsJsonArray("tiles");
 
