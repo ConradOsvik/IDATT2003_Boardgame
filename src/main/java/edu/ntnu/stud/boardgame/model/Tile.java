@@ -5,16 +5,14 @@ import edu.ntnu.stud.boardgame.model.action.TileAction;
 public class Tile {
 
   private final int tileId;
-  private final int row;
-  private final int column;
+  private Integer row;
+  private Integer column;
   private TileAction landAction;
   private Tile nextTile;
   private String name;
 
-  public Tile(int tileId, int row, int column) {
+  public Tile(int tileId) {
     this.tileId = tileId;
-    this.row = row;
-    this.column = column;
   }
 
   public void landPlayer(Player player) {
@@ -43,12 +41,20 @@ public class Tile {
     return tileId;
   }
 
-  public int getRow() {
+  public Integer getRow() {
     return row;
   }
 
-  public int getColumn() {
+  public void setRow(Integer row) {
+    this.row = row;
+  }
+
+  public Integer getColumn() {
     return column;
+  }
+
+  public void setColumn(Integer column) {
+    this.column = column;
   }
 
   public String getName() {

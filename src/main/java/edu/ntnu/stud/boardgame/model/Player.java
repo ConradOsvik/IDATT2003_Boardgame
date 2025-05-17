@@ -51,4 +51,8 @@ public class Player {
   public PieceType getPiece() {
     return piece;
   }
+
+  public Tile getCurrentTile() {
+    return currentTile;
+  }
 }
