@@ -14,8 +14,7 @@ public class BoardGameFacade {
   private final BoardGameFactory factory;
   private BoardGame currentGame;
 
-  public BoardGameFacade() {
-    BoardFileService boardFileService = new BoardFileService();
+  public BoardGameFacade(BoardFileService boardFileService) {
     this.factory = new BoardGameFactory(boardFileService);
   }
 
