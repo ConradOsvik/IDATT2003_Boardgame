@@ -1,0 +1,20 @@
+{
+  "name": "ladder 90",
+  "description": "ladder game with 90 tiles",
+  "rows": 10,
+  "columns": 9,
+  "startTileId": 0,
+  "endTileId": 90,
+  "tiles": [
+    {
+      "id": 0,
+      "nextTileId": 1
+    },
+    {
+      "id": 1,
+      "nextTileId": 2,
+      "row": 0,
+      "column": 0
+    }
+  ]
+}
