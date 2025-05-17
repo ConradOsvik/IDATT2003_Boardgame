@@ -61,7 +61,7 @@ public class BoardFileWriterGson implements BoardFileWriter {
     }
 
     if (tile.getNextTile() != null) {
-      tileObject.addProperty("nextTile", tile.getNextTile().getTileId());
+      tileObject.addProperty("nextTileId", tile.getNextTile().getTileId());
     }
     return tileObject;
   }

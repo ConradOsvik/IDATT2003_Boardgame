@@ -80,8 +80,8 @@ public class BoardFileReaderGson implements BoardFileReader {
         int id = tileObject.get("id").getAsInt();
         Tile tile = board.getTile(id);
 
-        if (tileObject.has("nextTile")) {
-          int nextTileId = tileObject.get("nextTile").getAsInt();
+        if (tileObject.has("nextTileId")) {
+          int nextTileId = tileObject.get("nextTileId").getAsInt();
           Tile nextTile = board.getTile(nextTileId);
           if (nextTile != null) {
             tile.setNextTile(nextTile);

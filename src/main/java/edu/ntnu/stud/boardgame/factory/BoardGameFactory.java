@@ -18,31 +18,42 @@ public class BoardGameFactory {
   }
 
   public BoardGame createGame(BoardGameType type) {
-    BoardGame game = switch (type) {
-      case LADDER -> new LadderGame();
-      case MONOPOLY -> new MonopolyGame();
-    };
+    BoardGame game = createEmptyGame(type);
 
-    game.createBoard();
-    game.createDice(2);
-    return game;
-  }
-
-  public BoardGame loadGameFromFile(BoardGameType type, String fileName) throws BoardFileException {
-    Board board = boardFileService.loadBoard(fileName);
-
-    BoardGame game = switch (type) {
-      case LADDER -> new LadderGame();
-      case MONOPOLY -> new MonopolyGame();
-    };
-
+    Board board = game.createDefaultBoard();
     game.setBoard(board);
     game.createDice(2);
 
     return game;
   }
 
-  public List<String> getAvailableGameBoards() {
-    return boardFileService.listAvailableBoards();
+  public BoardGame loadGameFromFile(BoardGameType type, String fileName) throws BoardFileException {
+    BoardGame game = createEmptyGame(type);
+
+    Board board;
+    if (fileName.equalsIgnoreCase("Default")) {
+      board = game.createDefaultBoard();
+    } else {
+      board = boardFileService.loadBoard(type, fileName);
+    }
+    game.setBoard(board);
+
+    game.createDice(2);
+
+    return game;
+  }
+
+  public List<String> getAvailableGameBoards(BoardGameType type) {
+    List<String> availableGameBoards = boardFileService.listAvailableBoards(type);
+    availableGameBoards.addFirst("Default");
+
+    return availableGameBoards;
+  }
+
+  private BoardGame createEmptyGame(BoardGameType type) {
+    return switch (type) {
+      case LADDER -> new LadderGame();
+      case MONOPOLY -> new MonopolyGame();
+    };
   }
 }

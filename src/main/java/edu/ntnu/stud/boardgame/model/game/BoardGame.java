@@ -30,7 +30,7 @@ public abstract class BoardGame {
     this.gameOver = false;
   }
 
-  public abstract void createBoard();
+  public abstract Board createDefaultBoard();
 
   public void createDice(int numberOfDice) {
     this.dice = new Dice(numberOfDice);

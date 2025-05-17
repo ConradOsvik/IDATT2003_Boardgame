@@ -1,6 +1,7 @@
 package edu.ntnu.stud.boardgame.model;
 
 import edu.ntnu.stud.boardgame.exception.BoardGameException;
+import edu.ntnu.stud.boardgame.exception.InvalidGameStateException;
 import edu.ntnu.stud.boardgame.factory.BoardGameFactory;
 import edu.ntnu.stud.boardgame.model.enums.BoardGameType;
 import edu.ntnu.stud.boardgame.model.enums.PieceType;
@@ -13,18 +14,27 @@ public class BoardGameFacade {
 
   private final BoardGameFactory factory;
   private BoardGame currentGame;
+  private BoardGameType currentGameType;
 
   public BoardGameFacade(BoardFileService boardFileService) {
     this.factory = new BoardGameFactory(boardFileService);
   }
 
-  public void createGame(BoardGameType type) {
-    currentGame = factory.createGame(type);
+  public void createGame() {
+    if (currentGameType == null) {
+      throw new InvalidGameStateException("No game type has been selected");
+    }
+
+    currentGame = factory.createGame(currentGameType);
   }
 
-  public void createGame(BoardGameType type, String fileName) throws BoardGameException {
+  public void createGame(String fileName) throws BoardGameException {
+    if (currentGameType == null) {
+      throw new InvalidGameStateException("No game type has been selected");
+    }
+
     try {
-      currentGame = factory.loadGameFromFile(type, fileName);
+      currentGame = factory.loadGameFromFile(currentGameType, fileName);
     } catch (Exception e) {
       throw new BoardGameException("Failed to load game from file: " + fileName, e);
     }
@@ -83,8 +93,20 @@ public class BoardGameFacade {
     return currentGame;
   }
 
+  public BoardGameType getCurrentGameType() {
+    return currentGameType;
+  }
+
+  public void setCurrentGameType(BoardGameType currentGameType) {
+    this.currentGameType = currentGameType;
+  }
+
   public List<String> getAvailableGameBoards() {
-    return factory.getAvailableGameBoards();
+    if (currentGameType == null) {
+      throw new InvalidGameStateException("No game type has been selected");
+    }
+
+    return factory.getAvailableGameBoards(currentGameType);
   }
 
   public void registerObserver(BoardGameObserver observer) {

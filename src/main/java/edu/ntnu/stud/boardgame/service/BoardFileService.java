@@ -6,6 +6,7 @@ import edu.ntnu.stud.boardgame.io.board.BoardFileReaderGson;
 import edu.ntnu.stud.boardgame.io.board.BoardFileWriter;
 import edu.ntnu.stud.boardgame.io.board.BoardFileWriterGson;
 import edu.ntnu.stud.boardgame.model.Board;
+import edu.ntnu.stud.boardgame.model.enums.BoardGameType;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,22 +22,29 @@ public class BoardFileService {
 
   private final BoardFileReader boardReader;
   private final BoardFileWriter boardWriter;
-  private final Path boardsDirectory;
+  private final Path boardsBaseDirectory;
 
   public BoardFileService() {
     this.boardReader = new BoardFileReaderGson();
     this.boardWriter = new BoardFileWriterGson();
-    this.boardsDirectory = Paths.get("/data/boards");
+    this.boardsBaseDirectory = Paths.get("data/boards");
 
-    createDirectoryIfNotExists(boardsDirectory);
+    createDirectoryIfNotExists(boardsBaseDirectory);
   }
 
-  public Board loadBoard(String fileName) throws BoardFileException {
+  private Path getGameTypeDirectory(BoardGameType gameType) {
+    Path gameTypeDir = boardsBaseDirectory.resolve(gameType.name().toLowerCase());
+    createDirectoryIfNotExists(gameTypeDir);
+    return gameTypeDir;
+  }
+
+  public Board loadBoard(BoardGameType gameType, String fileName) throws BoardFileException {
     if (fileName == null || fileName.isEmpty()) {
       throw new IllegalArgumentException("File name cannot be null or empty.");
     }
 
-    Path boardPath = boardsDirectory.resolve(ensureFileExtension(fileName));
+    Path gameTypeDir = getGameTypeDirectory(gameType);
+    Path boardPath = gameTypeDir.resolve(ensureFileExtension(fileName));
 
     if (!Files.exists(boardPath)) {
       throw new BoardFileException("Board file does not exist: " + boardPath);
@@ -51,7 +59,8 @@ public class BoardFileService {
     }
   }
 
-  public void saveBoard(String fileName, Board board) throws BoardFileException {
+  public void saveBoard(BoardGameType gameType, String fileName, Board board)
+      throws BoardFileException {
     if (fileName == null || fileName.isEmpty()) {
       throw new IllegalArgumentException("File name cannot be null or empty.");
     }
@@ -60,7 +69,8 @@ public class BoardFileService {
       throw new IllegalArgumentException("Board cannot be null.");
     }
 
-    Path boardPath = boardsDirectory.resolve(ensureFileExtension(fileName));
+    Path gameTypeDir = getGameTypeDirectory(gameType);
+    Path boardPath = gameTypeDir.resolve(ensureFileExtension(fileName));
 
     try {
       LOGGER.info("Saving board to: " + boardPath);
@@ -71,14 +81,15 @@ public class BoardFileService {
     }
   }
 
-  public List<String> listAvailableBoards() {
+  public List<String> listAvailableBoards(BoardGameType gameType) {
     List<String> boardNames = new ArrayList<>();
 
+    Path gameTypeDir = getGameTypeDirectory(gameType);
+
     try {
-      if (Files.exists(boardsDirectory) && Files.isDirectory(boardsDirectory)) {
-        try (Stream<Path> pathStream = Files.list(boardsDirectory)) {
-          pathStream
-              .filter(path -> path.toString().toLowerCase().endsWith(".json"))
+      if (Files.exists(gameTypeDir) && Files.isDirectory(gameTypeDir)) {
+        try (Stream<Path> pathStream = Files.list(gameTypeDir)) {
+          pathStream.filter(path -> path.toString().toLowerCase().endsWith(".json"))
               .forEach(path -> {
                 String fileName = path.getFileName().toString();
                 boardNames.add(fileName.substring(0, fileName.length() - 5));
