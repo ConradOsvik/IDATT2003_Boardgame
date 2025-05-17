@@ -1,13 +1,15 @@
 package edu.ntnu.stud.boardgame.model.game;
 
+import edu.ntnu.stud.boardgame.model.Board;
+
 public class MonopolyGame extends BoardGame {
 
   @Override
-  public void playTurn() {
+  public Board createDefaultBoard() {
+    return null;
   }
 
   @Override
-  public void createBoard() {
-
+  public void playTurn() {
   }
 }

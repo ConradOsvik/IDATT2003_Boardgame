@@ -13,10 +13,13 @@ import edu.ntnu.stud.boardgame.observer.event.SnakeEncounteredEvent;
 public class LadderGame extends BoardGame {
 
   @Override
-  public void createBoard() {
-    this.board = new Board("Classic Snakes and Ladders", "A classic game of Snakes and Ladders", 10,
-        9, 0, 90);
-    initializeStandardBoard();
+  public Board createDefaultBoard() {
+    Board board = new Board("Classic Snakes and Ladders", "A classic game of Snakes and Ladders",
+        10, 9, 0, 90);
+
+    initializeStandardBoard(board);
+
+    return board;
   }
 
   @Override
@@ -82,7 +85,7 @@ public class LadderGame extends BoardGame {
     }
   }
 
-  private void initializeStandardBoard() {
+  private void initializeStandardBoard(Board board) {
     Tile startingTile = new Tile(0);
     board.addTile(startingTile);
 
@@ -102,13 +105,13 @@ public class LadderGame extends BoardGame {
       currentTile.setNextTile(nextTile);
     }
 
-    addLadder(4, 14);
-    addLadder(9, 31);
-    addLadder(28, 84);
+    addLadder(board, 4, 14);
+    addLadder(board, 9, 31);
+    addLadder(board, 28, 84);
 
-    addSnake(17, 7);
-    addSnake(54, 34);
-    addSnake(87, 24);
+    addSnake(board, 17, 7);
+    addSnake(board, 54, 34);
+    addSnake(board, 87, 24);
   }
 
   private int calculateTileId(int row, int col) {
@@ -119,13 +122,13 @@ public class LadderGame extends BoardGame {
     }
   }
 
-  private void addLadder(int fromTileId, int toTileId) {
+  private void addLadder(Board board, int fromTileId, int toTileId) {
     Tile fromTile = board.getTile(fromTileId);
     Tile toTile = board.getTile(toTileId);
     fromTile.setLandAction(new LadderAction(toTile));
   }
 
-  private void addSnake(int fromTileId, int toTileId) {
+  private void addSnake(Board board, int fromTileId, int toTileId) {
     Tile fromTile = board.getTile(fromTileId);
     Tile toTile = board.getTile(toTileId);
     fromTile.setLandAction(new SnakeAction(toTile));
