@@ -8,24 +8,19 @@ import edu.ntnu.stud.boardgame.model.enums.PieceType;
 import edu.ntnu.stud.boardgame.model.game.BoardGame;
 import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
 import edu.ntnu.stud.boardgame.service.BoardFileService;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BoardGameFacade {
 
   private final BoardGameFactory factory;
+  private final List<BoardGameObserver> observers;
   private BoardGame currentGame;
   private BoardGameType currentGameType;
 
   public BoardGameFacade(BoardFileService boardFileService) {
     this.factory = new BoardGameFactory(boardFileService);
-  }
-
-  public void createGame() {
-    if (currentGameType == null) {
-      throw new InvalidGameStateException("No game type has been selected");
-    }
-
-    currentGame = factory.createGame(currentGameType);
+    this.observers = new ArrayList<>();
   }
 
   public void createGame(String fileName) throws BoardGameException {
@@ -35,6 +30,7 @@ public class BoardGameFacade {
 
     try {
       currentGame = factory.loadGameFromFile(currentGameType, fileName);
+      currentGame.registerObservers(observers);
     } catch (Exception e) {
       throw new BoardGameException("Failed to load game from file: " + fileName, e);
     }
@@ -98,9 +94,10 @@ public class BoardGameFacade {
   }
 
   public void registerObserver(BoardGameObserver observer) {
+    observers.add(observer);
+
     if (currentGame != null) {
       currentGame.registerObserver(observer);
     }
   }
-
 }
