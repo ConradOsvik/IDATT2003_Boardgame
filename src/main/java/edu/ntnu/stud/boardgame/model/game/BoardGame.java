@@ -127,13 +127,16 @@ public abstract class BoardGame {
     }
   }
 
+  public void notifyGameCreated() {
+    notifyObservers(new GameCreatedEvent(board, players));
+  }
+
   public Board getBoard() {
     return board;
   }
 
   public void setBoard(Board board) {
     this.board = board;
-    notifyObservers(new GameCreatedEvent(board));
   }
 
   public List<Player> getPlayers() {
