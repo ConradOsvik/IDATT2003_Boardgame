@@ -177,7 +177,10 @@
       "id": 24,
       "row": 1,
       "column": 3,
-      "nextTileId": 25
+      "nextTileId": 25,
+      "action": {
+        "type": "SkipTurnAction"
+      }
     },
     {
       "id": 25,
