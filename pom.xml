@@ -1,37 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://maven.apache.org/POM/4.0.0"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <artifactId>Boardgame</artifactId>
-
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <artifactId>boardgame</artifactId>
   <build>
     <plugins>
+      <!-- Java compiler -->
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>${maven.compiler.source}</source>
-          <target>${maven.compiler.target}</target>
-        </configuration>
         <groupId>org.apache.maven.plugins</groupId>
         <version>3.13.0</version>
       </plugin>
+
+      <!-- Unit-testing engine Surefire -->
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <argLine>
-            --add-exports=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
-            --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED
-            --add-opens=javafx.graphics/com.sun.glass.ui=ALL-UNNAMED
-            -Dtestfx.robot=glass
-            -Dtestfx.headless=true
-            -Dprism.order=sw
-            -Djava.awt.headless=true
-          </argLine>
-
-        </configuration>
         <groupId>org.apache.maven.plugins</groupId>
-        <version>3.5.2</version>
+        <version>3.2.5</version>
       </plugin>
+
+      <!-- JavaFX Maven plugin -->
       <plugin>
         <artifactId>javafx-maven-plugin</artifactId>
         <configuration>
@@ -40,25 +28,31 @@
         <groupId>org.openjfx</groupId>
         <version>0.0.8</version>
       </plugin>
+
+      <!-- JavaDoc generation plugin -->
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <failOnError>false</failOnError>
+          <nohelp>true</nohelp>
+          <show>private</show>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <id>attach-javadocs</id>
+          </execution>
+        </executions>
         <groupId>org.apache.maven.plugins</groupId>
-        <version>3.11.2</version>
+        <version>3.6.3</version>
       </plugin>
     </plugins>
   </build>
-  <dependencies>
-    <dependency>
-      <artifactId>javafx-controls</artifactId>
-      <groupId>org.openjfx</groupId>
-      <version>23.0.1</version>
-    </dependency>
-    <dependency>
-      <artifactId>gson</artifactId>
-      <groupId>com.google.code.gson</groupId>
-      <version>2.10.1</version>
-    </dependency>
 
+  <dependencies>
+    <!-- JUnit -->
     <dependency>
       <artifactId>junit-jupiter-api</artifactId>
       <groupId>org.junit.jupiter</groupId>
@@ -71,6 +65,8 @@
       <scope>test</scope>
       <version>${junit.version}</version>
     </dependency>
+
+    <!-- Mockito -->
     <dependency>
       <artifactId>mockito-core</artifactId>
       <groupId>org.mockito</groupId>
@@ -83,38 +79,31 @@
       <scope>test</scope>
       <version>${mockito.version}</version>
     </dependency>
+
+    <!-- JavaFX -->
     <dependency>
-      <artifactId>testfx-core</artifactId>
-      <groupId>org.testfx</groupId>
-      <scope>test</scope>
-      <version>${testfx.version}</version>
+      <artifactId>javafx-controls</artifactId>
+      <groupId>org.openjfx</groupId>
+      <version>23.0.1</version>
     </dependency>
+
+    <!-- Google GSON for JSON handling -->
     <dependency>
-      <artifactId>testfx-junit5</artifactId>
-      <groupId>org.testfx</groupId>
-      <scope>test</scope>
-      <version>${testfx.version}</version>
-    </dependency>
-    <dependency>
-      <artifactId>openjfx-monocle</artifactId>
-      <groupId>org.testfx</groupId>
-      <scope>test</scope>
-      <version>21.0.2</version>
+      <artifactId>gson</artifactId>
+      <groupId>com.google.code.gson</groupId>
+      <version>2.10.1</version>
     </dependency>
   </dependencies>
   <groupId>edu.ntnu.stud</groupId>
+
   <modelVersion>4.0.0</modelVersion>
-
-  <name>Boardgame</name>
-
   <properties>
     <junit.version>5.11.4</junit.version>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <mockito.version>5.8.0</mockito.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <testfx.version>4.0.18</testfx.version>
   </properties>
 
-  <version>1.0-SNAPSHOT</version>
+  <version>0.3.0</version>
 </project>
