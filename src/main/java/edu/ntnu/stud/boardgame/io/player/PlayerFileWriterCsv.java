@@ -18,7 +18,7 @@ public class PlayerFileWriterCsv implements PlayerFileWriter {
 
     try (BufferedWriter writer = Files.newBufferedWriter(path)) {
       for (Player player : players) {
-        writer.write(player.getName() + "," + player.getPiece());
+        writer.write(player.getName() + "," + player.getPiece().getDisplayName());
         writer.newLine();
       }
     } catch (IOException e) {

@@ -110,12 +110,6 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
     playersListView.getStyleClass().add("player-list");
     playersListView.setPrefHeight(200);
 
-    Button removePlayerButton = new ButtonBuilder()
-        .text("Remove Selected Player")
-        .styleClass("secondary-button")
-        .onClick(event -> removeSelectedPlayer())
-        .build();
-
     GridPane inputGrid = new GridPane();
     inputGrid.setHgap(10);
     inputGrid.setVgap(10);
@@ -129,8 +123,7 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
         inputGrid,
         addPlayerButton,
         playersLabel,
-        playersListView,
-        removePlayerButton
+        playersListView
     );
 
     return panel;
@@ -234,17 +227,6 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
       pieceTypeComboBox.getSelectionModel().clearSelection();
     } catch (Exception e) {
       controller.showErrorDialog("Error", "Failed to add player: " + e.getMessage());
-    }
-  }
-
-  private void removeSelectedPlayer() {
-    int selectedIndex = playersListView.getSelectionModel().getSelectedIndex();
-    if (selectedIndex >= 0 && selectedIndex < currentPlayers.size()) {
-      currentPlayers.remove(selectedIndex);
-      playersList.remove(selectedIndex);
-
-      // This is a simplification; in a real application,
-      // you would need to properly remove the player from the game facade
     }
   }
 

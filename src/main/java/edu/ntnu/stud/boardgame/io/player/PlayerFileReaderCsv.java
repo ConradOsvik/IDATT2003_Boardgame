@@ -39,7 +39,7 @@ public class PlayerFileReaderCsv implements PlayerFileReader {
         }
 
         try {
-          PieceType piece = PieceType.valueOf(pieceStr);
+          PieceType piece = PieceType.fromDisplayName(pieceStr);
           players.add(new Player(name, piece));
         } catch (IllegalArgumentException e) {
           throw new PlayerParsingException("Invalid piece type at line " + lineNumber);

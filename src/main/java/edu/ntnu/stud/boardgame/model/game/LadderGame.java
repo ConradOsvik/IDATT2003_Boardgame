@@ -89,14 +89,32 @@ public class LadderGame extends BoardGame {
     Tile startingTile = new Tile(0);
     board.addTile(startingTile);
 
-    for (int row = 0; row < 10; row++) {
-      for (int col = 0; col < 9; col++) {
-        int tileId = calculateTileId(row, col);
-        Tile tile = new Tile(tileId);
-        tile.setRow(row);
-        tile.setColumn(col);
-        board.addTile(tile);
+//    for (int row = 0; row < 10; row++) {
+//      for (int col = 0; col < 9; col++) {
+//        int tileId = calculateTileId(row, col);
+//        Tile tile = new Tile(tileId);
+//        tile.setRow(row);
+//        tile.setColumn(col);
+//        board.addTile(tile);
+//      }
+//    }
+
+    for (int i = 1; i <= 90; i++) {
+      Tile tile = new Tile(i);
+
+      int row = (i - 1) / 9;
+      int col;
+
+      if (row % 2 == 0) {
+        col = (i - 1) % 9;
+      } else {
+        col = 8 - ((i - 1) % 9);
       }
+
+      tile.setRow(9 - row);
+      tile.setColumn(col);
+
+      board.addTile(tile);
     }
 
     for (int i = 1; i < 90; i++) {
