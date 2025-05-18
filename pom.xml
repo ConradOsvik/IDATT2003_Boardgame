@@ -33,18 +33,14 @@
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
+          <doclint>none</doclint>
           <failOnError>false</failOnError>
-          <nohelp>true</nohelp>
-          <show>private</show>
+          <sourceFileExcludes>
+            <exclude>module-info.java</exclude>
+          </sourceFileExcludes>
+          <sourcepath>${project.build.sourceDirectory}</sourcepath>
+          <subpackages>edu.ntnu.stud.boardgame</subpackages>
         </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <id>attach-javadocs</id>
-          </execution>
-        </executions>
         <groupId>org.apache.maven.plugins</groupId>
         <version>3.6.3</version>
       </plugin>
@@ -84,7 +80,12 @@
     <dependency>
       <artifactId>javafx-controls</artifactId>
       <groupId>org.openjfx</groupId>
-      <version>23.0.1</version>
+      <version>${javafx.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>javafx-media</artifactId>
+      <groupId>org.openjfx</groupId>
+      <version>${javafx.version}</version>
     </dependency>
 
     <!-- Google GSON for JSON handling -->
@@ -98,6 +99,7 @@
 
   <modelVersion>4.0.0</modelVersion>
   <properties>
+    <javafx.version>23.0.1</javafx.version>
     <junit.version>5.11.4</junit.version>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
