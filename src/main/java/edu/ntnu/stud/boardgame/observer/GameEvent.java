@@ -13,7 +13,7 @@ public abstract class GameEvent {
   }
 
   public enum EventType {
-    GAME_CREATED, GAME_STARTED, GAME_ENDED, GAME_RESTARTED,
+    GAME_CREATED, GAME_STARTED, GAME_ENDED,
 
     TURN_CHANGED, DICE_ROLLED,
 

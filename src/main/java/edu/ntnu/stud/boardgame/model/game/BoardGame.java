@@ -113,8 +113,9 @@ public abstract class BoardGame {
   }
 
   protected void notifyObservers(GameEvent event) {
+    String eventType = event.getClass().getSimpleName();
     LOGGER.info(
-        "Notifying " + observers.size() + " observers about event: " + event.getEventType());
+        String.format("Notifying %d observers about event: %s", observers.size(), eventType));
     for (BoardGameObserver observer : observers) {
       observer.onGameEvent(event);
     }

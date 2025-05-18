@@ -75,7 +75,7 @@ public class LadderGame extends BoardGame {
         if (targetTile.getLandAction() instanceof LadderAction) {
           notifyObservers(
               new LadderClimbedEvent(currentPlayer, beforeActionTile, afterActionTile, 0, board));
-        } else {
+        } else if (targetTile.getLandAction() instanceof SnakeAction) {
           notifyObservers(
               new SnakeEncounteredEvent(currentPlayer, beforeActionTile, afterActionTile, 0,
                   board));
@@ -87,16 +87,6 @@ public class LadderGame extends BoardGame {
   private void initializeStandardBoard(Board board) {
     Tile startingTile = new Tile(0);
     board.addTile(startingTile);
-
-//    for (int row = 0; row < 10; row++) {
-//      for (int col = 0; col < 9; col++) {
-//        int tileId = calculateTileId(row, col);
-//        Tile tile = new Tile(tileId);
-//        tile.setRow(row);
-//        tile.setColumn(col);
-//        board.addTile(tile);
-//      }
-//    }
 
     for (int i = 1; i <= 90; i++) {
       Tile tile = new Tile(i);
@@ -122,21 +112,21 @@ public class LadderGame extends BoardGame {
       currentTile.setNextTile(nextTile);
     }
 
-    addLadder(board, 4, 14);
-    addLadder(board, 9, 31);
-    addLadder(board, 28, 84);
+    addLadder(board, 1, 40);
+    addLadder(board, 8, 10);
+    addLadder(board, 36, 52);
+    addLadder(board, 43, 62);
+    addLadder(board, 49, 79);
+    addLadder(board, 65, 82);
+    addLadder(board, 68, 85);
 
-    addSnake(board, 17, 7);
-    addSnake(board, 54, 34);
-    addSnake(board, 87, 24);
-  }
-
-  private int calculateTileId(int row, int col) {
-    if (row % 2 == 0) {
-      return 90 - (row * 9) - 9 + col + 1;
-    } else {
-      return 90 - (row * 9) - col;
-    }
+    addSnake(board, 24, 5);
+    addSnake(board, 33, 3);
+    addSnake(board, 42, 30);
+    addSnake(board, 56, 37);
+    addSnake(board, 64, 27);
+    addSnake(board, 74, 12);
+    addSnake(board, 87, 70);
   }
 
   private void addLadder(Board board, int fromTileId, int toTileId) {
