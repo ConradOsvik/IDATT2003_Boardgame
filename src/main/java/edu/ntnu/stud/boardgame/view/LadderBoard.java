@@ -5,6 +5,7 @@ import edu.ntnu.stud.boardgame.controller.MainController;
 import edu.ntnu.stud.boardgame.model.Player;
 import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
 import edu.ntnu.stud.boardgame.observer.GameEvent;
+import edu.ntnu.stud.boardgame.observer.event.BounceBackEvent;
 import edu.ntnu.stud.boardgame.observer.event.DiceRolledEvent;
 import edu.ntnu.stud.boardgame.observer.event.GameEndedEvent;
 import edu.ntnu.stud.boardgame.observer.event.GameStartedEvent;
@@ -95,8 +96,7 @@ public class LadderBoard extends BorderPane implements BoardGameObserver {
   public void onGameEvent(GameEvent event) {
     Platform.runLater(() -> {
       if (event instanceof GameStartedEvent startedEvent) {
-        Player currentPlayer = startedEvent.getCurrentPlayer();
-        controlPanel.updateCurrentPlayer(currentPlayer);
+        controlPanel.updateCurrentPlayer(startedEvent.getCurrentPlayer());
         updateUI();
         victoryScreen.setVisible(false);
         scoreboard.updatePlayers(gameController.getGame().getPlayers());
@@ -113,18 +113,27 @@ public class LadderBoard extends BorderPane implements BoardGameObserver {
         gameBoardView.animatePlayerSnakeSlide(snakeEvent.getPlayer(),
             snakeEvent.getFromTile(),
             snakeEvent.getToTile());
+      } else if (event instanceof BounceBackEvent bounceEvent) {
+        soundManager.playSound("bounce_back");
+        gameBoardView.animatePlayerBounceBack(bounceEvent.getPlayer(),
+            bounceEvent.getFromTile(),
+            bounceEvent.getToTile());
       } else if (event instanceof PlayerMovedEvent moveEvent) {
         soundManager.playSound("move");
         gameBoardView.animatePlayerMove(moveEvent.getPlayer(),
             moveEvent.getFromTile(),
             moveEvent.getToTile());
       } else if (event instanceof TurnChangedEvent turnEvent) {
-        Player currentPlayer = gameController.getGame().getCurrentPlayer();
+        Player currentPlayer = turnEvent.getCurrentPlayer();
         controlPanel.updateCurrentPlayer(currentPlayer);
         scoreboard.highlightCurrentPlayer(currentPlayer);
-      } else if (event instanceof PlayerWonEvent wonEvent
-          || event instanceof GameEndedEvent endedEvent) {
-        Player winner = gameController.getGame().getWinner();
+      } else if (event instanceof PlayerWonEvent wonEvent) {
+        Player winner = wonEvent.getWinner();
+        if (winner != null) {
+          showVictoryScreen(winner);
+        }
+      } else if (event instanceof GameEndedEvent endedEvent) {
+        Player winner = endedEvent.getWinner();
         if (winner != null) {
           showVictoryScreen(winner);
         }
