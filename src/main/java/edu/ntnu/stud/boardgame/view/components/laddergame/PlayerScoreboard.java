@@ -23,15 +23,15 @@ public class PlayerScoreboard extends VBox {
   public PlayerScoreboard() {
     setPadding(new Insets(15));
     setSpacing(10);
-    getStyleClass().add("player-scoreboard");
+    getStyleClass().add("card");
 
     titleLabel = new LabelBuilder()
         .text("Players")
-        .styleClass("scoreboard-title")
+        .styleClass("text-h3")
         .build();
 
     playersContainer = new VBox(5);
-    playersContainer.getStyleClass().add("players-container");
+    playersContainer.getStyleClass().add("list-container");
 
     getChildren().addAll(titleLabel, playersContainer);
   }
@@ -56,12 +56,12 @@ public class PlayerScoreboard extends VBox {
   }
 
   public void highlightCurrentPlayer(Player currentPlayer) {
-    playerRows.values().forEach(row -> row.getStyleClass().remove("current-player"));
+    playerRows.values().forEach(row -> row.getStyleClass().remove("list-item-highlighted"));
 
     if (currentPlayer != null) {
       HBox playerRow = playerRows.get(currentPlayer);
       if (playerRow != null) {
-        playerRow.getStyleClass().add("current-player");
+        playerRow.getStyleClass().add("list-item-highlighted");
       }
     }
   }
@@ -78,12 +78,12 @@ public class PlayerScoreboard extends VBox {
 
     Label nameLabel = new LabelBuilder()
         .text(player.getName())
-        .styleClass("player-name")
+        .styleClass("text-body-bold")
         .build();
 
     Label positionLabel = new LabelBuilder()
         .text("Position: Start")
-        .styleClass("player-position")
+        .styleClass("text-body")
         .build();
 
     row.getChildren().addAll(playerIndicator, nameLabel, positionLabel);

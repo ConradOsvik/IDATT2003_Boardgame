@@ -24,33 +24,33 @@ public class ControlPanel extends VBox {
 
     setPadding(new Insets(15));
     setSpacing(15);
-    getStyleClass().add("control-panel");
+    getStyleClass().add("card");
 
     titleLabel = new LabelBuilder()
         .text("Snakes and Ladders")
-        .styleClass("panel-title")
+        .styleClass("text-h2")
         .build();
 
     playerTurnLabel = new LabelBuilder()
         .text("Waiting to start...")
-        .styleClass("player-turn")
+        .styleClass("text-body-bold")
         .build();
 
     diceValueLabel = new LabelBuilder()
         .text("Dice: -")
-        .styleClass("dice-value")
+        .styleClass("text-accent")
         .build();
 
     rollDiceButton = new ButtonBuilder()
         .text("Roll Dice")
-        .styleClass("action-button")
+        .styleClass("btn-primary")
         .onClick(e -> rollDice())
         .disabled(true)
         .build();
 
     restartButton = new ButtonBuilder()
         .text("Restart Game")
-        .styleClass("secondary-button")
+        .styleClass("btn-secondary")
         .onClick(e -> restartGame())
         .build();
 
