@@ -4,10 +4,10 @@ import edu.ntnu.stud.boardgame.model.BoardGameFacade;
 import edu.ntnu.stud.boardgame.model.enums.BoardGameType;
 import edu.ntnu.stud.boardgame.service.BoardFileService;
 import edu.ntnu.stud.boardgame.service.PlayerFileService;
-import edu.ntnu.stud.boardgame.view.BoardSelection;
-import edu.ntnu.stud.boardgame.view.GameSelection;
-import edu.ntnu.stud.boardgame.view.LadderBoard;
-import edu.ntnu.stud.boardgame.view.PlayerSetup;
+import edu.ntnu.stud.boardgame.view.BoardSelectionView;
+import edu.ntnu.stud.boardgame.view.GameSelectionView;
+import edu.ntnu.stud.boardgame.view.LadderGameView;
+import edu.ntnu.stud.boardgame.view.PlayerSetupView;
 import java.net.URL;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -22,10 +22,10 @@ public class MainController {
   private final BorderPane mainContainer;
   private final GameController gameController;
 
-  private GameSelection gameSelectionView;
-  private BoardSelection boardSelectionView;
-  private PlayerSetup playerSetupView;
-  private LadderBoard ladderBoardView;
+  private GameSelectionView gameSelectionView;
+  private BoardSelectionView boardSelectionView;
+  private PlayerSetupView playerSetupView;
+  private LadderGameView ladderGameView;
 
   public MainController(Stage primaryStage) {
     this.primaryStage = primaryStage;
@@ -36,7 +36,7 @@ public class MainController {
 
     BoardGameFacade gameFacade = new BoardGameFacade(boardFileService);
 
-    this.gameController = new GameController(this, gameFacade, playerFileService, boardFileService);
+    this.gameController = new GameController(this);
 
     Scene scene = new Scene(mainContainer, 900, 700);
     URL cssUrl = getClass().getResource("/styles/styles.css");
@@ -55,9 +55,9 @@ public class MainController {
   }
 
   private void initializeViews() {
-    gameSelectionView = new GameSelection(gameController);
-    boardSelectionView = new BoardSelection(this, gameController);
-    playerSetupView = new PlayerSetup(this, gameController);
+    gameSelectionView = new GameSelectionView(gameController);
+    boardSelectionView = new BoardSelectionView(this, gameController);
+    playerSetupView = new PlayerSetupView(this, gameController);
   }
 
   public void showGameSelectionView() {
@@ -78,11 +78,11 @@ public class MainController {
 
   public void showGameView() {
     if (gameController.getCurrentGameType() == BoardGameType.LADDER) {
-      if (ladderBoardView == null) {
-        ladderBoardView = new LadderBoard(this, gameController);
+      if (ladderGameView == null) {
+        ladderGameView = new LadderGameView(this, gameController);
       }
       primaryStage.setTitle("Board Game - Snakes and Ladders");
-      mainContainer.setCenter(ladderBoardView);
+      mainContainer.setCenter(ladderGameView);
 
       if (!gameController.startGame()) {
         showGameSelectionView();

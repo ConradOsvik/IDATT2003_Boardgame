@@ -16,14 +16,12 @@ public class GameController {
   private final MainController mainController;
   private final BoardGameFacade gameFacade;
   private final PlayerFileService playerFileService;
-  private final BoardFileService boardFileService;
 
-  public GameController(MainController mainController, BoardGameFacade gameFacade,
-      PlayerFileService playerFileService, BoardFileService boardFileService) {
+  public GameController(MainController mainController) {
     this.mainController = mainController;
-    this.gameFacade = gameFacade;
-    this.playerFileService = playerFileService;
-    this.boardFileService = boardFileService;
+    this.playerFileService = new PlayerFileService();
+    BoardFileService boardFileService = new BoardFileService();
+    this.gameFacade = new BoardGameFacade(boardFileService);
   }
 
   public void selectGameType(BoardGameType gameType) {
@@ -57,6 +55,14 @@ public class GameController {
 
   public boolean addPlayer(String name, PieceType pieceType) {
     try {
+      for (Player player : gameFacade.getCurrentGame().getPlayers()) {
+        if (player.getPiece() == pieceType) {
+          showError("Input Error",
+              "The piece " + pieceType + " is already in use by another player.");
+          return false;
+        }
+      }
+
       gameFacade.addPlayer(name, pieceType);
       return true;
     } catch (Exception e) {
@@ -65,9 +71,16 @@ public class GameController {
     }
   }
 
-  public boolean savePlayers(String fileName, List<Player> players) {
+  public boolean savePlayers(String fileName) {
     try {
+      List<Player> players = gameFacade.getCurrentGame().getPlayers();
+      if (players.isEmpty()) {
+        showError("Input Error", "No players to save.");
+        return false;
+      }
+
       playerFileService.savePlayers(fileName, players);
+      showInfo("Success", "Players saved successfully to " + fileName + ".csv");
       return true;
     } catch (Exception e) {
       showError("Save Error", "Failed to save players: " + e.getMessage());
@@ -75,12 +88,18 @@ public class GameController {
     }
   }
 
-  public List<Player> loadPlayers(String fileName) {
+  public boolean loadPlayers(String fileName) {
     try {
-      return playerFileService.loadPlayers(fileName);
+      List<Player> loadedPlayers = playerFileService.loadPlayers(fileName);
+
+      for (Player player : loadedPlayers) {
+        addPlayer(player.getName(), player.getPiece());
+      }
+
+      return true;
     } catch (Exception e) {
       showError("Load Error", "Failed to load players: " + e.getMessage());
-      return List.of();
+      return false;
     }
   }
 
