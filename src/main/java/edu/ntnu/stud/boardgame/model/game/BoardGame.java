@@ -76,7 +76,7 @@ public abstract class BoardGame {
     gameOver = false;
     winner = null;
 
-    notifyObservers(new GameStartedEvent(currentPlayer));
+    notifyObservers(new GameStartedEvent(currentPlayer, players, board));
   }
 
   public abstract void playTurn();
@@ -109,6 +109,12 @@ public abstract class BoardGame {
   public void registerObserver(BoardGameObserver observer) {
     if (!observers.contains(observer)) {
       observers.add(observer);
+    }
+  }
+
+  public void registerObservers(List<BoardGameObserver> observers) {
+    for (BoardGameObserver observer : observers) {
+      registerObserver(observer);
     }
   }
 
