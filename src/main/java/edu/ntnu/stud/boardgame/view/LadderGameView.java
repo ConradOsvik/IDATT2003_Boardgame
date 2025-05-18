@@ -15,6 +15,8 @@ import edu.ntnu.stud.boardgame.observer.event.PlayerMovedEvent;
 import edu.ntnu.stud.boardgame.observer.event.PlayerWonEvent;
 import edu.ntnu.stud.boardgame.observer.event.SnakeEncounteredEvent;
 import edu.ntnu.stud.boardgame.observer.event.TurnChangedEvent;
+import edu.ntnu.stud.boardgame.util.SoundManager;
+import edu.ntnu.stud.boardgame.view.components.AudioControlPanel;
 import edu.ntnu.stud.boardgame.view.components.builder.ButtonBuilder;
 import edu.ntnu.stud.boardgame.view.components.laddergame.ControlPanel;
 import edu.ntnu.stud.boardgame.view.components.laddergame.GameBoard;
@@ -51,17 +53,19 @@ public class LadderGameView extends BorderPane implements BoardGameObserver {
     this.scoreboard = new PlayerScoreboard();
     this.gameBoardView = new GameBoard();
     this.victoryScreen = new VictoryScreen(gameController);
-    this.soundManager = new SoundManager();
+    this.soundManager = SoundManager.getInstance();
 
     initializeLayout();
     victoryScreen.setVisible(false);
   }
 
   private void initializeLayout() {
+    AudioControlPanel audioControls = new AudioControlPanel();
+
     VBox leftPanel = new VBox(20);
     leftPanel.setPadding(new Insets(15));
-    leftPanel.setPrefWidth(300);
-    leftPanel.getChildren().addAll(controlPanel, scoreboard);
+    leftPanel.setPrefWidth(350);
+    leftPanel.getChildren().addAll(controlPanel, scoreboard, audioControls);
     VBox.setVgrow(scoreboard, Priority.ALWAYS);
 
     StackPane gameArea = new StackPane();
@@ -117,12 +121,11 @@ public class LadderGameView extends BorderPane implements BoardGameObserver {
             snakeEvent.getFromTile(),
             snakeEvent.getToTile());
       } else if (event instanceof BounceBackEvent bounceEvent) {
-        soundManager.playSound("bounce_back");
+        soundManager.playSound("bounce");
         gameBoardView.animatePlayerBounceBack(bounceEvent.getPlayer(),
             bounceEvent.getFromTile(),
             bounceEvent.getToTile());
       } else if (event instanceof PlayerMovedEvent moveEvent) {
-        soundManager.playSound("move");
         gameBoardView.animatePlayerMove(moveEvent.getPlayer(),
             moveEvent.getFromTile(),
             moveEvent.getToTile());
@@ -152,12 +155,6 @@ public class LadderGameView extends BorderPane implements BoardGameObserver {
       if (player.getCurrentTile() != null) {
         gameBoardView.updatePlayerPosition(player, player.getCurrentTile());
       }
-    }
-  }
-
-  private class SoundManager {
-
-    public void playSound(String name) {
     }
   }
 }
