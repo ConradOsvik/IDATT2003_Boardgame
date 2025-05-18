@@ -6,11 +6,12 @@ import edu.ntnu.stud.boardgame.model.Player;
 import edu.ntnu.stud.boardgame.model.enums.PieceType;
 import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
 import edu.ntnu.stud.boardgame.observer.GameEvent;
+import edu.ntnu.stud.boardgame.observer.event.GameCreatedEvent;
+import edu.ntnu.stud.boardgame.observer.event.PlayerAddedEvent;
 import edu.ntnu.stud.boardgame.view.components.builder.ButtonBuilder;
 import edu.ntnu.stud.boardgame.view.components.builder.LabelBuilder;
 import edu.ntnu.stud.boardgame.view.components.builder.TextFieldBuilder;
-import java.util.ArrayList;
-import java.util.List;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -25,20 +26,20 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-public class PlayerSetup extends BorderPane implements BoardGameObserver {
+public class PlayerSetupView extends BorderPane implements BoardGameObserver {
 
   private final MainController controller;
   private final GameController gameController;
   private final ObservableList<String> playersList = FXCollections.observableArrayList();
-  private final List<Player> currentPlayers = new ArrayList<>();
   private TextField playerNameField;
   private ComboBox<PieceType> pieceTypeComboBox;
   private ListView<String> playersListView;
   private TextField fileNameField;
 
-  public PlayerSetup(MainController controller, GameController gameController) {
+  public PlayerSetupView(MainController controller, GameController gameController) {
     this.controller = controller;
     this.gameController = gameController;
+    gameController.registerObserver(this);
 
     getStyleClass().add("player-setup-view");
 
@@ -46,10 +47,7 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
   }
 
   private void initializeUI() {
-    Label titleLabel = new LabelBuilder()
-        .text("Player Setup")
-        .styleClass("title")
-        .build();
+    Label titleLabel = new LabelBuilder().text("Player Setup").styleClass("title").build();
 
     VBox leftPanel = createPlayerCreationPanel();
 
@@ -75,38 +73,24 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
     panel.setPadding(new Insets(20));
     panel.setMinWidth(350);
 
-    Label sectionTitle = new LabelBuilder()
-        .text("Add Players")
-        .styleClass("section-title")
-        .build();
+    Label sectionTitle = new LabelBuilder().text("Add Players").styleClass("section-title").build();
 
-    Label nameLabel = new LabelBuilder()
-        .text("Player Name:")
-        .build();
+    Label nameLabel = new LabelBuilder().text("Player Name:").build();
 
-    playerNameField = new TextFieldBuilder()
-        .promptText("Enter player name")
-        .styleClass("input-field")
-        .build();
+    playerNameField = new TextFieldBuilder().promptText("Enter player name")
+        .styleClass("input-field").build();
 
-    Label pieceLabel = new LabelBuilder()
-        .text("Select Piece:")
-        .build();
+    Label pieceLabel = new LabelBuilder().text("Select Piece:").build();
 
     pieceTypeComboBox = new ComboBox<>();
     pieceTypeComboBox.getItems().addAll(PieceType.values());
     pieceTypeComboBox.getStyleClass().add("combo-box");
     pieceTypeComboBox.setPromptText("Select a piece");
 
-    Button addPlayerButton = new ButtonBuilder()
-        .text("Add Player")
-        .styleClass("action-button")
-        .onClick(event -> addPlayer())
-        .build();
+    Button addPlayerButton = new ButtonBuilder().text("Add Player").styleClass("action-button")
+        .onClick(event -> addPlayer()).build();
 
-    Label playersLabel = new LabelBuilder()
-        .text("Current Players:")
-        .build();
+    Label playersLabel = new LabelBuilder().text("Current Players:").build();
 
     playersListView = new ListView<>(playersList);
     playersListView.getStyleClass().add("player-list");
@@ -120,13 +104,8 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
     inputGrid.add(pieceLabel, 0, 1);
     inputGrid.add(pieceTypeComboBox, 1, 1);
 
-    panel.getChildren().addAll(
-        sectionTitle,
-        inputGrid,
-        addPlayerButton,
-        playersLabel,
-        playersListView
-    );
+    panel.getChildren()
+        .addAll(sectionTitle, inputGrid, addPlayerButton, playersLabel, playersListView);
 
     return panel;
   }
@@ -137,33 +116,19 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
     panel.setPadding(new Insets(20));
     panel.setMinWidth(350);
 
-    Label sectionTitle = new LabelBuilder()
-        .text("Load/Save Players")
-        .styleClass("section-title")
+    Label sectionTitle = new LabelBuilder().text("Load/Save Players").styleClass("section-title")
         .build();
 
-    Label fileNameLabel = new LabelBuilder()
-        .text("File Name:")
-        .build();
+    Label fileNameLabel = new LabelBuilder().text("File Name:").build();
 
-    fileNameField = new TextFieldBuilder()
-        .promptText("Enter file name (without extension)")
-        .styleClass("input-field")
-        .build();
+    fileNameField = new TextFieldBuilder().promptText("Enter file name (without extension)")
+        .styleClass("input-field").build();
 
-    Button loadPlayersButton = new ButtonBuilder()
-        .text("Load Players")
-        .styleClass("action-button")
-        .width(150)
-        .onClick(event -> loadPlayers())
-        .build();
+    Button loadPlayersButton = new ButtonBuilder().text("Load Players").styleClass("action-button")
+        .width(150).onClick(event -> loadPlayers()).build();
 
-    Button savePlayersButton = new ButtonBuilder()
-        .text("Save Players")
-        .styleClass("action-button")
-        .width(150)
-        .onClick(event -> savePlayers())
-        .build();
+    Button savePlayersButton = new ButtonBuilder().text("Save Players").styleClass("action-button")
+        .width(150).onClick(event -> savePlayers()).build();
 
     GridPane inputGrid = new GridPane();
     inputGrid.setHgap(10);
@@ -185,17 +150,11 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
     buttonsBox.setAlignment(Pos.CENTER);
     buttonsBox.setPadding(new Insets(20, 0, 0, 0));
 
-    Button backButton = new ButtonBuilder()
-        .text("Back")
-        .styleClass("secondary-button")
-        .onClick(event -> controller.showBoardSelectionView())
-        .build();
+    Button backButton = new ButtonBuilder().text("Back").styleClass("secondary-button")
+        .onClick(event -> controller.showBoardSelectionView()).build();
 
-    Button startGameButton = new ButtonBuilder()
-        .text("Start Game")
-        .styleClass("action-button")
-        .onClick(event -> startGame())
-        .build();
+    Button startGameButton = new ButtonBuilder().text("Start Game").styleClass("action-button")
+        .onClick(event -> startGame()).build();
 
     buttonsBox.getChildren().addAll(backButton, startGameButton);
 
@@ -211,24 +170,9 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
       return;
     }
 
-    for (Player player : currentPlayers) {
-      if (player.getPiece() == selectedPiece) {
-        controller.showErrorDialog("Input Error",
-            "This piece is already in use by another player.");
-        return;
-      }
-    }
-
-    try {
-      gameController.addPlayer(playerName, selectedPiece);
-
-      currentPlayers.add(new Player(playerName, selectedPiece));
-      playersList.add(playerName + " (" + selectedPiece + ")");
-
+    if (gameController.addPlayer(playerName, selectedPiece)) {
       playerNameField.clear();
       pieceTypeComboBox.getSelectionModel().clearSelection();
-    } catch (Exception e) {
-      controller.showErrorDialog("Error", "Failed to add player: " + e.getMessage());
     }
   }
 
@@ -239,20 +183,7 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
       return;
     }
 
-    List<Player> loadedPlayers = gameController.loadPlayers(fileName);
-
-    currentPlayers.clear();
-    playersList.clear();
-
-    for (Player player : loadedPlayers) {
-      try {
-        gameController.addPlayer(player.getName(), player.getPiece());
-        currentPlayers.add(player);
-        playersList.add(player.getName() + " (" + player.getPiece() + ")");
-      } catch (Exception e) {
-        System.err.println("Failed to add player: " + e.getMessage());
-      }
-    }
+    gameController.loadPlayers(fileName);
   }
 
   private void savePlayers() {
@@ -262,18 +193,13 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
       return;
     }
 
-    if (currentPlayers.isEmpty()) {
-      controller.showErrorDialog("Input Error", "No players to save.");
-      return;
-    }
-
-    gameController.savePlayers(fileName, currentPlayers);
-    controller.showInfoDialog("Success", "Players saved successfully to " + fileName + ".csv");
+    gameController.savePlayers(fileName);
   }
 
   private void startGame() {
-    if (currentPlayers.size() < 2) {
-      controller.showErrorDialog("Player Error", "You need at least 2 players to start the game.");
+    if (playersList.isEmpty() || playersList.size() < 2) {
+      controller.showErrorDialog("Not Enough Players",
+          "Please add at least 2 players to start the game.");
       return;
     }
 
@@ -282,5 +208,14 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
 
   @Override
   public void onGameEvent(GameEvent event) {
+    if (event instanceof PlayerAddedEvent playerAddedEvent) {
+      Player player = playerAddedEvent.getPlayer();
+
+      Platform.runLater(() -> {
+        playersList.add(player.getName() + " (" + player.getPiece() + ")");
+      });
+    } else if (event instanceof GameCreatedEvent) {
+      Platform.runLater(playersList::clear);
+    }
   }
 }
