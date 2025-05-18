@@ -17,16 +17,6 @@ public class BoardGameFactory {
     this.boardFileService = boardFileService;
   }
 
-  public BoardGame createGame(BoardGameType type) {
-    BoardGame game = createEmptyGame(type);
-
-    Board board = game.createDefaultBoard();
-    game.setBoard(board);
-    game.createDice(2);
-
-    return game;
-  }
-
   public BoardGame loadGameFromFile(BoardGameType type, String fileName) throws BoardFileException {
     BoardGame game = createEmptyGame(type);
 
