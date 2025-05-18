@@ -2,7 +2,6 @@ package edu.ntnu.stud.boardgame.controller;
 
 import edu.ntnu.stud.boardgame.model.BoardGameFacade;
 import edu.ntnu.stud.boardgame.model.enums.BoardGameType;
-import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
 import edu.ntnu.stud.boardgame.service.BoardFileService;
 import edu.ntnu.stud.boardgame.service.PlayerFileService;
 import edu.ntnu.stud.boardgame.view.BoardSelection;
@@ -21,9 +20,6 @@ public class MainController {
 
   private final Stage primaryStage;
   private final BorderPane mainContainer;
-  private final BoardFileService boardFileService;
-  private final PlayerFileService playerFileService;
-  private final BoardGameFacade gameFacade;
   private final GameController gameController;
 
   private GameSelection gameSelectionView;
@@ -34,13 +30,15 @@ public class MainController {
   public MainController(Stage primaryStage) {
     this.primaryStage = primaryStage;
     this.mainContainer = new BorderPane();
-    this.boardFileService = new BoardFileService();
-    this.playerFileService = new PlayerFileService();
-    this.gameFacade = new BoardGameFacade(boardFileService);
-    this.gameController = new GameController(this, gameFacade);
+
+    BoardFileService boardFileService = new BoardFileService();
+    PlayerFileService playerFileService = new PlayerFileService();
+
+    BoardGameFacade gameFacade = new BoardGameFacade(boardFileService);
+
+    this.gameController = new GameController(this, gameFacade, playerFileService, boardFileService);
 
     Scene scene = new Scene(mainContainer, 900, 700);
-
     URL cssUrl = getClass().getResource("/styles/styles.css");
     if (cssUrl != null) {
       scene.getStylesheets().add(cssUrl.toExternalForm());
@@ -53,14 +51,13 @@ public class MainController {
     primaryStage.show();
 
     initializeViews();
-
     showGameSelectionView();
   }
 
   private void initializeViews() {
-    gameSelectionView = new GameSelection(this);
-    boardSelectionView = new BoardSelection(this);
-    playerSetupView = new PlayerSetup(this);
+    gameSelectionView = new GameSelection(gameController);
+    boardSelectionView = new BoardSelection(this, gameController);
+    playerSetupView = new PlayerSetup(this, gameController);
   }
 
   public void showGameSelectionView() {
@@ -80,47 +77,18 @@ public class MainController {
   }
 
   public void showGameView() {
-    try {
-      if (gameFacade.getCurrentGameType() == BoardGameType.LADDER) {
-        if (ladderBoardView == null) {
-          ladderBoardView = new LadderBoard(this, gameController);
-        }
-        primaryStage.setTitle("Board Game - Snakes and Ladders");
-        mainContainer.setCenter(ladderBoardView);
-      } else {
-        showErrorDialog("Not Implemented", "This game type is not implemented yet");
-        return;
+    if (gameController.getCurrentGameType() == BoardGameType.LADDER) {
+      if (ladderBoardView == null) {
+        ladderBoardView = new LadderBoard(this, gameController);
       }
+      primaryStage.setTitle("Board Game - Snakes and Ladders");
+      mainContainer.setCenter(ladderBoardView);
 
-      gameFacade.startGame();
-    } catch (Exception e) {
-      showErrorDialog("Game Error", "Failed to start game: " + e.getMessage());
-    }
-  }
-
-  public void selectGameType(BoardGameType gameType) {
-    gameFacade.setCurrentGameType(gameType);
-    showBoardSelectionView();
-  }
-
-  public void selectBoard(String boardName) {
-    try {
-      gameFacade.createGame(boardName);
-      showPlayerSetupView();
-    } catch (Exception e) {
-      showErrorDialog("Error", "Failed to load board: " + e.getMessage());
-    }
-  }
-
-  public void startGame() {
-    try {
-      if (gameFacade.getCurrentGame().getPlayers().size() < 2) {
-        showErrorDialog("Player Error", "You need at least 2 players to start the game.");
-        return;
+      if (!gameController.startGame()) {
+        showGameSelectionView();
       }
-      showGameView();
-    } catch (Exception e) {
-      showErrorDialog("Error", "Failed to start game: " + e.getMessage());
+    } else {
+      showErrorDialog("Not Implemented", "This game type is not implemented yet");
     }
   }
 
@@ -142,18 +110,6 @@ public class MainController {
     alert.setHeaderText(null);
     alert.setContentText(message);
     alert.showAndWait();
-  }
-
-  public void registerObserver(BoardGameObserver observer) {
-    gameFacade.registerObserver(observer);
-  }
-
-  public BoardGameFacade getGameFacade() {
-    return gameFacade;
-  }
-
-  public PlayerFileService getPlayerFileService() {
-    return playerFileService;
   }
 
   public GameController getGameController() {
