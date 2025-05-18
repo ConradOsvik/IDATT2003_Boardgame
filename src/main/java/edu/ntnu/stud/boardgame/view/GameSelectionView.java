@@ -2,8 +2,6 @@ package edu.ntnu.stud.boardgame.view;
 
 import edu.ntnu.stud.boardgame.controller.GameController;
 import edu.ntnu.stud.boardgame.model.enums.BoardGameType;
-import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
-import edu.ntnu.stud.boardgame.observer.GameEvent;
 import edu.ntnu.stud.boardgame.view.components.builder.ButtonBuilder;
 import edu.ntnu.stud.boardgame.view.components.builder.LabelBuilder;
 import java.io.InputStream;
@@ -18,11 +16,11 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
 
-public class GameSelection extends BorderPane implements BoardGameObserver {
+public class GameSelectionView extends BorderPane {
 
   private final GameController controller;
 
-  public GameSelection(GameController controller) {
+  public GameSelectionView(GameController controller) {
     this.controller = controller;
 
     getStyleClass().add("game-selection-view");
@@ -68,6 +66,7 @@ public class GameSelection extends BorderPane implements BoardGameObserver {
     card.getStyleClass().add("game-card");
     card.setAlignment(Pos.CENTER);
     card.setPadding(new Insets(20));
+    card.setMaxHeight(USE_PREF_SIZE);
 
     Label gameTitle = new LabelBuilder()
         .text(title)
@@ -114,9 +113,5 @@ public class GameSelection extends BorderPane implements BoardGameObserver {
     pane.setCenter(node);
     pane.setPadding(new Insets(20, 0, 0, 0));
     return pane;
-  }
-
-  @Override
-  public void onGameEvent(GameEvent event) {
   }
 }

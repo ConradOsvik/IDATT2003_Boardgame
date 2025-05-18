@@ -17,14 +17,14 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-public class BoardSelection extends BorderPane implements BoardGameObserver {
+public class BoardSelectionView extends BorderPane implements BoardGameObserver {
 
   private final MainController controller;
   private final GameController gameController;
   private final ObservableList<String> boardItems = FXCollections.observableArrayList();
   private ListView<String> boardListView;
 
-  public BoardSelection(MainController controller, GameController gameController) {
+  public BoardSelectionView(MainController controller, GameController gameController) {
     this.controller = controller;
     this.gameController = gameController;
 

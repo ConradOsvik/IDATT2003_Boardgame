@@ -6,9 +6,9 @@ import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
 import edu.ntnu.stud.boardgame.observer.GameEvent;
 import javafx.scene.layout.BorderPane;
 
-public class MonopolyBoard extends BorderPane implements BoardGameObserver {
+public class MonopolyGameView extends BorderPane implements BoardGameObserver {
 
-  public MonopolyBoard(MainController controller, GameController gameController) {
+  public MonopolyGameView(MainController controller, GameController gameController) {
     gameController.registerObserver(this);
   }
 
