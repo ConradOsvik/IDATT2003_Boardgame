@@ -1,7 +1,7 @@
 package edu.ntnu.stud.boardgame.view;
 
+import edu.ntnu.stud.boardgame.controller.GameController;
 import edu.ntnu.stud.boardgame.controller.MainController;
-import edu.ntnu.stud.boardgame.exception.files.PlayerFileException;
 import edu.ntnu.stud.boardgame.model.Player;
 import edu.ntnu.stud.boardgame.model.enums.PieceType;
 import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
@@ -28,6 +28,7 @@ import javafx.scene.layout.VBox;
 public class PlayerSetup extends BorderPane implements BoardGameObserver {
 
   private final MainController controller;
+  private final GameController gameController;
   private final ObservableList<String> playersList = FXCollections.observableArrayList();
   private final List<Player> currentPlayers = new ArrayList<>();
   private TextField playerNameField;
@@ -35,8 +36,9 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
   private ListView<String> playersListView;
   private TextField fileNameField;
 
-  public PlayerSetup(MainController controller) {
+  public PlayerSetup(MainController controller, GameController gameController) {
     this.controller = controller;
+    this.gameController = gameController;
 
     getStyleClass().add("player-setup-view");
 
@@ -218,7 +220,7 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
     }
 
     try {
-      controller.getGameFacade().addPlayer(playerName, selectedPiece);
+      gameController.addPlayer(playerName, selectedPiece);
 
       currentPlayers.add(new Player(playerName, selectedPiece));
       playersList.add(playerName + " (" + selectedPiece + ")");
@@ -237,23 +239,19 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
       return;
     }
 
-    try {
-      List<Player> loadedPlayers = controller.getPlayerFileService().loadPlayers(fileName);
+    List<Player> loadedPlayers = gameController.loadPlayers(fileName);
 
-      currentPlayers.clear();
-      playersList.clear();
+    currentPlayers.clear();
+    playersList.clear();
 
-      for (Player player : loadedPlayers) {
-        try {
-          controller.getGameFacade().addPlayer(player.getName(), player.getPiece());
-          currentPlayers.add(player);
-          playersList.add(player.getName() + " (" + player.getPiece() + ")");
-        } catch (Exception e) {
-          System.err.println("Failed to add player: " + e.getMessage());
-        }
+    for (Player player : loadedPlayers) {
+      try {
+        gameController.addPlayer(player.getName(), player.getPiece());
+        currentPlayers.add(player);
+        playersList.add(player.getName() + " (" + player.getPiece() + ")");
+      } catch (Exception e) {
+        System.err.println("Failed to add player: " + e.getMessage());
       }
-    } catch (PlayerFileException e) {
-      controller.showErrorDialog("Error", "Failed to load players: " + e.getMessage());
     }
   }
 
@@ -269,12 +267,8 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
       return;
     }
 
-    try {
-      controller.getPlayerFileService().savePlayers(fileName, currentPlayers);
-      controller.showInfoDialog("Success", "Players saved successfully to " + fileName + ".csv");
-    } catch (PlayerFileException e) {
-      controller.showErrorDialog("Error", "Failed to save players: " + e.getMessage());
-    }
+    gameController.savePlayers(fileName, currentPlayers);
+    controller.showInfoDialog("Success", "Players saved successfully to " + fileName + ".csv");
   }
 
   private void startGame() {
@@ -283,7 +277,7 @@ public class PlayerSetup extends BorderPane implements BoardGameObserver {
       return;
     }
 
-    controller.startGame();
+    controller.showGameView();
   }
 
   @Override

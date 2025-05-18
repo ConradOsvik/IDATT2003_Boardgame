@@ -60,9 +60,8 @@ public class LadderGame extends BoardGame {
       triggerLandAction(targetTile);
     }
 
-    if (currentTile.equals(lastTile)) {
-      this.winner = currentPlayer;
-      this.gameOver = true;
+    if (currentPlayer.getCurrentTile().equals(lastTile)) {
+      endGame(currentPlayer);
     }
   }
 
@@ -117,7 +116,7 @@ public class LadderGame extends BoardGame {
       board.addTile(tile);
     }
 
-    for (int i = 1; i < 90; i++) {
+    for (int i = 0; i < 90; i++) {
       Tile currentTile = board.getTile(i);
       Tile nextTile = board.getTile(i + 1);
       currentTile.setNextTile(nextTile);

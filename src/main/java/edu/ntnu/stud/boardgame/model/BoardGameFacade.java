@@ -52,18 +52,6 @@ public class BoardGameFacade {
     }
   }
 
-  public void restartGame() throws BoardGameException {
-    if (currentGame == null) {
-      throw new BoardGameException("No game has been created");
-    }
-
-    try {
-      currentGame.restartGame();
-    } catch (IllegalStateException e) {
-      throw new BoardGameException("Failed to restart game: " + e.getMessage(), e);
-    }
-  }
-
   public void addPlayer(String name, PieceType pieceType) throws BoardGameException {
     if (currentGame == null) {
       throw new BoardGameException("No game has been created");

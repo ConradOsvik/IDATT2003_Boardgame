@@ -7,12 +7,19 @@ import edu.ntnu.stud.boardgame.model.Player;
 import edu.ntnu.stud.boardgame.model.Tile;
 import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
 import edu.ntnu.stud.boardgame.observer.GameEvent;
+import edu.ntnu.stud.boardgame.observer.event.GameCreatedEvent;
+import edu.ntnu.stud.boardgame.observer.event.GameEndedEvent;
 import edu.ntnu.stud.boardgame.observer.event.GameStartedEvent;
+import edu.ntnu.stud.boardgame.observer.event.PlayerAddedEvent;
+import edu.ntnu.stud.boardgame.observer.event.PlayerWonEvent;
 import edu.ntnu.stud.boardgame.observer.event.TurnChangedEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public abstract class BoardGame {
+
+  protected static final Logger LOGGER = Logger.getLogger(BoardGame.class.getName());
 
   protected final List<BoardGameObserver> observers;
   protected final List<Player> players;
@@ -37,34 +44,16 @@ public abstract class BoardGame {
   }
 
   public void addPlayer(Player player) {
+    if (player == null) {
+      throw new IllegalArgumentException("Player cannot be null");
+    }
+
     players.add(player);
-    int startTileId = board.getStartTileId();
-    Tile startTile = board.getTile(startTileId);
-    player.placeOnTile(startTile);
+
+    notifyObservers(new PlayerAddedEvent(player));
   }
 
   public void startGame() {
-    if (players.isEmpty()) {
-      throw new InvalidGameStateException("No players have been added to the game");
-    }
-
-    if (board == null) {
-      throw new InvalidGameStateException("Board has not been created");
-    }
-
-    if (dice == null) {
-      throw new InvalidGameStateException("Dice has not been created");
-    }
-
-    currentPlayerIndex = 0;
-    currentPlayer = players.get(currentPlayerIndex);
-    gameOver = false;
-    winner = null;
-
-    notifyObservers(new GameStartedEvent());
-  }
-
-  public void restartGame() {
     if (players.isEmpty()) {
       throw new InvalidGameStateException("No players have been added to the game");
     }
@@ -86,6 +75,8 @@ public abstract class BoardGame {
     currentPlayer = players.get(currentPlayerIndex);
     gameOver = false;
     winner = null;
+
+    notifyObservers(new GameStartedEvent(currentPlayer));
   }
 
   public abstract void playTurn();
@@ -104,7 +95,15 @@ public abstract class BoardGame {
       return;
     }
 
-    notifyObservers(new TurnChangedEvent());
+    notifyObservers(new TurnChangedEvent(currentPlayer));
+  }
+
+  protected void endGame(Player winner) {
+    this.winner = winner;
+    this.gameOver = true;
+
+    notifyObservers(new PlayerWonEvent(winner));
+    notifyObservers(new GameEndedEvent(winner));
   }
 
   public void registerObserver(BoardGameObserver observer) {
@@ -114,6 +113,8 @@ public abstract class BoardGame {
   }
 
   protected void notifyObservers(GameEvent event) {
+    LOGGER.info(
+        "Notifying " + observers.size() + " observers about event: " + event.getEventType());
     for (BoardGameObserver observer : observers) {
       observer.onGameEvent(event);
     }
@@ -125,6 +126,7 @@ public abstract class BoardGame {
 
   public void setBoard(Board board) {
     this.board = board;
+    notifyObservers(new GameCreatedEvent(board));
   }
 
   public List<Player> getPlayers() {
