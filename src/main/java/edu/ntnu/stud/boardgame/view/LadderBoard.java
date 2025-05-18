@@ -96,6 +96,7 @@ public class LadderBoard extends BorderPane implements BoardGameObserver {
   public void onGameEvent(GameEvent event) {
     Platform.runLater(() -> {
       if (event instanceof GameStartedEvent startedEvent) {
+        controlPanel.setDiceDisabled(true);
         controlPanel.updateCurrentPlayer(startedEvent.getCurrentPlayer());
         updateUI();
         victoryScreen.setVisible(false);
@@ -128,11 +129,13 @@ public class LadderBoard extends BorderPane implements BoardGameObserver {
         controlPanel.updateCurrentPlayer(currentPlayer);
         scoreboard.highlightCurrentPlayer(currentPlayer);
       } else if (event instanceof PlayerWonEvent wonEvent) {
+        controlPanel.setDiceDisabled(true);
         Player winner = wonEvent.getWinner();
         if (winner != null) {
           showVictoryScreen(winner);
         }
       } else if (event instanceof GameEndedEvent endedEvent) {
+        controlPanel.setDiceDisabled(true);
         Player winner = endedEvent.getWinner();
         if (winner != null) {
           showVictoryScreen(winner);

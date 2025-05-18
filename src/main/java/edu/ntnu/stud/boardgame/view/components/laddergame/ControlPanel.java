@@ -69,6 +69,10 @@ public class ControlPanel extends VBox {
     diceValueLabel.setText("Dice: " + value);
   }
 
+  public void setDiceDisabled(boolean disabled) {
+    rollDiceButton.setDisable(disabled);
+  }
+
   public void updateCurrentPlayer(Player player) {
     if (player != null) {
       playerTurnLabel.setText("Current Turn: " + player.getName());
