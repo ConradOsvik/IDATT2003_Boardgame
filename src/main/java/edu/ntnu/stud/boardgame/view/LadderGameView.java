@@ -2,6 +2,7 @@ package edu.ntnu.stud.boardgame.view;
 
 import edu.ntnu.stud.boardgame.controller.GameController;
 import edu.ntnu.stud.boardgame.controller.MainController;
+import edu.ntnu.stud.boardgame.model.Board;
 import edu.ntnu.stud.boardgame.model.Player;
 import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
 import edu.ntnu.stud.boardgame.observer.GameEvent;
@@ -19,6 +20,7 @@ import edu.ntnu.stud.boardgame.view.components.laddergame.ControlPanel;
 import edu.ntnu.stud.boardgame.view.components.laddergame.GameBoard;
 import edu.ntnu.stud.boardgame.view.components.laddergame.PlayerScoreboard;
 import edu.ntnu.stud.boardgame.view.components.laddergame.VictoryScreen;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -26,9 +28,10 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-public class LadderBoard extends BorderPane implements BoardGameObserver {
+public class LadderGameView extends BorderPane implements BoardGameObserver {
 
   private final MainController controller;
   private final GameController gameController;
@@ -39,7 +42,7 @@ public class LadderBoard extends BorderPane implements BoardGameObserver {
   private final VictoryScreen victoryScreen;
   private final SoundManager soundManager;
 
-  public LadderBoard(MainController controller, GameController gameController) {
+  public LadderGameView(MainController controller, GameController gameController) {
     this.controller = controller;
     this.gameController = gameController;
     this.gameController.registerObserver(this);
@@ -47,7 +50,7 @@ public class LadderBoard extends BorderPane implements BoardGameObserver {
     this.controlPanel = new ControlPanel(gameController);
     this.scoreboard = new PlayerScoreboard();
     this.gameBoardView = new GameBoard();
-    this.victoryScreen = new VictoryScreen();
+    this.victoryScreen = new VictoryScreen(gameController);
     this.soundManager = new SoundManager();
 
     initializeLayout();
@@ -57,17 +60,19 @@ public class LadderBoard extends BorderPane implements BoardGameObserver {
   private void initializeLayout() {
     VBox leftPanel = new VBox(20);
     leftPanel.setPadding(new Insets(15));
-    leftPanel.setPrefWidth(250);
+    leftPanel.setPrefWidth(300);
     leftPanel.getChildren().addAll(controlPanel, scoreboard);
     VBox.setVgrow(scoreboard, Priority.ALWAYS);
 
-    BorderPane centerPanel = new BorderPane();
-    centerPanel.setCenter(gameBoardView);
-    centerPanel.setStyle("-fx-background-color: #f0f0f0;");
+    StackPane gameArea = new StackPane();
+    gameArea.setAlignment(Pos.CENTER);
+    gameArea.getChildren().add(gameBoardView);
+    gameArea.getChildren().add(victoryScreen);
+    StackPane.setAlignment(victoryScreen, Pos.CENTER);
 
     Button menuButton = new ButtonBuilder()
         .text("Back to Menu")
-        .styleClass("menu-button")
+        .styleClass("secondary-button")
         .onClick(e -> returnToMenu())
         .build();
 
@@ -76,10 +81,8 @@ public class LadderBoard extends BorderPane implements BoardGameObserver {
     bottomBar.setPadding(new Insets(10));
 
     setLeft(leftPanel);
-    setCenter(centerPanel);
+    setCenter(gameArea);
     setBottom(bottomBar);
-
-    centerPanel.getChildren().add(victoryScreen);
   }
 
   private void returnToMenu() {
@@ -89,7 +92,6 @@ public class LadderBoard extends BorderPane implements BoardGameObserver {
   private void showVictoryScreen(Player winner) {
     soundManager.playSound("victory");
     victoryScreen.showVictory(winner);
-    victoryScreen.setVisible(true);
   }
 
   @Override
@@ -98,7 +100,7 @@ public class LadderBoard extends BorderPane implements BoardGameObserver {
       if (event instanceof GameStartedEvent startedEvent) {
         controlPanel.setDiceDisabled(true);
         controlPanel.updateCurrentPlayer(startedEvent.getCurrentPlayer());
-        updateUI();
+        updateUI(startedEvent.getBoard(), startedEvent.getPlayers());
         victoryScreen.setVisible(false);
         scoreboard.updatePlayers(gameController.getGame().getPlayers());
       } else if (event instanceof DiceRolledEvent diceEvent) {
@@ -144,14 +146,11 @@ public class LadderBoard extends BorderPane implements BoardGameObserver {
     });
   }
 
-  private void updateUI() {
-    if (gameController.getGame() != null) {
-      gameBoardView.setBoard(gameController.getGame().getBoard());
-
-      for (Player player : gameController.getGame().getPlayers()) {
-        if (player.getCurrentTile() != null) {
-          gameBoardView.updatePlayerPosition(player, player.getCurrentTile());
-        }
+  private void updateUI(Board board, List<Player> players) {
+    gameBoardView.setBoard(board);
+    for (Player player : players) {
+      if (player.getCurrentTile() != null) {
+        gameBoardView.updatePlayerPosition(player, player.getCurrentTile());
       }
     }
   }
