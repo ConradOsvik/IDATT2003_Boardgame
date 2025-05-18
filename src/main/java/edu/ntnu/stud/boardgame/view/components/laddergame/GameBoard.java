@@ -33,10 +33,18 @@ public class GameBoard extends StackPane {
     boardRenderer = new BoardRenderer();
     pieceAnimation = new PieceAnimation();
 
+    setMinSize(400, 400);
+
     boardCanvas.widthProperty().bind(widthProperty());
     boardCanvas.heightProperty().bind(heightProperty());
     piecesLayer.setPickOnBounds(false);
 
+    setupResize();
+
+    getChildren().addAll(boardCanvas, piecesLayer);
+  }
+
+  private void setupResize() {
     ChangeListener<Number> resizeListener = (obs, oldVal, newVal) -> {
       if (newVal.doubleValue() > 0) {
         needsRedraw = true;
@@ -45,10 +53,8 @@ public class GameBoard extends StackPane {
       }
     };
 
-    boardCanvas.widthProperty().addListener(resizeListener);
-    boardCanvas.heightProperty().addListener(resizeListener);
-
-    getChildren().addAll(boardCanvas, piecesLayer);
+    widthProperty().addListener(resizeListener);
+    heightProperty().addListener(resizeListener);
   }
 
   public void setBoard(Board board) {
