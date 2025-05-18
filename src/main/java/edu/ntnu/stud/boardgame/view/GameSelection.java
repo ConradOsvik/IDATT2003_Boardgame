@@ -1,6 +1,6 @@
 package edu.ntnu.stud.boardgame.view;
 
-import edu.ntnu.stud.boardgame.controller.MainController;
+import edu.ntnu.stud.boardgame.controller.GameController;
 import edu.ntnu.stud.boardgame.model.enums.BoardGameType;
 import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
 import edu.ntnu.stud.boardgame.observer.GameEvent;
@@ -20,9 +20,9 @@ import javafx.scene.text.TextAlignment;
 
 public class GameSelection extends BorderPane implements BoardGameObserver {
 
-  private final MainController controller;
+  private final GameController controller;
 
-  public GameSelection(MainController controller) {
+  public GameSelection(GameController controller) {
     this.controller = controller;
 
     getStyleClass().add("game-selection-view");

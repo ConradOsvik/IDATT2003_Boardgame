@@ -1,5 +1,6 @@
 package edu.ntnu.stud.boardgame.view;
 
+import edu.ntnu.stud.boardgame.controller.GameController;
 import edu.ntnu.stud.boardgame.controller.MainController;
 import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
 import edu.ntnu.stud.boardgame.observer.GameEvent;
@@ -19,11 +20,13 @@ import javafx.scene.layout.VBox;
 public class BoardSelection extends BorderPane implements BoardGameObserver {
 
   private final MainController controller;
+  private final GameController gameController;
   private final ObservableList<String> boardItems = FXCollections.observableArrayList();
   private ListView<String> boardListView;
 
-  public BoardSelection(MainController controller) {
+  public BoardSelection(MainController controller, GameController gameController) {
     this.controller = controller;
+    this.gameController = gameController;
 
     getStyleClass().add("board-selection-view");
 
@@ -72,7 +75,7 @@ public class BoardSelection extends BorderPane implements BoardGameObserver {
   }
 
   public void refreshBoardList() {
-    List<String> availableBoards = controller.getGameFacade().getAvailableGameBoards();
+    List<String> availableBoards = gameController.getAvailableBoards();
     boardItems.clear();
 
     if (availableBoards != null && !availableBoards.isEmpty()) {
@@ -85,7 +88,7 @@ public class BoardSelection extends BorderPane implements BoardGameObserver {
   private void selectBoard() {
     String selectedBoard = boardListView.getSelectionModel().getSelectedItem();
     if (selectedBoard != null && !selectedBoard.isEmpty()) {
-      controller.selectBoard(selectedBoard);
+      gameController.selectBoard(selectedBoard);
     } else {
       controller.showErrorDialog("Selection Error", "Please select a board.");
     }

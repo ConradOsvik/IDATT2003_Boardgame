@@ -89,7 +89,7 @@ public class ControlPanel extends VBox {
 
   private void restartGame() {
     try {
-      gameController.restartGame();
+      gameController.startGame();
       diceValueLabel.setText("Dice: -");
     } catch (Exception e) {
       System.err.println("Error restarting game: " + e.getMessage());

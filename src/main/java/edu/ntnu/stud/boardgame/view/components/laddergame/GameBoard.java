@@ -6,45 +6,38 @@ import edu.ntnu.stud.boardgame.model.Tile;
 import edu.ntnu.stud.boardgame.model.action.LadderAction;
 import edu.ntnu.stud.boardgame.model.action.SnakeAction;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.Queue;
-import javafx.animation.PathTransition;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.CubicCurveTo;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.QuadCurveTo;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
-import javafx.util.Duration;
 
 public class GameBoard extends StackPane {
 
-  // Colors for board elements
-  private static final Color SNAKE_COLOR = Color.RED;
-  private static final Color LADDER_COLOR = Color.GREEN;
-  private static final Color DEFAULT_TILE_COLOR = Color.LIGHTBLUE;
+  private static final Color SNAKE_COLOR = Color.rgb(220, 20, 60);
+  private static final Color LADDER_COLOR = Color.rgb(50, 205, 50);
+  private static final Color DEFAULT_TILE_COLOR = Color.rgb(135, 206, 250);
   private static final Color BOARD_BACKGROUND_COLOR = Color.WHITE;
-  private static final Color SNAKE_TILE_COLOR = Color.PINK;
-  private static final Color LADDER_TILE_COLOR = Color.LIGHTGREEN;
-  private static final Color LAST_TILE_COLOR = Color.GOLD;
-  private static final Color START_TILE_COLOR = Color.LIGHTGRAY;
+  private static final Color SNAKE_TILE_COLOR = Color.rgb(255, 182, 193);
+  private static final Color LADDER_TILE_COLOR = Color.rgb(144, 238, 144);
+  private static final Color LAST_TILE_COLOR = Color.rgb(255, 215, 0);
+  private static final Color START_TILE_COLOR = Color.rgb(211, 211, 211);
+
   private final Canvas boardCanvas;
   private final Pane piecesLayer;
   private final Map<Player, PlayerPiece> playerPieces = new HashMap<>();
-  private final Map<PlayerPiece, Queue<PathTransition>> animationQueues = new HashMap<>();
-  private final Map<PlayerPiece, Boolean> isAnimating = new HashMap<>();
+
   private Board board;
   private double cellSize;
   private double padding;
+  private boolean needsRedraw = true;
 
   public GameBoard() {
     boardCanvas = new Canvas();
@@ -53,30 +46,38 @@ public class GameBoard extends StackPane {
     boardCanvas.widthProperty().bind(widthProperty());
     boardCanvas.heightProperty().bind(heightProperty());
 
-    boardCanvas.widthProperty().addListener((obs, oldVal, newVal) -> drawBoard());
-    boardCanvas.heightProperty().addListener((obs, oldVal, newVal) -> drawBoard());
+    ChangeListener<Number> resizeListener = (obs, oldVal, newVal) -> {
+      if (newVal.doubleValue() > 0) {
+        needsRedraw = true;
+        calculateCellSize();
+        Platform.runLater(this::drawBoard);
+      }
+    };
+
+    boardCanvas.widthProperty().addListener(resizeListener);
+    boardCanvas.heightProperty().addListener(resizeListener);
 
     getChildren().addAll(boardCanvas, piecesLayer);
   }
 
   public void setBoard(Board board) {
     this.board = board;
-
+    needsRedraw = true;
     calculateCellSize();
-
     drawBoard();
   }
 
   public void updatePlayerPosition(Player player, Tile tile) {
+    if (player == null) {
+      return;
+    }
+
     PlayerPiece piece = playerPieces.get(player);
 
     if (piece == null) {
       piece = new PlayerPiece(player);
       playerPieces.put(player, piece);
       piecesLayer.getChildren().add(piece);
-
-      animationQueues.put(piece, new LinkedList<>());
-      isAnimating.put(piece, false);
     }
 
     if (tile != null) {
@@ -90,8 +91,7 @@ public class GameBoard extends StackPane {
       return;
     }
 
-    Path path = createDirectPath(fromTile, toTile);
-    queueAnimation(piece, path, Duration.seconds(0.3));
+    piece.animateMove(fromTile, toTile, cellSize, padding);
   }
 
   public void animatePlayerLadderClimb(Player player, Tile fromTile, Tile toTile) {
@@ -100,8 +100,7 @@ public class GameBoard extends StackPane {
       return;
     }
 
-    Path path = createLadderPath(fromTile, toTile);
-    queueAnimation(piece, path, Duration.seconds(0.5));
+    piece.animateLadderClimb(fromTile, toTile, cellSize, padding);
   }
 
   public void animatePlayerSnakeSlide(Player player, Tile fromTile, Tile toTile) {
@@ -110,8 +109,7 @@ public class GameBoard extends StackPane {
       return;
     }
 
-    Path path = createSnakePath(fromTile, toTile);
-    queueAnimation(piece, path, Duration.seconds(0.5));
+    piece.animateSnakeSlide(fromTile, toTile, cellSize, padding);
   }
 
   private void calculateCellSize() {
@@ -127,18 +125,17 @@ public class GameBoard extends StackPane {
 
     cellSize = Math.min(maxCellWidth, maxCellHeight);
 
-    padding = Math.min(
-        (boardCanvas.getWidth() - (cellSize * cols)) / 2,
-        (boardCanvas.getHeight() - (cellSize * rows)) / 2
-    );
+    padding = Math.min((boardCanvas.getWidth() - (cellSize * cols)) / 2,
+        (boardCanvas.getHeight() - (cellSize * rows)) / 2);
+
+    updateAllPiecePositions();
   }
 
   private void drawBoard() {
-    if (board == null || boardCanvas.getWidth() <= 0 || boardCanvas.getHeight() <= 0) {
+    if (board == null || boardCanvas.getWidth() <= 0 || boardCanvas.getHeight() <= 0
+        || !needsRedraw) {
       return;
     }
-
-    calculateCellSize();
 
     GraphicsContext gc = boardCanvas.getGraphicsContext2D();
 
@@ -148,10 +145,9 @@ public class GameBoard extends StackPane {
     gc.fillRect(0, 0, boardCanvas.getWidth(), boardCanvas.getHeight());
 
     drawTiles(gc);
-
     drawSnakesAndLadders(gc);
 
-    updateAllPiecePositions();
+    needsRedraw = false;
   }
 
   private void drawTiles(GraphicsContext gc) {
@@ -159,12 +155,10 @@ public class GameBoard extends StackPane {
       return;
     }
 
-    int rows = board.getRows();
-    int cols = board.getColumns();
-
     double fontSize = Math.min(16, Math.max(9, cellSize / 4));
     gc.setFont(Font.font("Arial", FontWeight.NORMAL, fontSize));
     gc.setTextAlign(TextAlignment.CENTER);
+    gc.setTextBaseline(VPos.CENTER);
 
     for (int i = 1; i <= board.getEndTileId(); i++) {
       Tile tile = board.getTile(i);
@@ -180,7 +174,7 @@ public class GameBoard extends StackPane {
 
       boolean isSnake = tile.getLandAction() instanceof SnakeAction;
       boolean isLadder = tile.getLandAction() instanceof LadderAction;
-      boolean isStart = i == 1;
+      boolean isStart = i == board.getStartTileId() + 1;
       boolean isEnd = i == board.getEndTileId();
 
       if (isEnd) {
@@ -200,7 +194,7 @@ public class GameBoard extends StackPane {
       gc.strokeRect(x, y, cellSize, cellSize);
 
       gc.setFill(Color.BLACK);
-      gc.fillText(String.valueOf(i), x + cellSize / 2, y + cellSize / 2 + fontSize / 3);
+      gc.fillText(String.valueOf(i), x + cellSize / 2, y + cellSize / 2);
     }
   }
 
@@ -221,9 +215,8 @@ public class GameBoard extends StackPane {
   }
 
   private void drawSnake(GraphicsContext gc, Tile fromTile, Tile toTile) {
-    if (fromTile == null || toTile == null ||
-        fromTile.getRow() == null || fromTile.getColumn() == null ||
-        toTile.getRow() == null || toTile.getColumn() == null) {
+    if (fromTile == null || toTile == null || fromTile.getRow() == null
+        || fromTile.getColumn() == null || toTile.getRow() == null || toTile.getColumn() == null) {
       return;
     }
 
@@ -233,7 +226,7 @@ public class GameBoard extends StackPane {
     double endY = toTile.getRow() * cellSize + padding + cellSize / 2;
 
     gc.setStroke(SNAKE_COLOR);
-    gc.setLineWidth(3);
+    gc.setLineWidth(Math.max(3, cellSize / 15));
 
     double controlX1 = (startX + endX) / 2 + cellSize;
     double controlY1 = (startY + endY) / 2;
@@ -251,9 +244,8 @@ public class GameBoard extends StackPane {
   }
 
   private void drawLadder(GraphicsContext gc, Tile fromTile, Tile toTile) {
-    if (fromTile == null || toTile == null ||
-        fromTile.getRow() == null || fromTile.getColumn() == null ||
-        toTile.getRow() == null || toTile.getColumn() == null) {
+    if (fromTile == null || toTile == null || fromTile.getRow() == null
+        || fromTile.getColumn() == null || toTile.getRow() == null || toTile.getColumn() == null) {
       return;
     }
 
@@ -263,32 +255,42 @@ public class GameBoard extends StackPane {
     double endY = toTile.getRow() * cellSize + padding + cellSize / 2;
 
     gc.setStroke(LADDER_COLOR);
-    gc.setLineWidth(3);
+    gc.setLineWidth(Math.max(3, cellSize / 15));
 
-    gc.strokeLine(startX, startY, endX, endY);
+    double angle = Math.atan2(endY - startY, endX - startX);
+    double railOffset = cellSize / 8;
+
+    double rail1StartX = startX + railOffset * Math.cos(angle + Math.PI / 2);
+    double rail1StartY = startY + railOffset * Math.sin(angle + Math.PI / 2);
+    double rail1EndX = endX + railOffset * Math.cos(angle + Math.PI / 2);
+    double rail1EndY = endY + railOffset * Math.sin(angle + Math.PI / 2);
+
+    double rail2StartX = startX + railOffset * Math.cos(angle - Math.PI / 2);
+    double rail2StartY = startY + railOffset * Math.sin(angle - Math.PI / 2);
+    double rail2EndX = endX + railOffset * Math.cos(angle - Math.PI / 2);
+    double rail2EndY = endY + railOffset * Math.sin(angle - Math.PI / 2);
+
+    gc.strokeLine(rail1StartX, rail1StartY, rail1EndX, rail1EndY);
+    gc.strokeLine(rail2StartX, rail2StartY, rail2EndX, rail2EndY);
 
     double dx = endX - startX;
     double dy = endY - startY;
     double length = Math.sqrt(dx * dx + dy * dy);
 
-    double nx = dx / length;
-    double ny = dy / length;
-
-    double px = -ny;
-    double py = nx;
-
-    int numRungs = (int) (length / (cellSize / 2)) + 1;
-    double rungLength = cellSize / 3;
+    int numRungs = Math.max(3, (int) (length / (cellSize / 2)));
+    gc.setLineWidth(Math.max(2, cellSize / 20));
 
     for (int i = 0; i < numRungs; i++) {
       double t = i / (double) (numRungs - 1);
-      double x = startX + t * dx;
-      double y = startY + t * dy;
+      double rungX = startX + t * (endX - startX);
+      double rungY = startY + t * (endY - startY);
 
-      gc.strokeLine(
-          x - px * rungLength / 2, y - py * rungLength / 2,
-          x + px * rungLength / 2, y + py * rungLength / 2
-      );
+      double rung1X = rungX + railOffset * Math.cos(angle + Math.PI / 2);
+      double rung1Y = rungY + railOffset * Math.sin(angle + Math.PI / 2);
+      double rung2X = rungX + railOffset * Math.cos(angle - Math.PI / 2);
+      double rung2Y = rungY + railOffset * Math.sin(angle - Math.PI / 2);
+
+      gc.strokeLine(rung1X, rung1Y, rung2X, rung2Y);
     }
   }
 
@@ -304,130 +306,11 @@ public class GameBoard extends StackPane {
     piece.setTranslateY(y);
   }
 
-  private Path createDirectPath(Tile fromTile, Tile toTile) {
-    if (fromTile == null || toTile == null ||
-        fromTile.getRow() == null || fromTile.getColumn() == null ||
-        toTile.getRow() == null || toTile.getColumn() == null) {
-      return null;
-    }
-
-    double startX = fromTile.getColumn() * cellSize + padding + cellSize / 2;
-    double startY = fromTile.getRow() * cellSize + padding + cellSize / 2;
-    double endX = toTile.getColumn() * cellSize + padding + cellSize / 2;
-    double endY = toTile.getRow() * cellSize + padding + cellSize / 2;
-
-    Path path = new Path();
-    path.getElements().add(new MoveTo(startX, startY));
-    path.getElements().add(new LineTo(endX, endY));
-
-    return path;
-  }
-
-  private Path createLadderPath(Tile fromTile, Tile toTile) {
-    if (fromTile == null || toTile == null ||
-        fromTile.getRow() == null || fromTile.getColumn() == null ||
-        toTile.getRow() == null || toTile.getColumn() == null) {
-      return null;
-    }
-
-    double startX = fromTile.getColumn() * cellSize + padding + cellSize / 2;
-    double startY = fromTile.getRow() * cellSize + padding + cellSize / 2;
-    double endX = toTile.getColumn() * cellSize + padding + cellSize / 2;
-    double endY = toTile.getRow() * cellSize + padding + cellSize / 2;
-
-    Path path = new Path();
-    path.getElements().add(new MoveTo(startX, startY));
-
-    double midX = (startX + endX) / 2;
-    double controlY = Math.min(startY, endY) - cellSize / 2;
-
-    path.getElements().add(new QuadCurveTo(midX, controlY, endX, endY));
-
-    return path;
-  }
-
-  private Path createSnakePath(Tile fromTile, Tile toTile) {
-    if (fromTile == null || toTile == null ||
-        fromTile.getRow() == null || fromTile.getColumn() == null ||
-        toTile.getRow() == null || toTile.getColumn() == null) {
-      return null;
-    }
-
-    double startX = fromTile.getColumn() * cellSize + padding + cellSize / 2;
-    double startY = fromTile.getRow() * cellSize + padding + cellSize / 2;
-    double endX = toTile.getColumn() * cellSize + padding + cellSize / 2;
-    double endY = toTile.getRow() * cellSize + padding + cellSize / 2;
-
-    Path path = new Path();
-    path.getElements().add(new MoveTo(startX, startY));
-
-    double controlX1 = (startX + endX) / 2 + cellSize;
-    double controlY1 = (startY + endY) / 2;
-    double controlX2 = (startX + endX) / 2 - cellSize;
-    double controlY2 = (startY + endY) / 2;
-
-    path.getElements().add(new CubicCurveTo(
-        controlX1, controlY1,
-        controlX2, controlY2,
-        endX, endY
-    ));
-
-    return path;
-  }
-
-  private void queueAnimation(PlayerPiece piece, Path path, Duration duration) {
-    if (path == null || !animationQueues.containsKey(piece)) {
-      return;
-    }
-
-    Queue<PathTransition> queue = animationQueues.get(piece);
-
-    PathTransition transition = new PathTransition(duration, path, piece);
-    queue.add(transition);
-
-    if (!isAnimating.get(piece)) {
-      playNextAnimation(piece);
-    }
-  }
-
-  private void playNextAnimation(PlayerPiece piece) {
-    Queue<PathTransition> queue = animationQueues.get(piece);
-
-    if (queue.isEmpty()) {
-      isAnimating.put(piece, false);
-      return;
-    }
-
-    isAnimating.put(piece, true);
-    PathTransition nextAnimation = queue.poll();
-
-    nextAnimation.setOnFinished(e -> playNextAnimation(piece));
-    nextAnimation.play();
-  }
-
   private void updateAllPiecePositions() {
     playerPieces.forEach((player, piece) -> {
       if (player.getCurrentTile() != null) {
         positionPieceAtTile(piece, player.getCurrentTile());
       }
     });
-  }
-
-  private class PlayerPiece extends StackPane {
-
-    private final Player player;
-
-    public PlayerPiece(Player player) {
-      this.player = player;
-
-      Circle circle = new Circle(cellSize / 4);
-      circle.getStyleClass().add("player-piece");
-      circle.getStyleClass().add(player.getPiece().name().toLowerCase() + "-piece");
-
-      getChildren().add(circle);
-
-      setTranslateX(-cellSize / 4);
-      setTranslateY(-cellSize / 4);
-    }
   }
 }

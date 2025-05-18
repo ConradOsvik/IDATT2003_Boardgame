@@ -2,10 +2,7 @@ package edu.ntnu.stud.boardgame.view;
 
 import edu.ntnu.stud.boardgame.controller.GameController;
 import edu.ntnu.stud.boardgame.controller.MainController;
-import edu.ntnu.stud.boardgame.model.Board;
 import edu.ntnu.stud.boardgame.model.Player;
-import edu.ntnu.stud.boardgame.model.Tile;
-import edu.ntnu.stud.boardgame.model.game.LadderGame;
 import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
 import edu.ntnu.stud.boardgame.observer.GameEvent;
 import edu.ntnu.stud.boardgame.observer.event.DiceRolledEvent;
@@ -21,7 +18,6 @@ import edu.ntnu.stud.boardgame.view.components.laddergame.ControlPanel;
 import edu.ntnu.stud.boardgame.view.components.laddergame.GameBoard;
 import edu.ntnu.stud.boardgame.view.components.laddergame.PlayerScoreboard;
 import edu.ntnu.stud.boardgame.view.components.laddergame.VictoryScreen;
-import java.net.URL;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -33,31 +29,27 @@ import javafx.scene.layout.VBox;
 
 public class LadderBoard extends BorderPane implements BoardGameObserver {
 
-  private final MainController mainController;
+  private final MainController controller;
   private final GameController gameController;
 
   private final ControlPanel controlPanel;
   private final PlayerScoreboard scoreboard;
-  private final GameBoard gameBoard;
+  private final GameBoard gameBoardView;
   private final VictoryScreen victoryScreen;
+  private final SoundManager soundManager;
 
-//  private final Map<String, AudioClip> sounds = new HashMap<>();
-
-  public LadderBoard(MainController mainController, GameController gameController) {
-    this.mainController = mainController;
+  public LadderBoard(MainController controller, GameController gameController) {
+    this.controller = controller;
     this.gameController = gameController;
-
-    mainController.registerObserver(this);
+    this.gameController.registerObserver(this);
 
     this.controlPanel = new ControlPanel(gameController);
     this.scoreboard = new PlayerScoreboard();
-    this.gameBoard = new GameBoard();
+    this.gameBoardView = new GameBoard();
     this.victoryScreen = new VictoryScreen();
-
-    loadAudioClips();
+    this.soundManager = new SoundManager();
 
     initializeLayout();
-
     victoryScreen.setVisible(false);
   }
 
@@ -69,13 +61,13 @@ public class LadderBoard extends BorderPane implements BoardGameObserver {
     VBox.setVgrow(scoreboard, Priority.ALWAYS);
 
     BorderPane centerPanel = new BorderPane();
-    centerPanel.setCenter(gameBoard);
+    centerPanel.setCenter(gameBoardView);
     centerPanel.setStyle("-fx-background-color: #f0f0f0;");
 
     Button menuButton = new ButtonBuilder()
         .text("Back to Menu")
         .styleClass("menu-button")
-        .onClick(e -> mainController.showGameSelectionView())
+        .onClick(e -> returnToMenu())
         .build();
 
     HBox bottomBar = new HBox(menuButton);
@@ -89,52 +81,12 @@ public class LadderBoard extends BorderPane implements BoardGameObserver {
     centerPanel.getChildren().add(victoryScreen);
   }
 
-  private void loadAudioClips() {
-    try {
-      loadSound("dice_roll", "/sounds/dice_roll.wav");
-      loadSound("move", "/sounds/move.wav");
-      loadSound("ladder", "/sounds/ladder.wav");
-      loadSound("snake", "/sounds/snake.wav");
-      loadSound("victory", "/sounds/victory.wav");
-    } catch (Exception e) {
-      System.err.println("Failed to load audio clips: " + e.getMessage());
-    }
+  private void returnToMenu() {
+    controller.showGameSelectionView();
   }
 
-  private void loadSound(String name, String resourcePath) {
-    URL resource = getClass().getResource(resourcePath);
-    if (resource != null) {
-//      AudioClip clip = new AudioClip(resource.toExternalForm());
-//      sounds.put(name, clip);
-    } else {
-      System.err.println("Could not find sound resource: " + resourcePath);
-    }
-  }
-
-  private void playSound(String name) {
-//    AudioClip clip = sounds.get(name);
-//    if (clip != null) {
-//      clip.play();
-//    }
-  }
-
-  public void updateBoard() {
-    LadderGame game = (LadderGame) gameController.getGame();
-    if (game != null) {
-      Board board = game.getBoard();
-      gameBoard.setBoard(board);
-
-      for (Player player : game.getPlayers()) {
-        Tile currentTile = player.getCurrentTile();
-        if (currentTile != null) {
-          gameBoard.updatePlayerPosition(player, currentTile);
-        }
-      }
-    }
-  }
-
-  public void showVictoryScreen(Player winner) {
-    playSound("victory");
+  private void showVictoryScreen(Player winner) {
+    soundManager.playSound("victory");
     victoryScreen.showVictory(winner);
     victoryScreen.setVisible(true);
   }
@@ -142,38 +94,59 @@ public class LadderBoard extends BorderPane implements BoardGameObserver {
   @Override
   public void onGameEvent(GameEvent event) {
     Platform.runLater(() -> {
-      if (event instanceof GameStartedEvent) {
-        updateBoard();
+      if (event instanceof GameStartedEvent startedEvent) {
+        Player currentPlayer = startedEvent.getCurrentPlayer();
+        controlPanel.updateCurrentPlayer(currentPlayer);
+        updateUI();
         victoryScreen.setVisible(false);
         scoreboard.updatePlayers(gameController.getGame().getPlayers());
       } else if (event instanceof DiceRolledEvent diceEvent) {
-        playSound("dice_roll");
+        soundManager.playSound("dice_roll");
         controlPanel.updateDiceValue(diceEvent.getValue());
       } else if (event instanceof LadderClimbedEvent ladderEvent) {
-        playSound("ladder");
-        gameBoard.animatePlayerLadderClimb(ladderEvent.getPlayer(),
+        soundManager.playSound("ladder");
+        gameBoardView.animatePlayerLadderClimb(ladderEvent.getPlayer(),
             ladderEvent.getFromTile(),
             ladderEvent.getToTile());
       } else if (event instanceof SnakeEncounteredEvent snakeEvent) {
-        playSound("snake");
-        gameBoard.animatePlayerSnakeSlide(snakeEvent.getPlayer(),
+        soundManager.playSound("snake");
+        gameBoardView.animatePlayerSnakeSlide(snakeEvent.getPlayer(),
             snakeEvent.getFromTile(),
             snakeEvent.getToTile());
       } else if (event instanceof PlayerMovedEvent moveEvent) {
-        playSound("move");
-        gameBoard.animatePlayerMove(moveEvent.getPlayer(),
+        soundManager.playSound("move");
+        gameBoardView.animatePlayerMove(moveEvent.getPlayer(),
             moveEvent.getFromTile(),
             moveEvent.getToTile());
       } else if (event instanceof TurnChangedEvent turnEvent) {
         Player currentPlayer = gameController.getGame().getCurrentPlayer();
         controlPanel.updateCurrentPlayer(currentPlayer);
         scoreboard.highlightCurrentPlayer(currentPlayer);
-      } else if (event instanceof PlayerWonEvent || event instanceof GameEndedEvent) {
+      } else if (event instanceof PlayerWonEvent wonEvent
+          || event instanceof GameEndedEvent endedEvent) {
         Player winner = gameController.getGame().getWinner();
         if (winner != null) {
           showVictoryScreen(winner);
         }
       }
     });
+  }
+
+  private void updateUI() {
+    if (gameController.getGame() != null) {
+      gameBoardView.setBoard(gameController.getGame().getBoard());
+
+      for (Player player : gameController.getGame().getPlayers()) {
+        if (player.getCurrentTile() != null) {
+          gameBoardView.updatePlayerPosition(player, player.getCurrentTile());
+        }
+      }
+    }
+  }
+
+  private class SoundManager {
+
+    public void playSound(String name) {
+    }
   }
 }
