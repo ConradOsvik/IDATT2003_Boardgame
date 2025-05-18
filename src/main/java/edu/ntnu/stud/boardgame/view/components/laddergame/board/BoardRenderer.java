@@ -20,6 +20,7 @@ public class BoardRenderer {
   private static final Color BOARD_BACKGROUND_COLOR = Color.WHITESMOKE;
   private static final Color SNAKE_TILE_COLOR = Color.LIGHTCORAL;
   private static final Color LADDER_TILE_COLOR = Color.LIGHTGREEN;
+  private static final Color GENERAL_ACTION_TILE_COLOR = Color.PURPLE;
   private static final Color LAST_TILE_COLOR = Color.ORANGE;
 
   private static final int SNAKE_HEAD_RADIUS = 10;
@@ -65,6 +66,7 @@ public class BoardRenderer {
       boolean isSnake = tile.getLandAction() instanceof SnakeAction;
       boolean isLadder = tile.getLandAction() instanceof LadderAction;
       boolean isEnd = i == board.getEndTileId();
+      boolean hasGeneralAction = tile.getLandAction() != null && !isSnake && !isLadder;
 
       if (isEnd) {
         gc.setFill(LAST_TILE_COLOR);
@@ -72,6 +74,8 @@ public class BoardRenderer {
         gc.setFill(SNAKE_TILE_COLOR);
       } else if (isLadder) {
         gc.setFill(LADDER_TILE_COLOR);
+      } else if (hasGeneralAction) {
+        gc.setFill(GENERAL_ACTION_TILE_COLOR);
       } else {
         gc.setFill(DEFAULT_TILE_COLOR);
       }

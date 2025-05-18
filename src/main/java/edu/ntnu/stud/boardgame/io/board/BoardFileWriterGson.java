@@ -7,6 +7,7 @@ import edu.ntnu.stud.boardgame.exception.files.BoardWritingException;
 import edu.ntnu.stud.boardgame.model.Board;
 import edu.ntnu.stud.boardgame.model.Tile;
 import edu.ntnu.stud.boardgame.model.action.LadderAction;
+import edu.ntnu.stud.boardgame.model.action.SkipTurnAction;
 import edu.ntnu.stud.boardgame.model.action.SnakeAction;
 import edu.ntnu.stud.boardgame.model.action.TileAction;
 import java.io.FileWriter;
@@ -37,6 +38,10 @@ public class BoardFileWriterGson implements BoardFileWriter {
       actionObject.addProperty("destinationTileId", snakeAction.getDestinationTile().getTileId());
       actionObject.addProperty("description",
           "Snake from " + tile.getTileId() + " to " + snakeAction.getDestinationTile().getTileId());
+    } else if (action instanceof SkipTurnAction skipTurnAction) {
+      actionObject.addProperty("type", "SkipTurnAction");
+      actionObject.addProperty("description",
+          "Skip turn for player");
     } else {
       throw new BoardWritingException("Unknown action type: " + action.getClass());
     }

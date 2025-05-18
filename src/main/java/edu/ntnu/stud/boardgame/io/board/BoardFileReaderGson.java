@@ -10,6 +10,7 @@ import edu.ntnu.stud.boardgame.exception.files.BoardParsingException;
 import edu.ntnu.stud.boardgame.model.Board;
 import edu.ntnu.stud.boardgame.model.Tile;
 import edu.ntnu.stud.boardgame.model.action.LadderAction;
+import edu.ntnu.stud.boardgame.model.action.SkipTurnAction;
 import edu.ntnu.stud.boardgame.model.action.SnakeAction;
 import edu.ntnu.stud.boardgame.model.action.TileAction;
 import java.io.IOException;
@@ -126,6 +127,10 @@ public class BoardFileReaderGson implements BoardFileReader {
               }
 
               TileAction action = new SnakeAction(destinationTile);
+              tile.setLandAction(action);
+            }
+            case "SkipTurnAction" -> {
+              TileAction action = new SkipTurnAction();
               tile.setLandAction(action);
             }
           }
