@@ -17,16 +17,25 @@ public class PlayerFileService {
 
   private static final Logger LOGGER = Logger.getLogger(PlayerFileService.class.getName());
 
+  private static PlayerFileService instance;
+
   private final PlayerFileReader playerReader;
   private final PlayerFileWriter playerWriter;
   private final Path playersDirectory;
 
-  public PlayerFileService() {
+  private PlayerFileService() {
     this.playerReader = new PlayerFileReaderCsv();
     this.playerWriter = new PlayerFileWriterCsv();
     this.playersDirectory = Paths.get("data/players");
 
     createDirectoryIfNotExists(playersDirectory);
+  }
+
+  public static synchronized PlayerFileService getInstance() {
+    if (instance == null) {
+      instance = new PlayerFileService();
+    }
+    return instance;
   }
 
   public List<Player> loadPlayers(String fileName) throws PlayerFileException {

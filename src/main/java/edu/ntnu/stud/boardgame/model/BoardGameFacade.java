@@ -18,7 +18,8 @@ public class BoardGameFacade {
   private BoardGame currentGame;
   private BoardGameType currentGameType;
 
-  public BoardGameFacade(BoardFileService boardFileService) {
+  public BoardGameFacade() {
+    BoardFileService boardFileService = BoardFileService.getInstance();
     this.factory = new BoardGameFactory(boardFileService);
     this.observers = new ArrayList<>();
   }
@@ -31,6 +32,7 @@ public class BoardGameFacade {
     try {
       currentGame = factory.loadGameFromFile(currentGameType, fileName);
       currentGame.registerObservers(observers);
+      currentGame.notifyGameCreated();
     } catch (Exception e) {
       throw new BoardGameException("Failed to load game from file: " + fileName, e);
     }

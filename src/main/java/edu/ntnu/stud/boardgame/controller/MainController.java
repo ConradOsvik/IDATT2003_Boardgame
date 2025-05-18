@@ -1,9 +1,6 @@
 package edu.ntnu.stud.boardgame.controller;
 
-import edu.ntnu.stud.boardgame.model.BoardGameFacade;
 import edu.ntnu.stud.boardgame.model.enums.BoardGameType;
-import edu.ntnu.stud.boardgame.service.BoardFileService;
-import edu.ntnu.stud.boardgame.service.PlayerFileService;
 import edu.ntnu.stud.boardgame.view.BoardSelectionView;
 import edu.ntnu.stud.boardgame.view.GameSelectionView;
 import edu.ntnu.stud.boardgame.view.LadderGameView;
@@ -30,11 +27,6 @@ public class MainController {
   public MainController(Stage primaryStage) {
     this.primaryStage = primaryStage;
     this.mainContainer = new BorderPane();
-
-    BoardFileService boardFileService = new BoardFileService();
-    PlayerFileService playerFileService = new PlayerFileService();
-
-    BoardGameFacade gameFacade = new BoardGameFacade(boardFileService);
 
     this.gameController = new GameController(this);
 

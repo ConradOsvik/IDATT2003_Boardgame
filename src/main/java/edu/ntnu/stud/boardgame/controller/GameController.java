@@ -7,7 +7,6 @@ import edu.ntnu.stud.boardgame.model.enums.BoardGameType;
 import edu.ntnu.stud.boardgame.model.enums.PieceType;
 import edu.ntnu.stud.boardgame.model.game.BoardGame;
 import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
-import edu.ntnu.stud.boardgame.service.BoardFileService;
 import edu.ntnu.stud.boardgame.service.PlayerFileService;
 import java.util.List;
 
@@ -19,9 +18,8 @@ public class GameController {
 
   public GameController(MainController mainController) {
     this.mainController = mainController;
-    this.playerFileService = new PlayerFileService();
-    BoardFileService boardFileService = new BoardFileService();
-    this.gameFacade = new BoardGameFacade(boardFileService);
+    this.playerFileService = PlayerFileService.getInstance();
+    this.gameFacade = new BoardGameFacade();
   }
 
   public void selectGameType(BoardGameType gameType) {

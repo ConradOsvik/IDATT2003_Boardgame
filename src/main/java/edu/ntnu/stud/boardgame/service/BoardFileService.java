@@ -20,16 +20,25 @@ public class BoardFileService {
 
   private static final Logger LOGGER = Logger.getLogger(BoardFileService.class.getName());
 
+  private static BoardFileService instance;
+
   private final BoardFileReader boardReader;
   private final BoardFileWriter boardWriter;
   private final Path boardsBaseDirectory;
 
-  public BoardFileService() {
+  private BoardFileService() {
     this.boardReader = new BoardFileReaderGson();
     this.boardWriter = new BoardFileWriterGson();
     this.boardsBaseDirectory = Paths.get("data/boards");
 
     createDirectoryIfNotExists(boardsBaseDirectory);
+  }
+
+  public static synchronized BoardFileService getInstance() {
+    if (instance == null) {
+      instance = new BoardFileService();
+    }
+    return instance;
   }
 
   private Path getGameTypeDirectory(BoardGameType gameType) {
