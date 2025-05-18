@@ -4,6 +4,7 @@ import edu.ntnu.stud.boardgame.model.Player;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -37,6 +38,8 @@ public class PlayerPiece extends StackPane {
       LOGGER.log(Level.SEVERE, "Error loading token image", e);
     }
 
+    this.setAlignment(Pos.CENTER);
+
     updateSize(currentSize);
     getChildren().add(tokenImageView);
 
@@ -49,12 +52,9 @@ public class PlayerPiece extends StackPane {
     tokenImageView.setFitWidth(size);
     tokenImageView.setFitHeight(size);
     tokenImageView.setPreserveRatio(true);
-
-    tokenImageView.setTranslateX(-size / 2);
-    tokenImageView.setTranslateY(-size / 2);
   }
 
-  public Player getPlayer() {
-    return player;
+  public double getCurrentSize() {
+    return currentSize;
   }
 }

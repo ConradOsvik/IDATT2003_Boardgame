@@ -172,8 +172,9 @@ public class GameBoard extends StackPane {
     double x = tile.getColumn() * cellSize + padding + cellSize / 2;
     double y = tile.getRow() * cellSize + padding + cellSize / 2;
 
-    piece.setTranslateX(x);
-    piece.setTranslateY(y);
+    double pieceSize = piece.getCurrentSize();
+    piece.setTranslateX(x - pieceSize / 2);
+    piece.setTranslateY(y - pieceSize / 2);
   }
 
   private void updateAllPiecePositions() {
