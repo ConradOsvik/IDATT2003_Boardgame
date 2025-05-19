@@ -21,6 +21,7 @@ public class MonopolyPlayerScoreboard extends VBox {
   private final VBox playersContainer;
   private final Map<Player, Label> moneyLabels = new HashMap<>();
   private final Map<Player, HBox> playerRows = new HashMap<>();
+  private final Map<Player, Circle> playerIndicators = new HashMap<>();
   private final MonopolyController controller;
 
   public MonopolyPlayerScoreboard(MonopolyController controller) {
@@ -45,6 +46,7 @@ public class MonopolyPlayerScoreboard extends VBox {
     playersContainer.getChildren().clear();
     playerRows.clear();
     moneyLabels.clear();
+    playerIndicators.clear();
 
     for (int i = 0; i < players.size(); i++) {
       Player player = players.get(i);
@@ -60,26 +62,41 @@ public class MonopolyPlayerScoreboard extends VBox {
       moneyLabel.setText("$" + controller.getPlayerMoney(player));
 
       HBox playerRow = playerRows.get(player);
-      if (playerRow != null && playerRow.getChildren().size() >= 2) {
+      Circle indicator = playerIndicators.get(player);
+
+      if (playerRow != null && playerRow.getChildren().size() >= 2 && indicator != null) {
         Label nameLabel = (Label) playerRow.getChildren().get(1);
-        Circle indicator = (Circle) playerRow.getChildren().get(0);
 
         if (controller.isPlayerBankrupt(player)) {
           nameLabel.setText(player.getName() + " (BANKRUPT)");
           nameLabel.setTextFill(Color.RED);
           indicator.setOpacity(0.5);
+          moneyLabel.setTextFill(Color.RED);
+          playerRow.setOpacity(0.7);
+          playerRow.getStyleClass().add("bankrupt-player");
+        } else {
+          nameLabel.setText(player.getName());
+          nameLabel.setTextFill(Color.BLACK);
+          indicator.setOpacity(1.0);
+          moneyLabel.setTextFill(Color.BLACK);
+          playerRow.setOpacity(1.0);
+          playerRow.getStyleClass().remove("bankrupt-player");
         }
       }
     }
   }
 
   public void highlightCurrentPlayer(Player currentPlayer) {
-    playerRows.values().forEach(row -> row.getStyleClass().remove("list-item-highlighted"));
+    playerRows.forEach((player, row) -> {
+      row.getStyleClass().remove("current-player");
+    });
 
     if (currentPlayer != null) {
       HBox playerRow = playerRows.get(currentPlayer);
       if (playerRow != null) {
-        playerRow.getStyleClass().add("list-item-highlighted");
+        if (!controller.isPlayerBankrupt(currentPlayer)) {
+          playerRow.getStyleClass().add("current-player");
+        }
       }
     }
   }
@@ -122,11 +139,15 @@ public class MonopolyPlayerScoreboard extends VBox {
         .build();
 
     moneyLabels.put(player, moneyLabel);
+    playerIndicators.put(player, playerIndicator);
 
     if (controller.isPlayerBankrupt(player)) {
       nameLabel.setText(player.getName() + " (BANKRUPT)");
       nameLabel.setTextFill(Color.RED);
       playerIndicator.setOpacity(0.5);
+      moneyLabel.setTextFill(Color.RED);
+      row.setOpacity(0.7);
+      row.getStyleClass().add("bankrupt-player");
     }
 
     row.getChildren().addAll(playerIndicator, nameLabel, moneyLabel);
