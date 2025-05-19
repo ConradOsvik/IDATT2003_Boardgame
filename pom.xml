@@ -7,6 +7,7 @@
   <groupId>edu.ntnu.stud</groupId>
   <artifactId>boardgame</artifactId>
   <version>0.3.0</version>
+  <name>Boardgame Application</name>
 
   <properties>
     <jacoco.version>0.8.12</jacoco.version>
