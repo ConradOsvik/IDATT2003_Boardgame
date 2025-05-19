@@ -1,4 +1,4 @@
-package edu.ntnu.stud.boardgame.view.components.laddergame.board;
+package edu.ntnu.stud.boardgame.view.components.laddergame;
 
 import edu.ntnu.stud.boardgame.model.Board;
 import edu.ntnu.stud.boardgame.model.Tile;

@@ -5,62 +5,45 @@ import edu.ntnu.stud.boardgame.controller.MainController;
 import edu.ntnu.stud.boardgame.controller.MonopolyController;
 import edu.ntnu.stud.boardgame.model.Player;
 import edu.ntnu.stud.boardgame.model.Tile;
-import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
 import edu.ntnu.stud.boardgame.observer.GameEvent;
 import edu.ntnu.stud.boardgame.observer.event.DiceRolledEvent;
-import edu.ntnu.stud.boardgame.observer.event.GameEndedEvent;
 import edu.ntnu.stud.boardgame.observer.event.GameStartedEvent;
 import edu.ntnu.stud.boardgame.observer.event.MoneyTransferEvent;
 import edu.ntnu.stud.boardgame.observer.event.PlayerBankruptEvent;
 import edu.ntnu.stud.boardgame.observer.event.PlayerMovedEvent;
 import edu.ntnu.stud.boardgame.observer.event.PropertyPurchasedEvent;
 import edu.ntnu.stud.boardgame.observer.event.TurnChangedEvent;
-import edu.ntnu.stud.boardgame.util.SoundManager;
-import edu.ntnu.stud.boardgame.view.components.AudioControlPanel;
+import edu.ntnu.stud.boardgame.view.components.AbstractGameView;
 import edu.ntnu.stud.boardgame.view.components.builder.ButtonBuilder;
 import edu.ntnu.stud.boardgame.view.components.builder.LabelBuilder;
-import edu.ntnu.stud.boardgame.view.components.laddergame.VictoryScreen;
-import edu.ntnu.stud.boardgame.view.components.monopoly.MonopolyBoard;
+import edu.ntnu.stud.boardgame.view.components.monopoly.MonopolyGameBoard;
 import edu.ntnu.stud.boardgame.view.components.monopoly.MonopolyPlayerScoreboard;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-public class MonopolyGameView extends BorderPane implements BoardGameObserver {
+public class MonopolyGameView extends AbstractGameView {
 
-  private final MainController mainController;
-  private final GameController gameController;
   private final MonopolyController monopolyController;
-
-  private final MonopolyBoard gameBoard;
+  private final MonopolyGameBoard gameBoard;
   private final MonopolyPlayerScoreboard playerScoreboard;
-  private final VictoryScreen victoryScreen;
-  private final SoundManager soundManager;
 
   private final Label statusLabel;
   private final Button rollDiceButton;
   private final Button buyPropertyButton;
 
   public MonopolyGameView(MainController mainController, GameController gameController) {
-    this.mainController = mainController;
-    this.gameController = gameController;
-    this.gameController.registerObserver(this);
+    super(mainController, gameController);
     this.monopolyController = new MonopolyController(gameController);
-    this.soundManager = SoundManager.getInstance();
 
-    this.gameBoard = new MonopolyBoard(monopolyController);
+    this.gameBoard = new MonopolyGameBoard(monopolyController);
     this.playerScoreboard = new MonopolyPlayerScoreboard(monopolyController);
-    this.victoryScreen = new VictoryScreen(gameController);
 
     this.statusLabel = new LabelBuilder()
         .text("Welcome to Monopoly")
         .styleClass("title")
+        .wrapText(true)
         .build();
 
     this.rollDiceButton = new ButtonBuilder()
@@ -78,12 +61,9 @@ public class MonopolyGameView extends BorderPane implements BoardGameObserver {
         .build();
 
     initializeLayout();
-    victoryScreen.setVisible(false);
   }
 
   private void initializeLayout() {
-    setPadding(new Insets(20));
-
     VBox controlPanel = new VBox(15);
     controlPanel.setPadding(new Insets(15));
     controlPanel.setSpacing(15);
@@ -110,26 +90,12 @@ public class MonopolyGameView extends BorderPane implements BoardGameObserver {
 
     VBox leftPanel = new VBox(20);
     leftPanel.setPadding(new Insets(10));
-    leftPanel.getChildren().addAll(controlPanel, playerScoreboard, new AudioControlPanel());
-    leftPanel.setPrefWidth(250);
+    leftPanel.getChildren().addAll(controlPanel, playerScoreboard);
+    leftPanel.setPrefWidth(300);
 
-    Button menuButton = new ButtonBuilder()
-        .text("Back to Menu")
-        .styleClass("secondary-button")
-        .onClick(e -> mainController.showGameSelectionView())
-        .build();
-
-    HBox bottomBar = new HBox(menuButton);
-    bottomBar.setAlignment(Pos.CENTER);
-    bottomBar.setPadding(new Insets(10));
-
-    StackPane centerPane = new StackPane();
-    centerPane.getChildren().addAll(gameBoard, victoryScreen);
-    centerPane.setAlignment(Pos.CENTER);
+    gameArea.getChildren().add(0, gameBoard);
 
     setLeft(leftPanel);
-    setCenter(centerPane);
-    setBottom(bottomBar);
   }
 
   private void rollDice() {
@@ -190,31 +156,6 @@ public class MonopolyGameView extends BorderPane implements BoardGameObserver {
     buyPropertyButton.setDisable(!canBuy);
   }
 
-  @Override
-  public void onGameEvent(GameEvent event) {
-    Platform.runLater(() -> {
-      monopolyController.updateGameReference();
-
-      if (event instanceof GameStartedEvent startedEvent) {
-        handleGameStarted(startedEvent);
-      } else if (event instanceof DiceRolledEvent diceEvent) {
-        handleDiceRolled(diceEvent);
-      } else if (event instanceof PlayerMovedEvent moveEvent) {
-        handlePlayerMoved(moveEvent);
-      } else if (event instanceof TurnChangedEvent turnEvent) {
-        handleTurnChanged(turnEvent);
-      } else if (event instanceof PropertyPurchasedEvent propEvent) {
-        handlePropertyPurchased(propEvent);
-      } else if (event instanceof MoneyTransferEvent transferEvent) {
-        handleMoneyTransfer(transferEvent);
-      } else if (event instanceof PlayerBankruptEvent bankruptEvent) {
-        handlePlayerBankrupt(bankruptEvent);
-      } else if (event instanceof GameEndedEvent endEvent) {
-        handleGameEnded(endEvent);
-      }
-    });
-  }
-
   private void handleGameStarted(GameStartedEvent event) {
     gameBoard.clearPlayerPieces();
 
@@ -230,7 +171,7 @@ public class MonopolyGameView extends BorderPane implements BoardGameObserver {
 
     for (Player player : event.getPlayers()) {
       if (player.getCurrentTile() != null) {
-        gameBoard.updatePlayerPositions(player, player.getCurrentTile());
+        gameBoard.updatePlayerPosition(player, player.getCurrentTile());
       }
     }
   }
@@ -309,16 +250,24 @@ public class MonopolyGameView extends BorderPane implements BoardGameObserver {
     }
   }
 
-  private void handleGameEnded(GameEndedEvent event) {
-    rollDiceButton.setDisable(true);
-    buyPropertyButton.setDisable(true);
+  @Override
+  protected void handleGameEvent(GameEvent event) {
+    monopolyController.updateGameReference();
 
-    if (event.getWinner() != null) {
-      statusLabel.setText(event.getWinner().getName() + " wins the game!");
-      victoryScreen.showVictory(event.getWinner());
-      soundManager.playSound("victory");
-    } else {
-      statusLabel.setText("Game over!");
+    if (event instanceof GameStartedEvent startedEvent) {
+      handleGameStarted(startedEvent);
+    } else if (event instanceof DiceRolledEvent diceEvent) {
+      handleDiceRolled(diceEvent);
+    } else if (event instanceof PlayerMovedEvent moveEvent) {
+      handlePlayerMoved(moveEvent);
+    } else if (event instanceof TurnChangedEvent turnEvent) {
+      handleTurnChanged(turnEvent);
+    } else if (event instanceof PropertyPurchasedEvent propEvent) {
+      handlePropertyPurchased(propEvent);
+    } else if (event instanceof MoneyTransferEvent transferEvent) {
+      handleMoneyTransfer(transferEvent);
+    } else if (event instanceof PlayerBankruptEvent bankruptEvent) {
+      handlePlayerBankrupt(bankruptEvent);
     }
   }
 }
