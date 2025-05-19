@@ -7,6 +7,7 @@ module edu.ntnu.stud.boardgame {
   exports edu.ntnu.stud.boardgame;
   exports edu.ntnu.stud.boardgame.model;
   exports edu.ntnu.stud.boardgame.model.action;
+  exports edu.ntnu.stud.boardgame.model.action.registry;
   exports edu.ntnu.stud.boardgame.model.enums;
   exports edu.ntnu.stud.boardgame.model.game;
   exports edu.ntnu.stud.boardgame.controller;

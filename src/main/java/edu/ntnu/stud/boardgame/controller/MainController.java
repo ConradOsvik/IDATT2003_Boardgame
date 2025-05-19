@@ -114,8 +114,4 @@ public class MainController {
     alert.setContentText(message);
     alert.showAndWait();
   }
-
-  public GameController getGameController() {
-    return gameController;
-  }
 }
