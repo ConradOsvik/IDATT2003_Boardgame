@@ -7,8 +7,11 @@ import edu.ntnu.stud.boardgame.exception.files.BoardWritingException;
 import edu.ntnu.stud.boardgame.model.Board;
 import edu.ntnu.stud.boardgame.model.Tile;
 import edu.ntnu.stud.boardgame.model.action.LadderAction;
+import edu.ntnu.stud.boardgame.model.action.PropertyAction;
 import edu.ntnu.stud.boardgame.model.action.SkipTurnAction;
 import edu.ntnu.stud.boardgame.model.action.SnakeAction;
+import edu.ntnu.stud.boardgame.model.action.StartAction;
+import edu.ntnu.stud.boardgame.model.action.TaxAction;
 import edu.ntnu.stud.boardgame.model.action.TileAction;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -38,10 +41,21 @@ public class BoardFileWriterGson implements BoardFileWriter {
       actionObject.addProperty("destinationTileId", snakeAction.getDestinationTile().getTileId());
       actionObject.addProperty("description",
           "Snake from " + tile.getTileId() + " to " + snakeAction.getDestinationTile().getTileId());
-    } else if (action instanceof SkipTurnAction skipTurnAction) {
+    } else if (action instanceof SkipTurnAction) {
       actionObject.addProperty("type", "SkipTurnAction");
-      actionObject.addProperty("description",
-          "Skip turn for player");
+      actionObject.addProperty("description", "Skip turn for player");
+    } else if (action instanceof PropertyAction propertyAction) {
+      actionObject.addProperty("type", "PropertyAction");
+      actionObject.addProperty("price", propertyAction.getPrice());
+      actionObject.addProperty("description", "Property with price: " + propertyAction.getPrice());
+    } else if (action instanceof TaxAction taxAction) {
+      actionObject.addProperty("type", "TaxAction");
+      actionObject.addProperty("amount", taxAction.getAmount());
+      actionObject.addProperty("description", "Tax with amount: " + taxAction.getAmount());
+    } else if (action instanceof StartAction startAction) {
+      actionObject.addProperty("type", "StartAction");
+      actionObject.addProperty("amount", startAction.getAmount());
+      actionObject.addProperty("description", "Start tile with amount: " + startAction.getAmount());
     } else {
       throw new BoardWritingException("Unknown action type: " + action.getClass());
     }

@@ -39,6 +39,8 @@ public class SoundManager {
     loadSound("freeze", "/sounds/freeze.wav");
     loadSound("bounce", "/sounds/bounce.wav");
     loadSound("victory", "/sounds/victory.mp3");
+    loadSound("cash_incoming", "/sounds/cash_incoming.wav");
+    loadSound("receipt", "/sounds/receipt.wav");
   }
 
   public void loadSound(String name, String path) {

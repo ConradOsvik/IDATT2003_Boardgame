@@ -40,6 +40,25 @@ public class GameController {
     }
   }
 
+  public boolean saveSelectedBoardAs(String selectedBoard, String newName) {
+    try {
+      if (gameFacade.getCurrentGameType() == null) {
+        showError("Save Error", "No game type selected.");
+        return false;
+      }
+
+      gameFacade.createGame(selectedBoard);
+
+      gameFacade.saveCurrentBoard(newName);
+
+      showInfo("Success", "Board saved successfully as: " + newName);
+      return true;
+    } catch (Exception e) {
+      showError("Save Error", "Failed to save board: " + e.getMessage());
+      return false;
+    }
+  }
+
   public boolean selectBoard(String boardName) {
     try {
       gameFacade.createGame(boardName);

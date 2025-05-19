@@ -1,7 +1,6 @@
 package edu.ntnu.stud.boardgame.view.components.laddergame;
 
 import edu.ntnu.stud.boardgame.model.Player;
-import edu.ntnu.stud.boardgame.model.Tile;
 import edu.ntnu.stud.boardgame.view.components.builder.LabelBuilder;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +15,6 @@ import javafx.scene.shape.Circle;
 
 public class PlayerScoreboard extends VBox {
 
-  private final Label titleLabel;
   private final VBox playersContainer;
   private final Map<Player, HBox> playerRows = new HashMap<>();
 
@@ -25,7 +23,7 @@ public class PlayerScoreboard extends VBox {
     setSpacing(10);
     getStyleClass().add("card");
 
-    titleLabel = new LabelBuilder()
+    Label titleLabel = new LabelBuilder()
         .text("Players")
         .styleClass("text-h3")
         .build();
@@ -44,14 +42,6 @@ public class PlayerScoreboard extends VBox {
       HBox playerRow = createPlayerRow(player);
       playerRows.put(player, playerRow);
       playersContainer.getChildren().add(playerRow);
-    }
-  }
-
-  public void updatePlayerPosition(Player player, Tile tile) {
-    HBox playerRow = playerRows.get(player);
-    if (playerRow != null && playerRow.getChildren().size() >= 3) {
-      Label positionLabel = (Label) playerRow.getChildren().get(2);
-      positionLabel.setText("Position: " + (tile == null ? "Start" : tile.getTileId()));
     }
   }
 

@@ -9,8 +9,11 @@ import edu.ntnu.stud.boardgame.model.game.MonopolyGame;
 import edu.ntnu.stud.boardgame.service.BoardFileService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class BoardGameFactory {
+
+  private static final Logger LOGGER = Logger.getLogger(BoardGameFactory.class.getName());
 
   private final BoardFileService boardFileService;
 
@@ -18,25 +21,45 @@ public class BoardGameFactory {
     this.boardFileService = boardFileService;
   }
 
-  public BoardGame loadGameFromFile(BoardGameType type, String fileName) throws BoardFileException {
-    BoardGame game = createEmptyGame(type);
-
+  public BoardGame createGame(BoardGameType type, String boardName) throws BoardFileException {
     Board board;
-    if (fileName.equalsIgnoreCase("Default")) {
-      board = game.createDefaultBoard();
-    } else {
-      board = boardFileService.loadBoard(type, fileName);
-    }
-    game.setBoard(board);
 
+    if (boardName.startsWith("Predefined:")) {
+      String predefinedName = boardName.substring("Predefined:".length());
+      board = getPredefinedBoard(type, predefinedName);
+    } else {
+      board = boardFileService.loadBoard(type, boardName);
+    }
+
+    BoardGame game = createEmptyGame(type);
+    game.setBoard(board);
     game.createDice(2);
 
     return game;
   }
 
+  private Board getPredefinedBoard(BoardGameType type, String boardName) {
+    return switch (type) {
+      case LADDER -> LadderGameBoardFactory.createBoard(boardName);
+      case MONOPOLY -> MonopolyBoardFactory.createBoard(boardName);
+    };
+  }
+
   public List<String> getAvailableGameBoards(BoardGameType gameType) {
-    List<String> result = new ArrayList<>(boardFileService.listAvailableBoards(gameType));
-    result.addFirst("Default");
+    List<String> result = new ArrayList<>();
+
+    List<String> predefinedBoards = switch (gameType) {
+      case LADDER -> LadderGameBoardFactory.getAvailableBoards();
+      case MONOPOLY -> MonopolyBoardFactory.getAvailableBoards();
+    };
+
+    for (String board : predefinedBoards) {
+      result.add("Predefined:" + board);
+    }
+
+    List<String> fileBoards = boardFileService.listAvailableBoards(gameType);
+    result.addAll(fileBoards);
+
     return result;
   }
 

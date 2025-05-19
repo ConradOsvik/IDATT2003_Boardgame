@@ -14,27 +14,40 @@ import java.util.List;
 public class BoardGameFacade {
 
   private final BoardGameFactory factory;
+  private final BoardFileService boardFileService;
   private final List<BoardGameObserver> observers;
   private BoardGame currentGame;
   private BoardGameType currentGameType;
 
   public BoardGameFacade() {
-    BoardFileService boardFileService = BoardFileService.getInstance();
+    this.boardFileService = BoardFileService.getInstance();
     this.factory = new BoardGameFactory(boardFileService);
     this.observers = new ArrayList<>();
   }
 
-  public void createGame(String fileName) throws BoardGameException {
+  public void createGame(String boardName) throws BoardGameException {
     if (currentGameType == null) {
       throw new InvalidGameStateException("No game type has been selected");
     }
 
     try {
-      currentGame = factory.loadGameFromFile(currentGameType, fileName);
+      currentGame = factory.createGame(currentGameType, boardName);
       currentGame.registerObservers(observers);
       currentGame.notifyGameCreated();
     } catch (Exception e) {
-      throw new BoardGameException("Failed to load game from file: " + fileName, e);
+      throw new BoardGameException("Failed to create game with board: " + boardName, e);
+    }
+  }
+
+  public void saveCurrentBoard(String fileName) throws BoardGameException {
+    if (currentGame == null || currentGame.getBoard() == null) {
+      throw new BoardGameException("No game has been created");
+    }
+
+    try {
+      boardFileService.saveBoard(currentGameType, fileName, currentGame.getBoard());
+    } catch (Exception e) {
+      throw new BoardGameException("Failed to save board: " + e.getMessage(), e);
     }
   }
 
