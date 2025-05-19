@@ -34,10 +34,11 @@ public class MonopolyBoardFactory {
   }
 
   private static Board createStandardBoard() {
-    Board board = new Board("Standard Monopoly", "The classic monopoly game with 40 spaces around the board",
+    Board board = new Board("Standard Monopoly",
+        "The classic monopoly game with 40 spaces around the board",
         11, 11, 0, 39);
 
-    initializeMonopolyBoard(board, 40);
+    initializeStandardBoard(board);
 
     return board;
   }
@@ -46,7 +47,7 @@ public class MonopolyBoardFactory {
     Board board = new Board("Mini Monopoly", "A smaller version with 24 spaces around the board",
         6, 6, 0, 23);
 
-    initializeMonopolyBoard(board, 24);
+    initializeMiniBoard(board);
 
     return board;
   }
@@ -60,57 +61,105 @@ public class MonopolyBoardFactory {
     return board;
   }
 
-  private static void initializeMonopolyBoard(Board board, int size) {
+  private static void initializeStandardBoard(Board board) {
+    // Create start tile (GO)
     Tile startTile = new Tile(0);
-    startTile.setRow(size / 4);
-    startTile.setColumn(size / 4);
+    startTile.setRow(10);
+    startTile.setColumn(10);
     startTile.setName("GO");
     startTile.setLandAction(new StartAction(START_BONUS));
     board.addTile(startTile);
 
-    int maxIndex = size - 1;
-
-    for (int i = 1; i < size; i++) {
+    for (int i = 1; i <= 10; i++) {
       Tile tile = new Tile(i);
-
-      int row, col;
-      if (i <= maxIndex / 4) {
-        row = size / 4;
-        col = size / 4 - i;
-      } else if (i <= maxIndex / 2) {
-        row = size / 4 - (i - maxIndex / 4);
-        col = 0;
-      } else if (i <= 3 * maxIndex / 4) {
-        row = 0;
-        col = i - maxIndex / 2;
-      } else {
-        row = i - 3 * maxIndex / 4;
-        col = size / 4;
-      }
-
-      tile.setRow(row);
-      tile.setColumn(col);
-
-      if (i % 5 == 0) {
-        int taxAmount = 100;
-        tile.setName("Tax $" + taxAmount);
-        tile.setLandAction(new TaxAction(taxAmount));
-      } else {
-        int propertyPrice = 50 + i * 10;
-        tile.setName("Property $" + propertyPrice);
-        tile.setLandAction(new PropertyAction(propertyPrice));
-      }
-
+      tile.setRow(10);
+      tile.setColumn(10 - i);
+      setupTileProperties(tile, i);
       board.addTile(tile);
     }
 
-    for (int i = 0; i < maxIndex; i++) {
+    for (int i = 11; i <= 20; i++) {
+      Tile tile = new Tile(i);
+      tile.setRow(20 - i);
+      tile.setColumn(0);
+      setupTileProperties(tile, i);
+      board.addTile(tile);
+    }
+
+    for (int i = 21; i <= 30; i++) {
+      Tile tile = new Tile(i);
+      tile.setRow(0);
+      tile.setColumn(i - 20);
+      setupTileProperties(tile, i);
+      board.addTile(tile);
+    }
+
+    for (int i = 31; i <= 39; i++) {
+      Tile tile = new Tile(i);
+      tile.setRow(i - 30);
+      tile.setColumn(10);
+      setupTileProperties(tile, i);
+      board.addTile(tile);
+    }
+
+    for (int i = 0; i < 39; i++) {
       Tile currentTile = board.getTile(i);
       Tile nextTile = board.getTile(i + 1);
       currentTile.setNextTile(nextTile);
     }
 
-    Tile lastTile = board.getTile(maxIndex);
+    Tile lastTile = board.getTile(39);
+    Tile firstTile = board.getTile(0);
+    lastTile.setNextTile(firstTile);
+  }
+
+  private static void initializeMiniBoard(Board board) {
+    Tile startTile = new Tile(0);
+    startTile.setRow(5);
+    startTile.setColumn(5);
+    startTile.setName("GO");
+    startTile.setLandAction(new StartAction(START_BONUS));
+    board.addTile(startTile);
+
+    for (int i = 1; i <= 5; i++) {
+      Tile tile = new Tile(i);
+      tile.setRow(5);
+      tile.setColumn(5 - i);
+      setupTileProperties(tile, i);
+      board.addTile(tile);
+    }
+
+    for (int i = 6; i <= 11; i++) {
+      Tile tile = new Tile(i);
+      tile.setRow(11 - i);
+      tile.setColumn(0);
+      setupTileProperties(tile, i);
+      board.addTile(tile);
+    }
+
+    for (int i = 12; i <= 17; i++) {
+      Tile tile = new Tile(i);
+      tile.setRow(0);
+      tile.setColumn(i - 12);
+      setupTileProperties(tile, i);
+      board.addTile(tile);
+    }
+
+    for (int i = 18; i <= 23; i++) {
+      Tile tile = new Tile(i);
+      tile.setRow(i - 18);
+      tile.setColumn(5);
+      setupTileProperties(tile, i);
+      board.addTile(tile);
+    }
+
+    for (int i = 0; i < 23; i++) {
+      Tile currentTile = board.getTile(i);
+      Tile nextTile = board.getTile(i + 1);
+      currentTile.setNextTile(nextTile);
+    }
+
+    Tile lastTile = board.getTile(23);
     Tile firstTile = board.getTile(0);
     lastTile.setNextTile(firstTile);
   }
@@ -143,17 +192,7 @@ public class MonopolyBoardFactory {
 
       tile.setRow(row);
       tile.setColumn(col);
-
-      if (i % 5 == 0) {
-        int taxAmount = 200;
-        tile.setName("Tax $" + taxAmount);
-        tile.setLandAction(new TaxAction(taxAmount));
-      } else {
-        int propertyPrice = 100 + i * 20;
-        tile.setName("Property $" + propertyPrice);
-        tile.setLandAction(new PropertyAction(propertyPrice));
-      }
-
+      setupTileProperties(tile, i);
       board.addTile(tile);
     }
 
@@ -166,5 +205,17 @@ public class MonopolyBoardFactory {
     Tile lastTile = board.getTile(39);
     Tile firstTile = board.getTile(0);
     lastTile.setNextTile(firstTile);
+  }
+
+  private static void setupTileProperties(Tile tile, int index) {
+    if (index % 5 == 0) {
+      int taxAmount = 100;
+      tile.setName("Tax $" + taxAmount);
+      tile.setLandAction(new TaxAction(taxAmount));
+    } else {
+      int propertyPrice = 50 + index * 10;
+      tile.setName("Property $" + propertyPrice);
+      tile.setLandAction(new PropertyAction(propertyPrice));
+    }
   }
 }

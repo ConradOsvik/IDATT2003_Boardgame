@@ -19,10 +19,11 @@ public class LadderGameBoardFactory {
     PREDEFINED_BOARDS.put("Easy", createEasyBoard());
     PREDEFINED_BOARDS.put("Hard", createHardBoard());
     PREDEFINED_BOARDS.put("Extreme", createExtremeBoard());
+    PREDEFINED_BOARDS.put("Small", createSmallBoard());
   }
 
   public static List<String> getAvailableBoards() {
-    return Arrays.asList("Classic", "Easy", "Hard", "Extreme");
+    return Arrays.asList("Classic", "Easy", "Hard", "Extreme", "Small");
   }
 
   public static Board createBoard(String boardName) {
@@ -34,8 +35,7 @@ public class LadderGameBoardFactory {
 
   private static Board createClassicBoard() {
     Board board = new Board("Classic Snakes and Ladders",
-        "The traditional game with balanced snakes and ladders",
-        10, 9, 0, 90);
+        "The traditional game with balanced snakes and ladders", 10, 9, 0, 90);
 
     initializeLadderBoard(board);
 
@@ -60,8 +60,7 @@ public class LadderGameBoardFactory {
 
   private static Board createEasyBoard() {
     Board board = new Board("Easy Snakes and Ladders",
-        "A beginner-friendly game with more ladders than snakes",
-        10, 9, 0, 90);
+        "A beginner-friendly game with more ladders than snakes", 10, 9, 0, 90);
 
     initializeLadderBoard(board);
 
@@ -86,8 +85,7 @@ public class LadderGameBoardFactory {
 
   private static Board createHardBoard() {
     Board board = new Board("Hard Snakes and Ladders",
-        "A challenging game with more snakes than ladders",
-        10, 9, 0, 90);
+        "A challenging game with more snakes than ladders", 10, 9, 0, 90);
 
     initializeLadderBoard(board);
 
@@ -117,8 +115,7 @@ public class LadderGameBoardFactory {
 
   private static Board createExtremeBoard() {
     Board board = new Board("Extreme Snakes and Ladders",
-        "An extremely challenging game with many snakes and few ladders",
-        10, 9, 0, 90);
+        "An extremely challenging game with many snakes and few ladders", 10, 9, 0, 90);
 
     initializeLadderBoard(board);
 
@@ -145,6 +142,25 @@ public class LadderGameBoardFactory {
     addSkipTurnAction(board, 59);
     addSkipTurnAction(board, 76);
     addSkipTurnAction(board, 83);
+
+    return board;
+  }
+
+  private static Board createSmallBoard() {
+    Board board = new Board("Small Snakes and Ladders", "A small 30-tile Snakes and Ladders game",
+        6, 5, 0, 30);
+
+    initializeLadderBoard(board);
+
+    addLadder(board, 1, 10);
+    addLadder(board, 15, 25);
+    addLadder(board, 20, 28);
+
+    addSnake(board, 17, 7);
+    addSnake(board, 22, 13);
+    addSnake(board, 29, 16);
+
+    addSkipTurnAction(board, 24);
 
     return board;
   }
