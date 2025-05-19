@@ -200,4 +200,10 @@ public class GameBoard extends StackPane {
       }
     });
   }
+
+  public void clearPlayerPieces() {
+    pieceAnimation.clearAllAnimations();
+    piecesLayer.getChildren().clear();
+    playerPieces.clear();
+  }
 }

@@ -102,11 +102,7 @@ public class LadderGameView extends BorderPane implements BoardGameObserver {
   public void onGameEvent(GameEvent event) {
     Platform.runLater(() -> {
       if (event instanceof GameStartedEvent startedEvent) {
-        controlPanel.setDiceDisabled(true);
-        controlPanel.updateCurrentPlayer(startedEvent.getCurrentPlayer());
-        updateUI(startedEvent.getBoard(), startedEvent.getPlayers());
-        victoryScreen.setVisible(false);
-        scoreboard.updatePlayers(gameController.getGame().getPlayers());
+        handleGameStarted(startedEvent);
       } else if (event instanceof DiceRolledEvent diceEvent) {
         soundManager.playSound("dice_roll");
         controlPanel.updateDiceValue(diceEvent.getValue());
@@ -147,6 +143,21 @@ public class LadderGameView extends BorderPane implements BoardGameObserver {
         }
       }
     });
+  }
+
+  private void handleGameStarted(GameStartedEvent event) {
+    gameBoardView.clearPlayerPieces();
+
+    gameBoardView.setBoard(event.getBoard());
+    scoreboard.updatePlayers(event.getPlayers());
+    controlPanel.updateCurrentPlayer(event.getCurrentPlayer());
+    victoryScreen.setVisible(false);
+
+    for (Player player : event.getPlayers()) {
+      if (player.getCurrentTile() != null) {
+        gameBoardView.updatePlayerPosition(player, player.getCurrentTile());
+      }
+    }
   }
 
   private void updateUI(Board board, List<Player> players) {

@@ -216,6 +216,8 @@ public class MonopolyGameView extends BorderPane implements BoardGameObserver {
   }
 
   private void handleGameStarted(GameStartedEvent event) {
+    gameBoard.clearPlayerPieces();
+
     gameBoard.setBoard(event.getBoard());
     playerScoreboard.updatePlayers(event.getPlayers());
     statusLabel.setText("Game Started - Roll the Dice");
@@ -224,12 +226,13 @@ public class MonopolyGameView extends BorderPane implements BoardGameObserver {
     playerScoreboard.highlightCurrentPlayer(currentPlayer);
     rollDiceButton.setDisable(false);
     updateBuyButton(currentPlayer);
+    victoryScreen.setVisible(false);
 
     for (Player player : event.getPlayers()) {
-      gameBoard.updatePlayerPositions(player, player.getCurrentTile());
+      if (player.getCurrentTile() != null) {
+        gameBoard.updatePlayerPositions(player, player.getCurrentTile());
+      }
     }
-
-    victoryScreen.setVisible(false);
   }
 
   private void handleDiceRolled(DiceRolledEvent event) {

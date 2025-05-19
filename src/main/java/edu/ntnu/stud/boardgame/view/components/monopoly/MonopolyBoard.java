@@ -244,4 +244,10 @@ public class MonopolyBoard extends StackPane {
     needsRedraw = true;
     drawBoard();
   }
+
+  public void clearPlayerPieces() {
+    pieceAnimation.clearAllAnimations();
+    piecesLayer.getChildren().clear();
+    playerPieces.clear();
+  }
 }
