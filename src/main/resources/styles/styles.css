@@ -1,0 +1,515 @@
+@font-face {
+  font-family: 'Inter';
+  src: url("../fonts/inter-latin-500-normal.ttf");
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url("../fonts/inter-latin-800-normal.ttf");
+}
+
+/* Base styles */
+.root {
+  -fx-font-family: 'Inter', system-ui, sans-serif;
+  -fx-font-size: 14px;
+  -fx-background-color: #f5f5f5;
+}
+
+/* Typography */
+.text-h1 {
+  -fx-font-size: 24px;
+  -fx-font-weight: bold;
+  -fx-padding: 20px 0;
+  -fx-text-fill: #333;
+}
+
+.text-h2 {
+  -fx-font-size: 20px;
+  -fx-font-weight: bold;
+  -fx-padding: 10px 0;
+  -fx-text-fill: #333;
+}
+
+.text-h3 {
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+  -fx-padding: 8px 0;
+  -fx-text-fill: #444;
+}
+
+.text-body {
+  -fx-font-size: 14px;
+  -fx-text-fill: #666;
+}
+
+.text-body-bold {
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #666;
+}
+
+.text-accent {
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #E74C3C;
+}
+
+/* Buttons */
+.btn-primary {
+  -fx-background-color: #4285f4;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-padding: 10px 20px;
+  -fx-background-radius: 5px;
+  -fx-cursor: hand;
+}
+
+.btn-primary:hover {
+  -fx-background-color: #3367d6;
+}
+
+.btn-secondary {
+  -fx-background-color: #f5f5f5;
+  -fx-text-fill: #333;
+  -fx-font-weight: bold;
+  -fx-padding: 10px 20px;
+  -fx-background-radius: 5px;
+  -fx-border-color: #ddd;
+  -fx-border-radius: 5px;
+  -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+  -fx-background-color: #eee;
+}
+
+.btn-success {
+  -fx-background-color: #0f9d58;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-padding: 10px 20px;
+  -fx-background-radius: 5px;
+  -fx-cursor: hand;
+}
+
+.btn-success:hover {
+  -fx-background-color: #0b8043;
+}
+
+/* Containers */
+.card {
+  -fx-background-color: white;
+  -fx-background-radius: 10px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 3);
+  -fx-padding: 20px;
+}
+
+.list-container {
+  -fx-background-color: #f9f9f9;
+  -fx-background-radius: 5px;
+  -fx-border-color: #eee;
+  -fx-border-radius: 5px;
+}
+
+.list-item {
+  -fx-padding: 10px;
+  -fx-border-color: #eee;
+  -fx-border-width: 0 0 1 0;
+}
+
+.list-item-highlighted {
+  -fx-background-color: #e3f2fd;
+  -fx-border-color: #4285f4;
+  -fx-border-width: 0 0 0 3px;
+}
+
+/* Forms */
+.input-field {
+  -fx-padding: 8px;
+  -fx-border-color: #ddd;
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
+}
+
+.combo-box {
+  -fx-padding: 8px;
+  -fx-border-color: #ddd;
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
+}
+
+/* Title and header styles */
+.title {
+  -fx-font-size: 24px;
+  -fx-font-weight: bold;
+  -fx-padding: 20px 0;
+  -fx-text-fill: #333;
+  -fx-alignment: center;
+}
+
+.section-title {
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+  -fx-padding: 10px 0;
+  -fx-text-fill: #444;
+}
+
+/* Game selection styles */
+.game-selection-view {
+  -fx-padding: 20px;
+}
+
+.game-card {
+  -fx-background-color: white;
+  -fx-background-radius: 10px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 3);
+  -fx-padding: 20px;
+  -fx-alignment: center;
+  -fx-spacing: 15px;
+  -fx-min-width: 250px;
+  -fx-max-width: 300px;
+}
+
+.game-image {
+  -fx-fit-width: 150px;
+  -fx-fit-height: 150px;
+  -fx-preserve-ratio: true;
+}
+
+.game-title {
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #333;
+}
+
+.game-description {
+  -fx-text-fill: #666;
+  -fx-wrap-text: true;
+  -fx-text-alignment: center;
+}
+
+/* Board selection styles */
+.board-selection-view {
+  -fx-padding: 20px;
+}
+
+.board-list {
+  -fx-background-color: white;
+  -fx-background-radius: 5px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+}
+
+.board-item {
+  -fx-padding: 15px;
+  -fx-border-color: #eee;
+  -fx-border-width: 0 0 1 0;
+}
+
+.board-item:hover {
+  -fx-background-color: #f9f9f9;
+}
+
+/* Player setup styles */
+.player-setup-view {
+  -fx-padding: 20px;
+}
+
+.setup-container {
+  -fx-background-color: white;
+  -fx-background-radius: 10px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 3);
+  -fx-padding: 20px;
+}
+
+.player-list {
+  -fx-background-color: #f9f9f9;
+  -fx-background-radius: 5px;
+  -fx-border-color: #eee;
+  -fx-border-radius: 5px;
+}
+
+/* Game board styles */
+.game-board-view {
+  -fx-padding: 20px;
+}
+
+.game-status {
+  -fx-font-size: 20px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #333;
+}
+
+.player-status {
+  -fx-font-size: 16px;
+  -fx-text-fill: #444;
+}
+
+.dice-result {
+  -fx-font-size: 16px;
+  -fx-text-fill: #444;
+  -fx-font-weight: bold;
+}
+
+/* Form controls */
+.input-field {
+  -fx-padding: 8px;
+  -fx-border-color: #ddd;
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
+}
+
+.combo-box {
+  -fx-padding: 8px;
+  -fx-border-color: #ddd;
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
+}
+
+/* Button styles */
+.action-button {
+  -fx-background-color: #4285f4;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-padding: 10px 20px;
+  -fx-background-radius: 5px;
+  -fx-cursor: hand;
+}
+
+.action-button:hover {
+  -fx-background-color: #3367d6;
+}
+
+.secondary-button {
+  -fx-background-color: #f5f5f5;
+  -fx-text-fill: #333;
+  -fx-font-weight: bold;
+  -fx-padding: 10px 20px;
+  -fx-background-radius: 5px;
+  -fx-border-color: #ddd;
+  -fx-border-radius: 5px;
+  -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+  -fx-background-color: #eee;
+}
+
+.create-button {
+  -fx-background-color: #0f9d58;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-padding: 10px 20px;
+  -fx-background-radius: 5px;
+  -fx-cursor: hand;
+}
+
+.create-button:hover {
+  -fx-background-color: #0b8043;
+}
+
+/* Scroll pane styles */
+.scroll-pane {
+  -fx-background-color: transparent;
+  -fx-border-color: transparent;
+}
+
+.scroll-pane > .viewport {
+  -fx-background-color: transparent;
+}
+
+/* Game board tile styles */
+.normal-tile {
+  -fx-fill: white;
+  -fx-stroke: #ddd;
+  -fx-stroke-width: 1px;
+}
+
+.ladder-start-tile {
+  -fx-fill: #4caf50;
+  -fx-stroke: #388e3c;
+  -fx-stroke-width: 1px;
+}
+
+.ladder-end-tile {
+  -fx-fill: #a5d6a7;
+  -fx-stroke: #388e3c;
+  -fx-stroke-width: 1px;
+}
+
+.snake-start-tile {
+  -fx-fill: #f44336;
+  -fx-stroke: #d32f2f;
+  -fx-stroke-width: 1px;
+}
+
+.snake-end-tile {
+  -fx-fill: #ffcdd2;
+  -fx-stroke: #d32f2f;
+  -fx-stroke-width: 1px;
+}
+
+/* Control Panel Styles */
+.control-panel {
+  -fx-background-color: white;
+  -fx-background-radius: 10px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 3);
+  -fx-padding: 20px;
+  -fx-spacing: 15px;
+  -fx-alignment: center;
+}
+
+.panel-title {
+  -fx-font-size: 22px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #333;
+  -fx-alignment: center;
+}
+
+.player-turn {
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #666;
+  -fx-alignment: center;
+}
+
+.dice-value {
+  -fx-font-size: 20px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #E74C3C;
+  -fx-alignment: center;
+}
+
+/* Player Scoreboard Styles */
+.player-scoreboard {
+  -fx-background-color: white;
+  -fx-background-radius: 10px;
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 3);
+  -fx-padding: 20px;
+  -fx-spacing: 10px;
+}
+
+.scoreboard-title {
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #333;
+}
+
+.players-container {
+  -fx-spacing: 8px;
+}
+
+.player-row {
+  -fx-background-color: #f9f9f9;
+  -fx-background-radius: 5px;
+  -fx-padding: 10px;
+  -fx-border-color: #eee;
+  -fx-border-radius: 5px;
+}
+
+.current-player {
+  -fx-background-color: #e3f2fd;
+  -fx-border-color: #4285f4;
+  -fx-border-width: 0 0 0 3px;
+}
+
+.player-indicator {
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 3, 0, 0, 1);
+}
+
+.player-name {
+  -fx-font-weight: bold;
+  -fx-text-fill: #333;
+}
+
+.player-position {
+  -fx-text-fill: #666;
+}
+
+/* Player Piece Styles */
+.player-piece {
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 5, 0, 0, 1);
+}
+
+.red-piece {
+  -fx-fill: #E74C3C;
+}
+
+.blue-piece {
+  -fx-fill: #4285f4;
+}
+
+.green-piece {
+  -fx-fill: #0f9d58;
+}
+
+.yellow-piece {
+  -fx-fill: #f4b400;
+}
+
+.black-piece {
+  -fx-fill: #333;
+}
+
+/* Victory Screen Styles */
+.victory-screen {
+  -fx-background-color: transparent;
+}
+
+.victory-title {
+  -fx-font-size: 36px;
+  -fx-font-weight: bold;
+  -fx-text-fill: gold;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.8), 6, 0, 0, 0);
+}
+
+.winner-label {
+  -fx-font-size: 24px;
+  -fx-font-weight: bold;
+  -fx-text-fill: white;
+}
+
+.victory-message {
+  -fx-font-size: 18px;
+  -fx-text-fill: white;
+}
+
+.victory-button {
+  -fx-font-size: 16px;
+  -fx-padding: 10 20 10 20;
+  -fx-background-color: gold;
+  -fx-text-fill: black;
+  -fx-background-radius: 5;
+  -fx-cursor: hand;
+}
+
+.victory-button:hover {
+  -fx-background-color: derive(gold, 10%);
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 5, 0, 0, 0);
+}
+
+/* Dice */
+.dice {
+  -fx-background-color: #f8f8f8;
+  -fx-border-color: #ccc;
+  -fx-border-radius: 10;
+  -fx-background-radius: 10;
+  -fx-padding: 10;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 10, 0, 0, 5);
+}
+
+/* Audio Control Panel */
+.audio-control-panel {
+  -fx-background-color: rgba(255, 255, 255, 0.9);
+  -fx-background-radius: 10px;
+  -fx-border-radius: 10px;
+  -fx-border-color: #cccccc;
+  -fx-border-width: 1px;
+  -fx-padding: 10px;
+}
+
+.settings-title {
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #333333;
+  -fx-padding: 0 0 5px 0;
+}
