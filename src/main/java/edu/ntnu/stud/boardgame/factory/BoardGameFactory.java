@@ -7,6 +7,7 @@ import edu.ntnu.stud.boardgame.model.game.BoardGame;
 import edu.ntnu.stud.boardgame.model.game.LadderGame;
 import edu.ntnu.stud.boardgame.model.game.MonopolyGame;
 import edu.ntnu.stud.boardgame.service.BoardFileService;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BoardGameFactory {
@@ -33,11 +34,10 @@ public class BoardGameFactory {
     return game;
   }
 
-  public List<String> getAvailableGameBoards(BoardGameType type) {
-    List<String> availableGameBoards = boardFileService.listAvailableBoards(type);
-    availableGameBoards.addFirst("Default");
-
-    return availableGameBoards;
+  public List<String> getAvailableGameBoards(BoardGameType gameType) {
+    List<String> result = new ArrayList<>(boardFileService.listAvailableBoards(gameType));
+    result.addFirst("Default");
+    return result;
   }
 
   private BoardGame createEmptyGame(BoardGameType type) {
