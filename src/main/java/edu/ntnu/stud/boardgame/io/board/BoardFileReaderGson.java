@@ -10,8 +10,11 @@ import edu.ntnu.stud.boardgame.exception.files.BoardParsingException;
 import edu.ntnu.stud.boardgame.model.Board;
 import edu.ntnu.stud.boardgame.model.Tile;
 import edu.ntnu.stud.boardgame.model.action.LadderAction;
+import edu.ntnu.stud.boardgame.model.action.PropertyAction;
 import edu.ntnu.stud.boardgame.model.action.SkipTurnAction;
 import edu.ntnu.stud.boardgame.model.action.SnakeAction;
+import edu.ntnu.stud.boardgame.model.action.StartAction;
+import edu.ntnu.stud.boardgame.model.action.TaxAction;
 import edu.ntnu.stud.boardgame.model.action.TileAction;
 import java.io.IOException;
 import java.io.Reader;
@@ -131,6 +134,30 @@ public class BoardFileReaderGson implements BoardFileReader {
             }
             case "SkipTurnAction" -> {
               TileAction action = new SkipTurnAction();
+              tile.setLandAction(action);
+            }
+            case "PropertyAction" -> {
+              if (!actionObject.has("price")) {
+                throw new BoardParsingException("PropertyAction must have price");
+              }
+              int price = actionObject.get("price").getAsInt();
+              TileAction action = new PropertyAction(price);
+              tile.setLandAction(action);
+            }
+            case "TaxAction" -> {
+              if (!actionObject.has("amount")) {
+                throw new BoardParsingException("TaxAction must have amount");
+              }
+              int amount = actionObject.get("amount").getAsInt();
+              TileAction action = new TaxAction(amount);
+              tile.setLandAction(action);
+            }
+            case "StartAction" -> {
+              if (!actionObject.has("amount")) {
+                throw new BoardParsingException("StartAction must have amount");
+              }
+              int amount = actionObject.get("amount").getAsInt();
+              TileAction action = new StartAction(amount);
               tile.setLandAction(action);
             }
           }
