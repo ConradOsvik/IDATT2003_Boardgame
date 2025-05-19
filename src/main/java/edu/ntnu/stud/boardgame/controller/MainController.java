@@ -4,6 +4,7 @@ import edu.ntnu.stud.boardgame.model.enums.BoardGameType;
 import edu.ntnu.stud.boardgame.view.BoardSelectionView;
 import edu.ntnu.stud.boardgame.view.GameSelectionView;
 import edu.ntnu.stud.boardgame.view.LadderGameView;
+import edu.ntnu.stud.boardgame.view.MonopolyGameView;
 import edu.ntnu.stud.boardgame.view.PlayerSetupView;
 import java.net.URL;
 import javafx.application.Platform;
@@ -23,6 +24,7 @@ public class MainController {
   private BoardSelectionView boardSelectionView;
   private PlayerSetupView playerSetupView;
   private LadderGameView ladderGameView;
+  private MonopolyGameView monopolyGameView;
 
   public MainController(Stage primaryStage) {
     this.primaryStage = primaryStage;
@@ -76,11 +78,20 @@ public class MainController {
       primaryStage.setTitle("Board Game - Snakes and Ladders");
       mainContainer.setCenter(ladderGameView);
 
-      if (!gameController.startGame()) {
-        showGameSelectionView();
+    } else if (gameController.getCurrentGameType() == BoardGameType.MONOPOLY) {
+      if (monopolyGameView == null) {
+        monopolyGameView = new MonopolyGameView(this, gameController);
       }
+      primaryStage.setTitle("Board Game - Monopoly");
+      mainContainer.setCenter(monopolyGameView);
+
     } else {
       showErrorDialog("Not Implemented", "This game type is not implemented yet");
+      return;
+    }
+
+    if (!gameController.startGame()) {
+      showGameSelectionView();
     }
   }
 
