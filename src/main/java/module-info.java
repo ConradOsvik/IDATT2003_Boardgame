@@ -7,6 +7,7 @@ module edu.ntnu.stud.boardgame {
   exports edu.ntnu.stud.boardgame;
   exports edu.ntnu.stud.boardgame.model;
   exports edu.ntnu.stud.boardgame.model.action;
+  exports edu.ntnu.stud.boardgame.model.action.registry;
   exports edu.ntnu.stud.boardgame.model.enums;
   exports edu.ntnu.stud.boardgame.model.game;
   exports edu.ntnu.stud.boardgame.controller;
@@ -14,8 +15,7 @@ module edu.ntnu.stud.boardgame {
   exports edu.ntnu.stud.boardgame.view.components;
   exports edu.ntnu.stud.boardgame.view.components.builder;
   exports edu.ntnu.stud.boardgame.view.components.laddergame;
-  exports edu.ntnu.stud.boardgame.view.components.laddergame.board;
-  exports edu.ntnu.stud.boardgame.view.components.laddergame.piece;
+  exports edu.ntnu.stud.boardgame.view.components.piece;
   exports edu.ntnu.stud.boardgame.io.board;
   exports edu.ntnu.stud.boardgame.io.player;
   exports edu.ntnu.stud.boardgame.exception;

@@ -1,11 +1,10 @@
-package edu.ntnu.stud.boardgame.view.components.laddergame;
+package edu.ntnu.stud.boardgame.view.components;
 
 import edu.ntnu.stud.boardgame.model.Board;
 import edu.ntnu.stud.boardgame.model.Player;
 import edu.ntnu.stud.boardgame.model.Tile;
-import edu.ntnu.stud.boardgame.view.components.laddergame.board.BoardRenderer;
-import edu.ntnu.stud.boardgame.view.components.laddergame.piece.PieceAnimation;
-import edu.ntnu.stud.boardgame.view.components.laddergame.piece.PlayerPiece;
+import edu.ntnu.stud.boardgame.view.components.piece.PieceAnimation;
+import edu.ntnu.stud.boardgame.view.components.piece.PlayerPiece;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.application.Platform;
@@ -14,23 +13,21 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
-public class GameBoard extends StackPane {
+public abstract class AbstractGameBoard extends StackPane implements GameBoardInterface {
 
-  private final Canvas boardCanvas;
-  private final Pane piecesLayer;
-  private final Map<Player, PlayerPiece> playerPieces = new HashMap<>();
-  private final BoardRenderer boardRenderer;
-  private final PieceAnimation pieceAnimation;
+  protected final Canvas boardCanvas;
+  protected final Pane piecesLayer;
+  protected final Map<Player, PlayerPiece> playerPieces = new HashMap<>();
+  protected final PieceAnimation pieceAnimation;
 
-  private Board board;
-  private double cellSize;
-  private double padding;
-  private boolean needsRedraw = true;
+  protected Board board;
+  protected double cellSize;
+  protected double padding = 20;
+  protected boolean needsRedraw = true;
 
-  public GameBoard() {
+  public AbstractGameBoard() {
     boardCanvas = new Canvas();
     piecesLayer = new Pane();
-    boardRenderer = new BoardRenderer();
     pieceAnimation = new PieceAnimation();
 
     setMinSize(400, 400);
@@ -40,11 +37,10 @@ public class GameBoard extends StackPane {
     piecesLayer.setPickOnBounds(false);
 
     setupResize();
-
     getChildren().addAll(boardCanvas, piecesLayer);
   }
 
-  private void setupResize() {
+  protected void setupResize() {
     ChangeListener<Number> resizeListener = (obs, oldVal, newVal) -> {
       if (newVal.doubleValue() > 0) {
         needsRedraw = true;
@@ -57,6 +53,7 @@ public class GameBoard extends StackPane {
     heightProperty().addListener(resizeListener);
   }
 
+  @Override
   public void setBoard(Board board) {
     this.board = board;
     needsRedraw = true;
@@ -64,6 +61,7 @@ public class GameBoard extends StackPane {
     drawBoard();
   }
 
+  @Override
   public void updatePlayerPosition(Player player, Tile tile) {
     if (player == null) {
       return;
@@ -86,7 +84,12 @@ public class GameBoard extends StackPane {
     }
   }
 
+  @Override
   public void animatePlayerMove(Player player, Tile fromTile, Tile toTile) {
+    if (player == null) {
+      return;
+    }
+
     PlayerPiece piece = playerPieces.get(player);
     if (piece == null) {
       return;
@@ -111,66 +114,24 @@ public class GameBoard extends StackPane {
     pieceAnimation.animateRegularMove(piece, fromTile, toTile, cellSize, padding, steps);
   }
 
-  public void animatePlayerLadderClimb(Player player, Tile fromTile, Tile toTile) {
-    PlayerPiece piece = playerPieces.get(player);
-    if (piece == null || fromTile == null || toTile == null) {
-      return;
-    }
-
-    piece.setVisible(true);
-    pieceAnimation.animateLadderClimb(piece, fromTile, toTile, cellSize, padding);
+  @Override
+  public void clearPlayerPieces() {
+    pieceAnimation.clearAllAnimations();
+    piecesLayer.getChildren().clear();
+    playerPieces.clear();
   }
 
-  public void animatePlayerSnakeSlide(Player player, Tile fromTile, Tile toTile) {
-    PlayerPiece piece = playerPieces.get(player);
-    if (piece == null || fromTile == null || toTile == null) {
-      return;
-    }
-
-    piece.setVisible(true);
-    pieceAnimation.animateSnakeSlide(piece, fromTile, toTile, cellSize, padding);
+  @Override
+  public void refreshBoard() {
+    needsRedraw = true;
+    drawBoard();
   }
 
-  public void animatePlayerBounceBack(Player player, Tile fromTile, Tile toTile) {
-    PlayerPiece piece = playerPieces.get(player);
-    if (piece == null || fromTile == null || toTile == null) {
-      return;
-    }
+  protected abstract void calculateCellSize();
 
-    piece.setVisible(true);
-    pieceAnimation.animateBounceBack(piece, fromTile, toTile, cellSize, padding);
-  }
+  protected abstract void drawBoard();
 
-  private void calculateCellSize() {
-    if (board == null || boardCanvas.getWidth() <= 0 || boardCanvas.getHeight() <= 0) {
-      return;
-    }
-
-    int rows = board.getRows();
-    int cols = board.getColumns();
-
-    double maxCellWidth = (boardCanvas.getWidth() - 40) / cols;
-    double maxCellHeight = (boardCanvas.getHeight() - 40) / rows;
-
-    cellSize = Math.min(maxCellWidth, maxCellHeight);
-
-    padding = Math.min((boardCanvas.getWidth() - (cellSize * cols)) / 2,
-        (boardCanvas.getHeight() - (cellSize * rows)) / 2);
-
-    updateAllPiecePositions();
-  }
-
-  private void drawBoard() {
-    if (board == null || boardCanvas.getWidth() <= 0 || boardCanvas.getHeight() <= 0
-        || !needsRedraw) {
-      return;
-    }
-
-    boardRenderer.render(boardCanvas, board, cellSize, padding);
-    needsRedraw = false;
-  }
-
-  private void positionPieceAtTile(PlayerPiece piece, Tile tile) {
+  protected void positionPieceAtTile(PlayerPiece piece, Tile tile) {
     if (tile == null || tile.getRow() == null || tile.getColumn() == null) {
       return;
     }
@@ -183,7 +144,7 @@ public class GameBoard extends StackPane {
     piece.setTranslateY(y - pieceSize / 2);
   }
 
-  private void updateAllPiecePositions() {
+  protected void updateAllPiecePositions() {
     double pieceSize = Math.max(15, cellSize * 0.6);
     playerPieces.values().forEach(piece -> piece.updateSize(pieceSize));
 

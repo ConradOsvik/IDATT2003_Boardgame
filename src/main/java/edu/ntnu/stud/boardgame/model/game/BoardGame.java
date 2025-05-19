@@ -37,8 +37,6 @@ public abstract class BoardGame {
     this.gameOver = false;
   }
 
-  public abstract Board createDefaultBoard();
-
   public void createDice(int numberOfDice) {
     this.dice = new Dice(numberOfDice);
   }

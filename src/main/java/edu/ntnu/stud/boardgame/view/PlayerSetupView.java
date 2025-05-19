@@ -33,7 +33,6 @@ public class PlayerSetupView extends BorderPane implements BoardGameObserver {
   private final ObservableList<String> playersList = FXCollections.observableArrayList();
   private TextField playerNameField;
   private ComboBox<PieceType> pieceTypeComboBox;
-  private ListView<String> playersListView;
   private TextField fileNameField;
 
   public PlayerSetupView(MainController controller, GameController gameController) {
@@ -92,7 +91,7 @@ public class PlayerSetupView extends BorderPane implements BoardGameObserver {
 
     Label playersLabel = new LabelBuilder().text("Current Players:").build();
 
-    playersListView = new ListView<>(playersList);
+    ListView<String> playersListView = new ListView<>(playersList);
     playersListView.getStyleClass().add("player-list");
     playersListView.setPrefHeight(200);
 

@@ -13,11 +13,9 @@ import javafx.scene.layout.VBox;
 public class ControlPanel extends VBox {
 
   private final GameController gameController;
-  private final Label titleLabel;
   private final Label playerTurnLabel;
   private final Label diceValueLabel;
   private final Button rollDiceButton;
-  private final Button restartButton;
 
   public ControlPanel(GameController gameController) {
     this.gameController = gameController;
@@ -26,7 +24,7 @@ public class ControlPanel extends VBox {
     setSpacing(15);
     getStyleClass().add("card");
 
-    titleLabel = new LabelBuilder()
+    Label titleLabel = new LabelBuilder()
         .text("Snakes and Ladders")
         .styleClass("text-h2")
         .build();
@@ -48,7 +46,7 @@ public class ControlPanel extends VBox {
         .disabled(true)
         .build();
 
-    restartButton = new ButtonBuilder()
+    Button restartButton = new ButtonBuilder()
         .text("Restart Game")
         .styleClass("btn-secondary")
         .onClick(e -> restartGame())
