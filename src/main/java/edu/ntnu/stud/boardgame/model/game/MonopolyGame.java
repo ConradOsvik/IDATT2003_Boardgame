@@ -1,12 +1,9 @@
 package edu.ntnu.stud.boardgame.model.game;
 
-import edu.ntnu.stud.boardgame.model.Board;
 import edu.ntnu.stud.boardgame.model.Player;
 import edu.ntnu.stud.boardgame.model.Tile;
 import edu.ntnu.stud.boardgame.model.action.PropertyAction;
-import edu.ntnu.stud.boardgame.model.action.StartAction;
-import edu.ntnu.stud.boardgame.model.action.TaxAction;
-import edu.ntnu.stud.boardgame.model.action.TileAction;
+import edu.ntnu.stud.boardgame.model.action.registry.MonopolyActionRegistry;
 import edu.ntnu.stud.boardgame.observer.event.DiceRolledEvent;
 import edu.ntnu.stud.boardgame.observer.event.GameEndedEvent;
 import edu.ntnu.stud.boardgame.observer.event.MoneyTransferEvent;
@@ -31,14 +28,9 @@ public class MonopolyGame extends BoardGame {
   private final Map<Player, Integer> playerMoney = new HashMap<>();
   private final List<Player> bankruptPlayers = new ArrayList<>();
 
-  @Override
-  public Board createDefaultBoard() {
-    Board board = new Board("Monopoly", "A simplified Monopoly game",
-        11, 11, 0, 39);
-
-    initializeBoard(board);
-
-    return board;
+  public MonopolyGame() {
+    super();
+    MonopolyActionRegistry.getInstance().registerGame(this);
   }
 
   @Override
@@ -112,13 +104,23 @@ public class MonopolyGame extends BoardGame {
     notifyObservers(new TurnChangedEvent(currentPlayer));
   }
 
+  @Override
+  protected void endGame(Player winner) {
+    this.winner = winner;
+    this.gameOver = true;
+
+    if (winner != null) {
+      notifyObservers(new PlayerWonEvent(winner));
+    }
+    notifyObservers(new GameEndedEvent(winner));
+  }
+
   public boolean buyProperty(Player player, Tile property) {
     if (player == null || property == null) {
       return false;
     }
 
-    TileAction action = property.getLandAction();
-    if (!(action instanceof PropertyAction propertyAction)) {
+    if (!(property.getLandAction() instanceof PropertyAction propertyAction)) {
       return false;
     }
 
@@ -226,59 +228,6 @@ public class MonopolyGame extends BoardGame {
     }
   }
 
-  private void initializeBoard(Board board) {
-    Tile startTile = new Tile(0);
-    startTile.setRow(10);
-    startTile.setColumn(10);
-    startTile.setName("GO");
-    startTile.setLandAction(new StartAction(START_BONUS, this));
-    board.addTile(startTile);
-
-    for (int i = 1; i < 40; i++) {
-      Tile tile = new Tile(i);
-
-      int row, col;
-      if (i <= 10) {
-        row = 10;
-        col = 10 - i;
-      } else if (i <= 20) {
-        row = 20 - i;
-        col = 0;
-      } else if (i <= 30) {
-        row = 0;
-        col = i - 20;
-      } else {
-        row = i - 30;
-        col = 10;
-      }
-
-      tile.setRow(row);
-      tile.setColumn(col);
-
-      if (i % 5 == 0) {
-        int taxAmount = 100;
-        tile.setName("Tax $" + taxAmount);
-        tile.setLandAction(new TaxAction(taxAmount, this));
-      } else {
-        int propertyPrice = 50 + i * 10;
-        tile.setName("Property $" + propertyPrice);
-        tile.setLandAction(new PropertyAction(propertyPrice, this));
-      }
-
-      board.addTile(tile);
-    }
-
-    for (int i = 0; i < 39; i++) {
-      Tile currentTile = board.getTile(i);
-      Tile nextTile = board.getTile(i + 1);
-      currentTile.setNextTile(nextTile);
-    }
-
-    Tile lastTile = board.getTile(39);
-    Tile firstTile = board.getTile(0);
-    lastTile.setNextTile(firstTile);
-  }
-
   public int getPlayerMoney(Player player) {
     return playerMoney.getOrDefault(player, 0);
   }
@@ -289,16 +238,5 @@ public class MonopolyGame extends BoardGame {
 
   public List<Player> getBankruptPlayers() {
     return new ArrayList<>(bankruptPlayers);
-  }
-
-  @Override
-  protected void endGame(Player winner) {
-    this.winner = winner;
-    this.gameOver = true;
-
-    if (winner != null) {
-      notifyObservers(new PlayerWonEvent(winner));
-    }
-    notifyObservers(new GameEndedEvent(winner));
   }
 }

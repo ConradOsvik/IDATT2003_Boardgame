@@ -1,26 +1,21 @@
 package edu.ntnu.stud.boardgame.model.action;
 
 import edu.ntnu.stud.boardgame.model.Player;
-import edu.ntnu.stud.boardgame.model.game.MonopolyGame;
+import edu.ntnu.stud.boardgame.model.action.registry.MonopolyActionRegistry;
 
 public class PropertyAction implements TileAction {
 
   private final int price;
-  private final MonopolyGame game;
   private Player owner;
 
-  public PropertyAction(int price, MonopolyGame game) {
+  public PropertyAction(int price) {
     this.price = price;
-    this.game = game;
     this.owner = null;
   }
 
   @Override
   public void perform(Player player) {
-    if (owner != null && owner != player) {
-      int rent = price / 5;
-      game.payRent(player, owner, rent);
-    }
+    MonopolyActionRegistry.getInstance().executePropertyAction(player, this);
   }
 
   public Player getOwner() {

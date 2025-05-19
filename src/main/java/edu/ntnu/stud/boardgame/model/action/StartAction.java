@@ -1,21 +1,19 @@
 package edu.ntnu.stud.boardgame.model.action;
 
 import edu.ntnu.stud.boardgame.model.Player;
-import edu.ntnu.stud.boardgame.model.game.MonopolyGame;
+import edu.ntnu.stud.boardgame.model.action.registry.MonopolyActionRegistry;
 
 public class StartAction implements TileAction {
 
   private final int amount;
-  private final MonopolyGame game;
 
-  public StartAction(int amount, MonopolyGame game) {
+  public StartAction(int amount) {
     this.amount = amount;
-    this.game = game;
   }
 
   @Override
   public void perform(Player player) {
-    game.receiveStartMoney(player, amount);
+    MonopolyActionRegistry.getInstance().executeStartAction(player, amount);
   }
 
   public int getAmount() {
