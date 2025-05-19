@@ -96,6 +96,19 @@
   -fx-background-color: #0b8043;
 }
 
+.btn-danger {
+  -fx-background-color: #f44336;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-padding: 10px 20px;
+  -fx-background-radius: 5px;
+  -fx-cursor: hand;
+}
+
+.btn-danger:hover {
+  -fx-background-color: #d32f2f;
+}
+
 /* Containers */
 .card {
   -fx-background-color: white;
