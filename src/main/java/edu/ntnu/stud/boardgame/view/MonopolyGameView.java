@@ -202,7 +202,7 @@ public class MonopolyGameView extends AbstractGameView {
   }
 
   private void handlePropertyPurchased(PropertyPurchasedEvent event) {
-    soundManager.playSound("freeze");
+    soundManager.playSound("receipt");
     statusLabel.setText(event.getPlayer().getName() +
         " bought " + event.getProperty().getName() +
         " for $" + event.getPrice());
@@ -226,7 +226,7 @@ public class MonopolyGameView extends AbstractGameView {
           " paid $" + event.getAmount() +
           " in " + event.getReason());
     } else if (event.getFromPlayer() == null) {
-      soundManager.playSound("ladder");
+      soundManager.playSound("cash_incoming");
       statusLabel.setText(event.getToPlayer().getName() +
           " received $" + event.getAmount() +
           " for " + event.getReason());
