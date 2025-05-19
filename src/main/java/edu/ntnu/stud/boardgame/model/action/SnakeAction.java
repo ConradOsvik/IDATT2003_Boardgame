@@ -5,13 +5,21 @@ import edu.ntnu.stud.boardgame.model.Tile;
 
 public class SnakeAction implements TileAction {
 
-  private Tile destinationTile;
+  private final Tile destinationTile;
 
   public SnakeAction(Tile destinationTile) {
+    if (destinationTile == null) {
+      throw new IllegalArgumentException("Destination tile cannot be null");
+    }
+
     this.destinationTile = destinationTile;
   }
 
   public void perform(Player player) {
+    if (player == null) {
+      throw new IllegalArgumentException("Player cannot be null");
+    }
+
     player.placeOnTile(destinationTile);
   }
 
