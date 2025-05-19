@@ -56,12 +56,12 @@ public class PlayerScoreboard extends VBox {
   }
 
   public void highlightCurrentPlayer(Player currentPlayer) {
-    playerRows.values().forEach(row -> row.getStyleClass().remove("list-item-highlighted"));
+    playerRows.values().forEach(row -> row.getStyleClass().remove("current-player"));
 
     if (currentPlayer != null) {
       HBox playerRow = playerRows.get(currentPlayer);
       if (playerRow != null) {
-        playerRow.getStyleClass().add("list-item-highlighted");
+        playerRow.getStyleClass().add("current-player");
       }
     }
   }
