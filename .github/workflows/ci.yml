@@ -41,4 +41,4 @@ jobs:
           java-version: 21
           target-folder: docs
           project: maven
-          javadoc-source-folder: target/reports/apidocs
+          javadoc-source-folder: target/site/apidocs
