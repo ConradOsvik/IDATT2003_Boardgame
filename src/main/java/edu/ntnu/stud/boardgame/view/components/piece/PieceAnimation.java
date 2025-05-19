@@ -1,4 +1,4 @@
-package edu.ntnu.stud.boardgame.view.components.laddergame.piece;
+package edu.ntnu.stud.boardgame.view.components.piece;
 
 import edu.ntnu.stud.boardgame.model.Tile;
 import java.util.HashMap;
