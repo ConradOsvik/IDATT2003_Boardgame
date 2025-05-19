@@ -32,7 +32,7 @@ public class MainController {
 
     this.gameController = new GameController(this);
 
-    Scene scene = new Scene(mainContainer, 900, 700);
+    Scene scene = new Scene(mainContainer, 1200, 900);
     URL cssUrl = getClass().getResource("/styles/styles.css");
     if (cssUrl != null) {
       scene.getStylesheets().add(cssUrl.toExternalForm());
@@ -42,6 +42,8 @@ public class MainController {
 
     primaryStage.setTitle("Board Game Application");
     primaryStage.setScene(scene);
+    primaryStage.setMinWidth(1000);
+    primaryStage.setMinHeight(800);
     primaryStage.show();
 
     initializeViews();
