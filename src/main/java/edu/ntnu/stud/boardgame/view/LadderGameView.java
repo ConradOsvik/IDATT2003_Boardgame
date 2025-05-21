@@ -19,6 +19,8 @@ import edu.ntnu.stud.boardgame.view.components.laddergame.PlayerScoreboard;
 import javafx.geometry.Insets;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.geometry.Pos;
 
 public class LadderGameView extends AbstractGameView {
 
@@ -29,6 +31,9 @@ public class LadderGameView extends AbstractGameView {
   public LadderGameView(MainController controller, GameController gameController) {
     super(controller, gameController);
 
+    getStyleClass().add("game-view");
+    getStyleClass().add("ladder-game-view");
+
     this.controlPanel = new ControlPanel(gameController);
     this.scoreboard = new PlayerScoreboard();
     this.gameBoard = new LadderGameBoard();
@@ -37,13 +42,24 @@ public class LadderGameView extends AbstractGameView {
   }
 
   private void initializeLayout() {
-    VBox leftPanel = new VBox(20);
-    leftPanel.setPadding(new Insets(15));
-    leftPanel.setPrefWidth(300);
+    VBox leftPanel = new VBox(25);
+    leftPanel.setPadding(new Insets(20));
+    leftPanel.setPrefWidth(320);
+    leftPanel.getStyleClass().add("left-panel-background");
+
     leftPanel.getChildren().addAll(controlPanel, scoreboard);
     VBox.setVgrow(scoreboard, Priority.ALWAYS);
 
-    gameArea.getChildren().addFirst(gameBoard);
+    HBox gameBoardContainer = new HBox(gameBoard);
+    gameBoardContainer.setAlignment(Pos.CENTER);
+    gameBoardContainer.getStyleClass().add("game-board-container");
+    gameBoardContainer.setPadding(new Insets(10));
+
+    if (gameArea.getChildren().contains(gameBoard)) {
+      gameArea.getChildren().remove(gameBoard);
+    }
+    gameArea.getChildren().clear();
+    gameArea.getChildren().add(gameBoardContainer);
 
     setLeft(leftPanel);
   }
@@ -55,6 +71,9 @@ public class LadderGameView extends AbstractGameView {
     scoreboard.updatePlayers(event.getPlayers());
     controlPanel.updateCurrentPlayer(event.getCurrentPlayer());
     victoryScreen.setVisible(false);
+
+    controlPanel.updateDiceValue(0);
+    controlPanel.setDiceDisabled(false);
 
     for (Player player : event.getPlayers()) {
       if (player.getCurrentTile() != null) {
@@ -73,8 +92,7 @@ public class LadderGameView extends AbstractGameView {
     gameBoard.animatePlayerLadderClimb(
         event.getPlayer(),
         event.getFromTile(),
-        event.getToTile()
-    );
+        event.getToTile());
   }
 
   private void handleSnakeEncountered(SnakeEncounteredEvent event) {
@@ -82,8 +100,7 @@ public class LadderGameView extends AbstractGameView {
     gameBoard.animatePlayerSnakeSlide(
         event.getPlayer(),
         event.getFromTile(),
-        event.getToTile()
-    );
+        event.getToTile());
   }
 
   private void handleBounceBack(BounceBackEvent event) {
@@ -91,22 +108,21 @@ public class LadderGameView extends AbstractGameView {
     gameBoard.animatePlayerBounceBack(
         event.getPlayer(),
         event.getFromTile(),
-        event.getToTile()
-    );
+        event.getToTile());
   }
 
   private void handlePlayerMoved(PlayerMovedEvent event) {
     gameBoard.animatePlayerMove(
         event.getPlayer(),
         event.getFromTile(),
-        event.getToTile()
-    );
+        event.getToTile());
   }
 
   private void handleTurnChanged(TurnChangedEvent event) {
     Player currentPlayer = event.getCurrentPlayer();
     controlPanel.updateCurrentPlayer(currentPlayer);
     scoreboard.highlightCurrentPlayer(currentPlayer);
+    controlPanel.setDiceDisabled(false);
   }
 
   private void handlePlayerWon(PlayerWonEvent event) {

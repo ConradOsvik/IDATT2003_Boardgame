@@ -1,3 +1,4 @@
 PHONY: run
 run:
-	mvn exec:java -Dexec.mainClass="edu.ntnu.stud.boardgame.BoardGameApp"
+	mvn clean compile
+	mvn exec:java -Dexec.mainClass="edu.ntnu.stud.boardgame.BoardGameMain"

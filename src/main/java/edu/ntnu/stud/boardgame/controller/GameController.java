@@ -8,6 +8,7 @@ import edu.ntnu.stud.boardgame.model.enums.PieceType;
 import edu.ntnu.stud.boardgame.model.game.BoardGame;
 import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
 import edu.ntnu.stud.boardgame.service.PlayerFileService;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameController {
@@ -155,6 +156,15 @@ public class GameController {
 
   public BoardGameType getCurrentGameType() {
     return gameFacade.getCurrentGameType();
+  }
+
+  public List<String> getAvailablePlayerListNames() {
+    try {
+      return playerFileService.getAvailablePlayerListFileNames();
+    } catch (Exception e) {
+      showError("Load Error", "Failed to retrieve saved player lists: " + e.getMessage());
+      return new ArrayList<>(); // Return empty list on error
+    }
   }
 
   private void showError(String title, String message) {
