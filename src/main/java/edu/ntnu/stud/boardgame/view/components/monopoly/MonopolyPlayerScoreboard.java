@@ -109,24 +109,7 @@ public class MonopolyPlayerScoreboard extends VBox {
 
     Circle playerIndicator = new Circle(8);
     playerIndicator.getStyleClass().add("player-indicator");
-
-    switch (playerIndex) {
-      case 0:
-        playerIndicator.setFill(Color.RED);
-        break;
-      case 1:
-        playerIndicator.setFill(Color.BLUE);
-        break;
-      case 2:
-        playerIndicator.setFill(Color.GREEN);
-        break;
-      case 3:
-        playerIndicator.setFill(Color.YELLOW);
-        break;
-      default:
-        playerIndicator.setFill(Color.PURPLE);
-        break;
-    }
+    playerIndicator.setFill(player.getPiece().getColor());
 
     Label nameLabel = new LabelBuilder()
         .text(player.getName())

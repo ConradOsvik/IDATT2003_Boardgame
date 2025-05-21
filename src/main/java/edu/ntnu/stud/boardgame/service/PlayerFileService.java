@@ -12,6 +12,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.logging.Logger;
+import java.io.File;
+import java.util.ArrayList;
 
 public class PlayerFileService {
 
@@ -94,5 +96,32 @@ public class PlayerFileService {
       return fileName + ".csv";
     }
     return fileName;
+  }
+
+  public List<String> getAvailablePlayerListFileNames() {
+    List<String> playerListNames = new ArrayList<>();
+
+    File playersDirFile = playersDirectory.toFile();
+
+    if (!playersDirFile.exists() || !playersDirFile.isDirectory()) {
+      LOGGER.warning("Player save directory does not exist or is not a directory: " +
+          playersDirectory.toAbsolutePath());
+      return playerListNames;
+    }
+
+    File[] files = playersDirFile.listFiles((dir, name) -> name.toLowerCase().endsWith(".csv"));
+
+    if (files != null) {
+      for (File file : files) {
+        String fileName = file.getName();
+        int lastDot = fileName.lastIndexOf('.');
+        if (lastDot > 0 && fileName.substring(lastDot).equalsIgnoreCase(".csv")) {
+          playerListNames.add(fileName.substring(0, lastDot));
+        } else {
+          playerListNames.add(fileName);
+        }
+      }
+    }
+    return playerListNames;
   }
 }

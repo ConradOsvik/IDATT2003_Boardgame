@@ -1,13 +1,20 @@
 package edu.ntnu.stud.boardgame.model.enums;
 
+import javafx.scene.paint.Color;
+
 public enum PieceType {
-  RED("RedToken"), BLUE("BlueToken"), GREEN("GreenToken"), YELLOW("YellowToken"), BLACK(
-      "BlackToken");
+  RED("RedToken", Color.RED),
+  BLUE("BlueToken", Color.BLUE),
+  GREEN("GreenToken", Color.GREEN),
+  YELLOW("YellowToken", Color.YELLOW),
+  BLACK("BlackToken", Color.BLACK);
 
   private final String displayName;
+  private final Color color;
 
-  PieceType(String displayName) {
+  PieceType(String displayName, Color color) {
     this.displayName = displayName;
+    this.color = color;
   }
 
   public static PieceType fromDisplayName(String displayName) {
@@ -21,6 +28,10 @@ public enum PieceType {
 
   public String getDisplayName() {
     return displayName;
+  }
+
+  public Color getColor() {
+    return color;
   }
 
   public String getFormattedDisplayName() {

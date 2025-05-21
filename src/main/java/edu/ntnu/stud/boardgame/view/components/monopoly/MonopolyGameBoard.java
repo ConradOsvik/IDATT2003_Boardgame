@@ -15,13 +15,11 @@ public class MonopolyGameBoard extends AbstractGameBoard {
 
   private final MonopolyController controller;
   private final Map<TileType, Color> tileColors;
-  private final Map<Integer, Color> playerColors;
 
   public MonopolyGameBoard(MonopolyController controller) {
     super();
     this.controller = controller;
     this.tileColors = initializeTileColors();
-    this.playerColors = initializePlayerColors();
   }
 
   private Map<TileType, Color> initializeTileColors() {
@@ -29,15 +27,6 @@ public class MonopolyGameBoard extends AbstractGameBoard {
     colors.put(TileType.START, Color.GREEN);
     colors.put(TileType.TAX, Color.ORANGE);
     colors.put(TileType.PROPERTY, Color.LIGHTBLUE);
-    return colors;
-  }
-
-  private Map<Integer, Color> initializePlayerColors() {
-    Map<Integer, Color> colors = new HashMap<>();
-    colors.put(0, Color.RED);
-    colors.put(1, Color.BLUE);
-    colors.put(2, Color.GREEN);
-    colors.put(3, Color.YELLOW);
     return colors;
   }
 
@@ -134,8 +123,7 @@ public class MonopolyGameBoard extends AbstractGameBoard {
       return tileColors.get(TileType.PROPERTY);
     }
 
-    int playerIndex = controller.getGame().getPlayers().indexOf(owner);
-    return playerColors.getOrDefault(playerIndex, Color.PURPLE);
+    return owner.getPiece().getColor();
   }
 
   private void drawTileBackground(GraphicsContext gc, double x, double y, Color color) {

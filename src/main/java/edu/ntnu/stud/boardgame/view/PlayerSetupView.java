@@ -24,7 +24,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.ColumnConstraints;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class PlayerSetupView extends BorderPane implements BoardGameObserver {
 
@@ -33,7 +40,15 @@ public class PlayerSetupView extends BorderPane implements BoardGameObserver {
   private final ObservableList<String> playersList = FXCollections.observableArrayList();
   private TextField playerNameField;
   private ComboBox<PieceType> pieceTypeComboBox;
-  private TextField fileNameField;
+  private TextField newPlayerListNameField;
+  private Button savePlayersButton;
+
+  private ListView<String> savedPlayerListsView;
+  private final ObservableList<String> savedPlayerListItems = FXCollections.observableArrayList();
+  private Button loadSelectedPlayerListButton;
+
+  private final List<PieceType> allPieceTypes = new ArrayList<>(Arrays.asList(PieceType.values()));
+  private final ObservableList<PieceType> availablePieceTypesObservableList = FXCollections.observableArrayList();
 
   public PlayerSetupView(MainController controller, GameController gameController) {
     this.controller = controller;
@@ -43,119 +58,165 @@ public class PlayerSetupView extends BorderPane implements BoardGameObserver {
     getStyleClass().add("player-setup-view");
 
     initializeUI();
+    resetAvailablePieces();
+    refreshSavedPlayerLists();
   }
 
   private void initializeUI() {
-    Label titleLabel = new LabelBuilder().text("Player Setup").styleClass("title").build();
+    Button backButton = new ButtonBuilder()
+        .text("Back")
+        .styleClass("secondary-button")
+        .onClick(event -> controller.showBoardSelectionView())
+        .build();
 
-    VBox leftPanel = createPlayerCreationPanel();
+    Label titleLabel = new LabelBuilder().text("Set Up Your Players").styleClass("title").build();
+    StackPane titleContainer = new StackPane(titleLabel);
+    StackPane.setAlignment(titleLabel, Pos.CENTER);
 
-    VBox rightPanel = createPlayerFilePanel();
+    HBox headerBox = new HBox(15, backButton, titleContainer);
+    headerBox.setAlignment(Pos.CENTER_LEFT);
+    HBox.setHgrow(titleContainer, Priority.ALWAYS);
+    headerBox.setPadding(new Insets(0, 0, 20, 0));
 
-    HBox buttonsBox = createActionButtons();
+    HBox mainContent = new HBox(40);
+    mainContent.setAlignment(Pos.TOP_CENTER);
 
-    HBox mainContent = new HBox(30);
-    mainContent.setAlignment(Pos.CENTER);
-    mainContent.getChildren().addAll(leftPanel, rightPanel);
+    VBox playerCreationPanel = createPlayerCreationPanel();
+    VBox playerFilePanel = createPlayerFilePanel();
 
-    VBox contentBox = new VBox(20);
-    contentBox.setPadding(new Insets(20));
-    contentBox.getChildren().addAll(titleLabel, mainContent, buttonsBox);
+    HBox.setHgrow(playerCreationPanel, Priority.ALWAYS);
+    HBox.setHgrow(playerFilePanel, Priority.ALWAYS);
+
+    mainContent.getChildren().addAll(playerCreationPanel, playerFilePanel);
+
+    HBox bottomActionsBox = createBottomActionButtons();
+
+    VBox contentBox = new VBox(30);
+    contentBox.setPadding(new Insets(0, 30, 30, 30));
+    contentBox.getChildren().addAll(headerBox, mainContent, bottomActionsBox);
     contentBox.setAlignment(Pos.TOP_CENTER);
 
     setCenter(contentBox);
+    updateSavePlayersButtonState();
+    updateLoadPlayerListButtonState();
   }
 
   private VBox createPlayerCreationPanel() {
-    VBox panel = new VBox(15);
+    VBox panel = new VBox(20);
     panel.getStyleClass().add("setup-container");
-    panel.setPadding(new Insets(20));
-    panel.setMinWidth(350);
+    panel.setPrefWidth(380);
+    panel.setMaxWidth(Double.MAX_VALUE);
 
-    Label sectionTitle = new LabelBuilder().text("Add Players").styleClass("section-title").build();
-
-    Label nameLabel = new LabelBuilder().text("Player Name:").build();
-
-    playerNameField = new TextFieldBuilder().promptText("Enter player name")
-        .styleClass("input-field").build();
-
-    Label pieceLabel = new LabelBuilder().text("Select Piece:").build();
-
-    pieceTypeComboBox = new ComboBox<>();
-    pieceTypeComboBox.getItems().addAll(PieceType.values());
-    pieceTypeComboBox.getStyleClass().add("combo-box");
-    pieceTypeComboBox.setPromptText("Select a piece");
-
-    Button addPlayerButton = new ButtonBuilder().text("Add Player").styleClass("action-button")
-        .onClick(event -> addPlayer()).build();
-
-    Label playersLabel = new LabelBuilder().text("Current Players:").build();
-
-    ListView<String> playersListView = new ListView<>(playersList);
-    playersListView.getStyleClass().add("player-list");
-    playersListView.setPrefHeight(200);
+    Label sectionTitle = new LabelBuilder().text("Add Players Manually").styleClass("section-title").build();
 
     GridPane inputGrid = new GridPane();
     inputGrid.setHgap(10);
-    inputGrid.setVgap(10);
+    inputGrid.setVgap(15);
+    inputGrid.setAlignment(Pos.CENTER_LEFT);
+
+    ColumnConstraints col1 = new ColumnConstraints();
+    col1.setHgrow(Priority.NEVER);
+    ColumnConstraints col2 = new ColumnConstraints();
+    col2.setHgrow(Priority.ALWAYS);
+    inputGrid.getColumnConstraints().addAll(col1, col2);
+
+    Label nameLabel = new LabelBuilder().text("Player Name:").build();
+    playerNameField = new TextFieldBuilder().promptText("E.g., Alex")
+        .styleClass("input-field").build();
+    playerNameField.setMaxWidth(Double.MAX_VALUE);
+
+    Label pieceLabel = new LabelBuilder().text("Select Piece:").build();
+    pieceTypeComboBox = new ComboBox<>(availablePieceTypesObservableList);
+    pieceTypeComboBox.getStyleClass().add("combo-box");
+    pieceTypeComboBox.setPromptText("Choose an available piece");
+    pieceTypeComboBox.setMaxWidth(Double.MAX_VALUE);
+
     inputGrid.add(nameLabel, 0, 0);
     inputGrid.add(playerNameField, 1, 0);
     inputGrid.add(pieceLabel, 0, 1);
     inputGrid.add(pieceTypeComboBox, 1, 1);
 
+    Button addPlayerButton = new ButtonBuilder().text("Add This Player")
+        .styleClass("action-button")
+        .onClick(event -> addPlayer()).build();
+    HBox addPlayerButtonContainer = new HBox(addPlayerButton);
+    addPlayerButtonContainer.setAlignment(Pos.CENTER_RIGHT);
+
+    Label playersLabel = new LabelBuilder().text("Current Players for This Game:").styleClass("text-body-bold").build();
+
+    ListView<String> playersListView = new ListView<>(playersList);
+    playersListView.getStyleClass().add("player-list");
+    playersListView.setPrefHeight(180);
+    VBox.setVgrow(playersListView, Priority.ALWAYS);
+
     panel.getChildren()
-        .addAll(sectionTitle, inputGrid, addPlayerButton, playersLabel, playersListView);
+        .addAll(sectionTitle, inputGrid, addPlayerButtonContainer, playersLabel, playersListView);
 
     return panel;
   }
 
   private VBox createPlayerFilePanel() {
-    VBox panel = new VBox(15);
+    VBox panel = new VBox(20);
     panel.getStyleClass().add("setup-container");
-    panel.setPadding(new Insets(20));
-    panel.setMinWidth(350);
+    panel.setPrefWidth(380);
+    panel.setMaxWidth(Double.MAX_VALUE);
 
-    Label sectionTitle = new LabelBuilder().text("Load/Save Players").styleClass("section-title")
+    Label sectionTitle = new LabelBuilder().text("Manage Player Lists").styleClass("section-title").build();
+
+    Label availableListsLabel = new LabelBuilder().text("Available Saved Lists:").styleClass("text-body-bold").build();
+    savedPlayerListsView = new ListView<>(savedPlayerListItems);
+    savedPlayerListsView.getStyleClass().add("player-list");
+    savedPlayerListsView.setPrefHeight(150);
+    VBox.setVgrow(savedPlayerListsView, Priority.SOMETIMES);
+
+    loadSelectedPlayerListButton = new ButtonBuilder().text("Load Selected List")
+        .styleClass("secondary-button")
+        .onClick(event -> loadSelectedPlayerList())
         .build();
 
-    Label fileNameLabel = new LabelBuilder().text("File Name:").build();
+    VBox loadingSection = new VBox(10, availableListsLabel, savedPlayerListsView, loadSelectedPlayerListButton);
+    loadingSection.setAlignment(Pos.CENTER_LEFT);
 
-    fileNameField = new TextFieldBuilder().promptText("Enter file name (without extension)")
-        .styleClass("input-field").build();
+    Label saveAsLabel = new LabelBuilder().text("Save Current Player List As:").styleClass("text-body-bold").build();
 
-    Button loadPlayersButton = new ButtonBuilder().text("Load Players").styleClass("action-button")
-        .width(150).onClick(event -> loadPlayers()).build();
+    newPlayerListNameField = new TextFieldBuilder().promptText("Enter name for new list")
+        .styleClass("input-field")
+        .build();
+    newPlayerListNameField.setMaxWidth(Double.MAX_VALUE);
 
-    Button savePlayersButton = new ButtonBuilder().text("Save Players").styleClass("action-button")
-        .width(150).onClick(event -> savePlayers()).build();
+    savePlayersButton = new ButtonBuilder().text("Save List")
+        .styleClass("secondary-button")
+        .onClick(event -> saveCurrentPlayersAs())
+        .build();
 
-    GridPane inputGrid = new GridPane();
-    inputGrid.setHgap(10);
-    inputGrid.setVgap(10);
-    inputGrid.add(fileNameLabel, 0, 0);
-    inputGrid.add(fileNameField, 1, 0);
+    VBox savingSection = new VBox(10, saveAsLabel, newPlayerListNameField, savePlayersButton);
+    savingSection.setAlignment(Pos.CENTER_LEFT);
 
-    VBox buttonsBox = new VBox(10);
-    buttonsBox.setAlignment(Pos.CENTER);
-    buttonsBox.getChildren().addAll(loadPlayersButton, savePlayersButton);
+    Label fileInfoLabel = new LabelBuilder()
+        .text("Select a list to load, or save the current set of players with a new name.")
+        .wrapText(true)
+        .styleClass("text-body")
+        .build();
+    fileInfoLabel.setPadding(new Insets(10, 0, 0, 0));
 
-    panel.getChildren().addAll(sectionTitle, inputGrid, buttonsBox);
+    panel.getChildren().addAll(sectionTitle, loadingSection, savingSection, fileInfoLabel);
+
+    savedPlayerListsView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+      updateLoadPlayerListButtonState();
+    });
 
     return panel;
   }
 
-  private HBox createActionButtons() {
+  private HBox createBottomActionButtons() {
     HBox buttonsBox = new HBox(20);
     buttonsBox.setAlignment(Pos.CENTER);
-    buttonsBox.setPadding(new Insets(20, 0, 0, 0));
 
-    Button backButton = new ButtonBuilder().text("Back").styleClass("secondary-button")
-        .onClick(event -> controller.showBoardSelectionView()).build();
-
-    Button startGameButton = new ButtonBuilder().text("Start Game").styleClass("action-button")
+    Button startGameButton = new ButtonBuilder().text("Start Game!")
+        .styleClass("action-button")
         .onClick(event -> startGame()).build();
 
-    buttonsBox.getChildren().addAll(backButton, startGameButton);
+    buttonsBox.getChildren().addAll(startGameButton);
 
     return buttonsBox;
   }
@@ -171,50 +232,139 @@ public class PlayerSetupView extends BorderPane implements BoardGameObserver {
 
     if (gameController.addPlayer(playerName, selectedPiece)) {
       playerNameField.clear();
-      pieceTypeComboBox.getSelectionModel().clearSelection();
+    } else {
+      Platform.runLater(this::refreshAvailablePiecesFromModelState);
     }
   }
 
-  private void loadPlayers() {
-    String fileName = fileNameField.getText().trim();
-    if (fileName.isEmpty()) {
-      controller.showErrorDialog("Input Error", "Please enter a file name.");
-      return;
+  private void loadSelectedPlayerList() {
+    String selectedList = savedPlayerListsView.getSelectionModel().getSelectedItem();
+    if (selectedList != null && !selectedList.isEmpty()) {
+      gameController.loadPlayers(selectedList);
+    } else {
+      controller.showErrorDialog("Selection Error", "Please select a player list to load.");
     }
-
-    gameController.loadPlayers(fileName);
   }
 
-  private void savePlayers() {
-    String fileName = fileNameField.getText().trim();
-    if (fileName.isEmpty()) {
-      controller.showErrorDialog("Input Error", "Please enter a file name.");
+  private void saveCurrentPlayersAs() {
+    String listName = newPlayerListNameField.getText().trim();
+    if (listName.isEmpty()) {
+      controller.showErrorDialog("Input Error", "Please enter a name for the player list.");
       return;
     }
-
-    gameController.savePlayers(fileName);
+    if (playersList.isEmpty()) {
+      controller.showErrorDialog("No Players", "Add some players before saving a list.");
+      return;
+    }
+    gameController.savePlayers(listName);
+    refreshSavedPlayerLists();
+    newPlayerListNameField.clear();
   }
 
   private void startGame() {
-    if (playersList.isEmpty() || playersList.size() < 2) {
+    if (playersList.isEmpty()) {
+      controller.showErrorDialog("No Players Added",
+          "Please add at least one player to start the game, or load a player list.");
+      return;
+    }
+    if (playersList.size() < 2) {
       controller.showErrorDialog("Not Enough Players",
-          "Please add at least 2 players to start the game.");
+          "Most games require at least 2 players. Please add more players.");
       return;
     }
 
     controller.showGameView();
   }
 
+  private void updateSavePlayersButtonState() {
+    if (savePlayersButton != null && newPlayerListNameField != null) {
+      boolean canSave = !playersList.isEmpty();
+      savePlayersButton.setVisible(canSave);
+      savePlayersButton.setManaged(canSave);
+      newPlayerListNameField.setVisible(canSave);
+      newPlayerListNameField.setManaged(canSave);
+    }
+  }
+
+  private void updateLoadPlayerListButtonState() {
+    if (loadSelectedPlayerListButton != null) {
+      boolean selectionExists = savedPlayerListsView != null
+          && savedPlayerListsView.getSelectionModel().getSelectedItem() != null;
+      loadSelectedPlayerListButton.setDisable(!selectionExists);
+    }
+  }
+
+  private void refreshSavedPlayerLists() {
+    List<String> availableNames = new ArrayList<>();
+    try {
+      availableNames = gameController.getAvailablePlayerListNames();
+    } catch (Exception e) {
+      System.err.println("Error fetching saved player lists: " + e.getMessage());
+      e.printStackTrace();
+      controller.showErrorDialog("Load Error", "Could not retrieve the list of saved player configurations.");
+      savedPlayerListItems.clear();
+      updateLoadPlayerListButtonState();
+      return;
+    }
+
+    if (availableNames != null) {
+      savedPlayerListItems.setAll(availableNames);
+      FXCollections.sort(savedPlayerListItems);
+    } else {
+      savedPlayerListItems.clear();
+    }
+    updateLoadPlayerListButtonState();
+  }
+
+  private void refreshAvailablePiecesFromModelState() {
+    availablePieceTypesObservableList.setAll(allPieceTypes);
+    if (gameController.getGame() != null && gameController.getGame().getPlayers() != null) {
+      for (Player player : gameController.getGame().getPlayers()) {
+        if (player.getPiece() != null) {
+          availablePieceTypesObservableList.remove(player.getPiece());
+        }
+      }
+    }
+    if (pieceTypeComboBox != null) {
+      pieceTypeComboBox.getSelectionModel().clearSelection();
+    }
+  }
+
   @Override
   public void onGameEvent(GameEvent event) {
     if (event instanceof PlayerAddedEvent playerAddedEvent) {
       Player player = playerAddedEvent.getPlayer();
-
       Platform.runLater(() -> {
-        playersList.add(player.getName() + " (" + player.getPiece() + ")");
+        if (!playersList.contains(player.getName() + " (" + player.getPiece() + ")")) {
+          playersList.add(player.getName() + " (" + player.getPiece() + ")");
+        }
+        availablePieceTypesObservableList.remove(player.getPiece());
+        updateSavePlayersButtonState();
+        if (pieceTypeComboBox.getItems().isEmpty()) {
+          controller.showInfoDialog("All Pieces Taken", "All available player pieces have been selected.");
+        }
       });
     } else if (event instanceof GameCreatedEvent) {
-      Platform.runLater(playersList::clear);
+      Platform.runLater(() -> {
+        playersList.clear();
+        resetAvailablePieces();
+        updateSavePlayersButtonState();
+      });
+    }
+  }
+
+  private void resetAvailablePieces() {
+    availablePieceTypesObservableList.setAll(allPieceTypes);
+    if (gameController.getGame() != null && gameController.getGame().getPlayers() != null) {
+      for (Player p : gameController.getGame().getPlayers()) {
+        if (p.getPiece() != null) {
+          availablePieceTypesObservableList.remove(p.getPiece());
+        }
+      }
+    }
+    if (pieceTypeComboBox != null) {
+      pieceTypeComboBox.getSelectionModel().clearSelection();
+      pieceTypeComboBox.setPromptText("Choose an available piece");
     }
   }
 }

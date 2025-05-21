@@ -73,8 +73,7 @@ public class LadderGameView extends AbstractGameView {
     gameBoard.animatePlayerLadderClimb(
         event.getPlayer(),
         event.getFromTile(),
-        event.getToTile()
-    );
+        event.getToTile());
   }
 
   private void handleSnakeEncountered(SnakeEncounteredEvent event) {
@@ -82,8 +81,7 @@ public class LadderGameView extends AbstractGameView {
     gameBoard.animatePlayerSnakeSlide(
         event.getPlayer(),
         event.getFromTile(),
-        event.getToTile()
-    );
+        event.getToTile());
   }
 
   private void handleBounceBack(BounceBackEvent event) {
@@ -91,16 +89,14 @@ public class LadderGameView extends AbstractGameView {
     gameBoard.animatePlayerBounceBack(
         event.getPlayer(),
         event.getFromTile(),
-        event.getToTile()
-    );
+        event.getToTile());
   }
 
   private void handlePlayerMoved(PlayerMovedEvent event) {
     gameBoard.animatePlayerMove(
         event.getPlayer(),
         event.getFromTile(),
-        event.getToTile()
-    );
+        event.getToTile());
   }
 
   private void handleTurnChanged(TurnChangedEvent event) {

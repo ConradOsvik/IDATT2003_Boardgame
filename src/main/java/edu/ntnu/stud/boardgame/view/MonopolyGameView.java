@@ -85,8 +85,7 @@ public class MonopolyGameView extends AbstractGameView {
         statusLabel,
         rollDiceButton,
         buyPropertyButton,
-        restartButton
-    );
+        restartButton);
 
     VBox leftPanel = new VBox(20);
     leftPanel.setPadding(new Insets(10));

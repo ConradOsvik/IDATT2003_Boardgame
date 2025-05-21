@@ -191,24 +191,7 @@ public class MonopolyBoard extends StackPane {
         Player owner = controller.getPropertyOwner(tile);
 
         if (owner != null) {
-          int playerIndex = controller.getGame().getPlayers().indexOf(owner);
-          switch (playerIndex) {
-            case 0:
-              gc.setFill(Color.RED);
-              break;
-            case 1:
-              gc.setFill(Color.BLUE);
-              break;
-            case 2:
-              gc.setFill(Color.GREEN);
-              break;
-            case 3:
-              gc.setFill(Color.YELLOW);
-              break;
-            default:
-              gc.setFill(Color.PURPLE);
-              break;
-          }
+          gc.setFill(owner.getPiece().getColor());
         } else {
           gc.setFill(Color.LIGHTBLUE);
         }
