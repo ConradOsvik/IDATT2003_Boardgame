@@ -48,21 +48,23 @@ class BoardFileReaderGsonTest {
 
     @Test
     void readBoard_validJson_parsesBoardCorrectly() throws BoardParsingException, IOException {
-        String validJson = "{\"name\":\"Test Board\", \"description\":\"A board for testing\", \"rows\":10, \"columns\":10, \"startTileId\":0, \"endTileId\":99, \"tiles\":[\n"
-                +
-                "  {\"id\":0, \"row\":9, \"column\":0, \"name\":\"Start\", \"action\":{\"type\":\"StartAction\", \"amount\":200}},\n"
-                +
-                "  {\"id\":1, \"row\":9, \"column\":1, \"name\":\"Property 1\", \"action\":{\"type\":\"PropertyAction\", \"price\":60}, \"nextTileId\":2},\n"
-                +
-                "  {\"id\":2, \"row\":9, \"column\":2, \"name\":\"Ladder Up\", \"action\":{\"type\":\"LadderAction\", \"destinationTileId\":5}},\n"
-                +
-                "  {\"id\":3, \"row\":9, \"column\":3, \"name\":\"Tax\", \"action\":{\"type\":\"TaxAction\", \"amount\":100}},\n"
-                +
-                "  {\"id\":4, \"row\":9, \"column\":4, \"name\":\"Snake Down\", \"action\":{\"type\":\"SnakeAction\", \"destinationTileId\":1}},\n"
-                +
-                "  {\"id\":5, \"row\":8, \"column\":2, \"name\":\"Top of Ladder\"},\n" +
-                "  {\"id\":6, \"row\":9, \"column\":6, \"name\":\"Skip\", \"action\":{\"type\":\"SkipTurnAction\"}}\n" +
-                "]}";
+        String validJson = String.join("",
+                "{",
+                "\"name\":\"Test Board\",",
+                "\"description\":\"A board for testing\",",
+                "\"rows\":10,",
+                "\"columns\":10,",
+                "\"startTileId\":0,",
+                "\"endTileId\":99,",
+                "\"tiles\":[",
+                "{\"id\":0,\"row\":9,\"column\":0,\"name\":\"Start\",\"action\":{\"type\":\"StartAction\",\"amount\":200}},",
+                "{\"id\":1,\"row\":9,\"column\":1,\"name\":\"Property 1\",\"action\":{\"type\":\"PropertyAction\",\"price\":60},\"nextTileId\":2},",
+                "{\"id\":2,\"row\":9,\"column\":2,\"name\":\"Ladder Up\",\"action\":{\"type\":\"LadderAction\",\"destinationTileId\":5}},",
+                "{\"id\":3,\"row\":9,\"column\":3,\"name\":\"Tax\",\"action\":{\"type\":\"TaxAction\",\"amount\":100}},",
+                "{\"id\":4,\"row\":9,\"column\":4,\"name\":\"Snake Down\",\"action\":{\"type\":\"SnakeAction\",\"destinationTileId\":1}},",
+                "{\"id\":5,\"row\":8,\"column\":2,\"name\":\"Top of Ladder\"},",
+                "{\"id\":6,\"row\":9,\"column\":6,\"name\":\"Skip\",\"action\":{\"type\":\"SkipTurnAction\"}}",
+                "]}");
 
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
