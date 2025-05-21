@@ -37,13 +37,17 @@ class BoardFileReaderGsonTest {
     @Mock
     private Path mockPath;
 
+    @Mock
+    private BasicFileAttributes mockAttributes;
+
     @BeforeEach
     void setUp() {
         boardReader = new BoardFileReaderGson();
+        when(mockAttributes.isDirectory()).thenReturn(false);
     }
 
     @Test
-    void readBoard_validJson_parsesBoardCorrectly() throws BoardParsingException {
+    void readBoard_validJson_parsesBoardCorrectly() throws BoardParsingException, IOException {
         String validJson = "{\"name\":\"Test Board\", \"description\":\"A board for testing\", \"rows\":10, \"columns\":10, \"startTileId\":0, \"endTileId\":99, \"tiles\":[\n"
                 +
                 "  {\"id\":0, \"row\":9, \"column\":0, \"name\":\"Start\", \"action\":{\"type\":\"StartAction\", \"amount\":200}},\n"
@@ -63,6 +67,8 @@ class BoardFileReaderGsonTest {
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(new StringReader(validJson)));
+            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
+                    .thenReturn(mockAttributes);
             mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(true);
 
             Board board = boardReader.readBoard(mockPath);
@@ -116,6 +122,8 @@ class BoardFileReaderGsonTest {
     void readBoard_ioException_throwsBoardParsingException() throws IOException {
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath)).thenThrow(new IOException("Disk error"));
+            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
+                    .thenReturn(mockAttributes);
             mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(true);
             BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
             assertTrue(ex.getMessage().contains("Failed to read board file: Disk error"));
@@ -128,6 +136,8 @@ class BoardFileReaderGsonTest {
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(new StringReader(invalidJson)));
+            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
+                    .thenReturn(mockAttributes);
             mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(true);
             BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
             assertTrue(ex.getMessage().contains("Invalid JSON syntax"));
@@ -140,8 +150,9 @@ class BoardFileReaderGsonTest {
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(new StringReader(json)));
+            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
+                    .thenReturn(mockAttributes);
             mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(true);
-
             BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
             assertEquals("Board must have name, description, rows, and columns", ex.getMessage());
         }
@@ -153,6 +164,8 @@ class BoardFileReaderGsonTest {
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(new StringReader(json)));
+            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
+                    .thenReturn(mockAttributes);
             mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(true);
             BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
             assertEquals("Tile must have id, row, and column", ex.getMessage());
@@ -165,6 +178,8 @@ class BoardFileReaderGsonTest {
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(new StringReader(json)));
+            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
+                    .thenReturn(mockAttributes);
             mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(true);
             BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
             assertEquals("Action must have type", ex.getMessage());
@@ -177,6 +192,8 @@ class BoardFileReaderGsonTest {
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(new StringReader(json)));
+            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
+                    .thenReturn(mockAttributes);
             mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(true);
             BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
             assertEquals("Board must have a 'tiles' array", ex.getMessage());
@@ -189,6 +206,8 @@ class BoardFileReaderGsonTest {
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(new StringReader(json)));
+            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
+                    .thenReturn(mockAttributes);
             mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(true);
             Board board = boardReader.readBoard(mockPath);
             assertNotNull(board);
