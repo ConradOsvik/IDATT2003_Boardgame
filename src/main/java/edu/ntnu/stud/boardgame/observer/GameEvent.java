@@ -22,10 +22,8 @@ public abstract class GameEvent {
 
     PLAYER_ADDED, PLAYER_MOVED, PLAYER_WON,
 
-    // Monopoly specific, but could be generic if other games have money
     MONEY_TRANSFER, PROPERTY_PURCHASED, PLAYER_BANKRUPT,
 
-    // Ladder game specific
     LADDER_CLIMBED, SNAKE_ENCOUNTERED, BOUNCE_BACK
   }
 }

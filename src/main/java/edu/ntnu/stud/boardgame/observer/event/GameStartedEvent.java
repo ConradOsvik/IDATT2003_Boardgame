@@ -23,7 +23,7 @@ public class GameStartedEvent extends GameEvent {
       throw new IllegalArgumentException("Board cannot be null for GameStartedEvent.");
     }
     this.currentPlayer = currentPlayer;
-    this.players = players; // Consider defensive copy
+    this.players = players;
     this.board = board;
   }
 
@@ -32,7 +32,7 @@ public class GameStartedEvent extends GameEvent {
   }
 
   public List<Player> getPlayers() {
-    return players; // Consider defensive copy
+    return players;
   }
 
   public Board getBoard() {

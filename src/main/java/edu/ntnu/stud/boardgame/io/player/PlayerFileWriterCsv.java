@@ -16,8 +16,7 @@ public class PlayerFileWriterCsv implements PlayerFileWriter {
       throw new IllegalArgumentException("Path cannot be null.");
     }
     if (players == null || players.isEmpty()) {
-      // Consider if an empty list should be an error or just result in an empty file.
-      // For now, keeping original behavior of throwing an exception.
+
       throw new PlayerWritingException("Player list is null or empty");
     }
 

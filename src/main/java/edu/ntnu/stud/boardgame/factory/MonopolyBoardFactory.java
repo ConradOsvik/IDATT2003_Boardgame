@@ -65,7 +65,7 @@ public class MonopolyBoardFactory {
   }
 
   private static void initializeStandardBoard(Board board) {
-    // Create start tile (GO)
+
     Tile startTile = new Tile(0);
     startTile.setRow(10);
     startTile.setColumn(10);

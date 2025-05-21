@@ -293,8 +293,8 @@ class LadderGameTest {
 
     @Test
     void playTurn_bouncedToNonExistentTile_throwsInvalidGameStateException() {
-        when(mockDice.roll()).thenReturn(12); // Overshoot by 2
-        when(mockBoard.getTile(8)).thenReturn(null); // Bounce target tile doesn't exist
+        when(mockDice.roll()).thenReturn(12);
+        when(mockBoard.getTile(8)).thenReturn(null);
 
         Exception exception = assertThrows(InvalidGameStateException.class, () -> game.playTurn());
         assertTrue(exception.getMessage().contains("Bounced to a non-existent tile"));

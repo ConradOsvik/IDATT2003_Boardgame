@@ -18,7 +18,7 @@ public class Board {
     if (name == null || name.trim().isEmpty()) {
       throw new IllegalArgumentException("Board name cannot be null or empty.");
     }
-    if (description == null) { // Assuming empty description is okay, but not null
+    if (description == null) {
       throw new IllegalArgumentException("Board description cannot be null.");
     }
     if (rows <= 0) {
@@ -33,10 +33,6 @@ public class Board {
     if (endTileId < 0) {
       throw new IllegalArgumentException("End tile ID cannot be negative.");
     }
-    // Further validation for startTileId and endTileId might be needed
-    // e.g., ensuring they are within a valid range or correspond to actual tiles
-    // once added.
-    // For now, basic constructor parameter checks are implemented.
 
     this.tiles = new HashMap<>();
     this.rows = rows;

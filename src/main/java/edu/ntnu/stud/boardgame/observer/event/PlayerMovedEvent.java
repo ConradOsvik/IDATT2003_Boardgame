@@ -35,7 +35,6 @@ public class PlayerMovedEvent extends GameEvent {
     this.board = board;
   }
 
-  // Convenience constructor for direct PLAYER_MOVED events
   public PlayerMovedEvent(Player player, Tile fromTile, Tile toTile, int steps, Board board) {
     this(EventType.PLAYER_MOVED, player, fromTile, toTile, steps, board);
   }

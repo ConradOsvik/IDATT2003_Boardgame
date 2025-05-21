@@ -103,6 +103,5 @@ public abstract class AbstractGameView extends BorderPane implements BoardGameOb
     }
   }
 
-  // Template method to be implemented by subclasses
   protected abstract void handleGameEvent(GameEvent event);
 }

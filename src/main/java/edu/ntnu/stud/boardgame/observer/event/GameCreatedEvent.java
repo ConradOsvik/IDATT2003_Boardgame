@@ -15,11 +15,11 @@ public class GameCreatedEvent extends GameEvent {
     if (board == null) {
       throw new IllegalArgumentException("Board cannot be null for GameCreatedEvent.");
     }
-    if (players == null) { // Note: Allowing empty list, but not null list
+    if (players == null) {
       throw new IllegalArgumentException("Players list cannot be null for GameCreatedEvent.");
     }
     this.board = board;
-    this.players = players; // Consider making a defensive copy
+    this.players = players;
   }
 
   public Board getBoard() {
@@ -27,6 +27,6 @@ public class GameCreatedEvent extends GameEvent {
   }
 
   public List<Player> getPlayers() {
-    return players; // Consider returning a defensive copy
+    return players;
   }
 }

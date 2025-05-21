@@ -101,9 +101,6 @@ public abstract class BoardGame {
   }
 
   protected void endGame(Player winner) {
-    // Assuming winner is non-null when a player wins.
-    // If a draw or other non-winner end is possible, this might need adjustment
-    // or the winner parameter might be @Nullable with checks in event handlers.
     this.winner = winner;
     this.gameOver = true;
 
@@ -114,7 +111,7 @@ public abstract class BoardGame {
   public void registerObserver(BoardGameObserver observer) {
     if (observer == null) {
       LOGGER.warning("Attempted to register a null observer.");
-      return; // Do not add null observer
+      return;
     }
     if (!observers.contains(observer)) {
       observers.add(observer);
@@ -127,7 +124,7 @@ public abstract class BoardGame {
       return;
     }
     for (BoardGameObserver observer : observers) {
-      registerObserver(observer); // This will handle individual null checks
+      registerObserver(observer);
     }
   }
 

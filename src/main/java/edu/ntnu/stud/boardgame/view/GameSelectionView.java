@@ -78,7 +78,7 @@ public class GameSelectionView extends BorderPane {
 
     if (onSelect == null) {
       LOGGER.severe("onSelect event handler is null for game card: " + cardTitle + ". Button will be unresponsive.");
-      // Optionally, disable the button or don't create it
+
     }
 
     VBox card = new VBox();

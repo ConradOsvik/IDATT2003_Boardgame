@@ -206,7 +206,7 @@ public class GameController {
       return playerFileService.getAvailablePlayerListFileNames();
     } catch (Exception e) {
       showError("Load Error", "Failed to retrieve saved player lists: " + e.getMessage());
-      return new ArrayList<>(); // Return empty list on error
+      return new ArrayList<>();
     }
   }
 

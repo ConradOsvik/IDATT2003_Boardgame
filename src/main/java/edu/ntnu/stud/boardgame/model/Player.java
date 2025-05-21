@@ -77,9 +77,7 @@ public class Player {
   public void setCurrentTile(Tile tile) {
     if (tile == null) {
       throw new IllegalArgumentException("Cannot set current tile to null.");
-      // Or, if null is a valid state to mean "off board", then this check might be
-      // different
-      // For now, assume it's not valid.
+
     }
     this.currentTile = tile;
   }

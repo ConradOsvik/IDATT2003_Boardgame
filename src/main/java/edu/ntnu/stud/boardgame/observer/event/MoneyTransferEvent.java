@@ -5,8 +5,8 @@ import edu.ntnu.stud.boardgame.observer.GameEvent;
 
 public class MoneyTransferEvent extends GameEvent {
 
-  private final Player fromPlayer; // Can be null (e.g., for bank transactions)
-  private final Player toPlayer; // Can be null (e.g., for bank transactions)
+  private final Player fromPlayer;
+  private final Player toPlayer;
   private final int amount;
   private final String reason;
 
@@ -15,7 +15,7 @@ public class MoneyTransferEvent extends GameEvent {
     if (reason == null || reason.trim().isEmpty()) {
       throw new IllegalArgumentException("Reason for money transfer cannot be null or empty.");
     }
-    // fromPlayer and toPlayer can be null as per design
+
     this.fromPlayer = fromPlayer;
     this.toPlayer = toPlayer;
     this.amount = amount;
