@@ -120,6 +120,7 @@ public abstract class BoardGame {
     String eventType = event.getClass().getSimpleName();
     LOGGER.info(
         String.format("Notifying %d observers about event: %s", observers.size(), eventType));
+
     for (BoardGameObserver observer : observers) {
       observer.onGameEvent(event);
     }

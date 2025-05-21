@@ -139,7 +139,7 @@ public class MonopolyGame extends BoardGame {
 
     propertyAction.setOwner(player);
 
-    LOGGER.info(player.getName() + " bought property for $" + price);
+    LOGGER.info(player.getName() + " bought property for $" + price + " at " + property.getName());
 
     notifyObservers(new PropertyPurchasedEvent(player, property, price));
 
