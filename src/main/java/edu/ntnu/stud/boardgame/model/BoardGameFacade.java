@@ -109,6 +109,10 @@ public class BoardGameFacade {
   }
 
   public void registerObserver(BoardGameObserver observer) {
+    if (observer == null) {
+      System.err.println("Attempted to register a null observer in BoardGameFacade.");
+      return;
+    }
     observers.add(observer);
 
     if (currentGame != null) {

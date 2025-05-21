@@ -5,6 +5,7 @@ import edu.ntnu.stud.boardgame.model.enums.BoardGameType;
 import edu.ntnu.stud.boardgame.view.components.builder.ButtonBuilder;
 import edu.ntnu.stud.boardgame.view.components.builder.LabelBuilder;
 import java.io.InputStream;
+import java.util.logging.Logger;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -18,9 +19,13 @@ import javafx.scene.layout.Priority;
 
 public class GameSelectionView extends BorderPane {
 
+  private static final Logger LOGGER = Logger.getLogger(GameSelectionView.class.getName());
   private final GameController controller;
 
   public GameSelectionView(GameController controller) {
+    if (controller == null) {
+      throw new IllegalArgumentException("GameController cannot be null.");
+    }
     this.controller = controller;
 
     getStyleClass().add("game-selection-view");
@@ -59,37 +64,60 @@ public class GameSelectionView extends BorderPane {
 
   private VBox createGameCard(String title, String imagePath, String description,
       javafx.event.EventHandler<javafx.event.ActionEvent> onSelect) {
+
+    String cardTitle = (title == null || title.trim().isEmpty()) ? "Untitled Game" : title;
+    if (title == null || title.trim().isEmpty()) {
+      LOGGER.warning("Game card title is null or empty. Using default.");
+    }
+
+    String cardDescription = (description == null || description.trim().isEmpty()) ? "No description available."
+        : description;
+    if (description == null || description.trim().isEmpty()) {
+      LOGGER.warning("Game card description is null or empty. Using default for title: " + cardTitle);
+    }
+
+    if (onSelect == null) {
+      LOGGER.severe("onSelect event handler is null for game card: " + cardTitle + ". Button will be unresponsive.");
+      // Optionally, disable the button or don't create it
+    }
+
     VBox card = new VBox();
     card.getStyleClass().add("game-card");
     card.setAlignment(Pos.CENTER);
 
     Label gameTitle = new LabelBuilder()
-        .text(title)
+        .text(cardTitle)
         .styleClass("game-title")
         .build();
 
     ImageView imageView = new ImageView();
-    try {
-      InputStream is = getClass().getResourceAsStream(imagePath);
-      if (is != null) {
-        Image image = new Image(is);
-        imageView.setImage(image);
-        imageView.getStyleClass().add("game-image");
-        imageView.setPreserveRatio(true);
-      } else {
-        System.err.println("Could not find image at " + imagePath);
-        Label errorLabel = new Label("Image not found");
+    if (imagePath != null && !imagePath.trim().isEmpty()) {
+      try {
+        InputStream is = getClass().getResourceAsStream(imagePath);
+        if (is != null) {
+          Image image = new Image(is);
+          imageView.setImage(image);
+          imageView.getStyleClass().add("game-image");
+          imageView.setPreserveRatio(true);
+        } else {
+          LOGGER.warning("Could not find image at " + imagePath);
+          Label errorLabel = new Label("Image not found");
+          card.getChildren().add(errorLabel);
+        }
+      } catch (Exception e) {
+        LOGGER.severe("Failed to load image: " + imagePath);
+        e.printStackTrace();
+        Label errorLabel = new Label("Error loading image");
         card.getChildren().add(errorLabel);
       }
-    } catch (Exception e) {
-      System.err.println("Failed to load image: " + imagePath);
-      e.printStackTrace();
-      Label errorLabel = new Label("Error loading image");
+    } else {
+      LOGGER.warning("Image path is null or empty for game card: " + cardTitle);
+      Label errorLabel = new Label("Image not provided");
       card.getChildren().add(errorLabel);
     }
 
     Label descriptionLabel = new LabelBuilder()
-        .text(description)
+        .text(cardDescription)
         .wrapText(true)
         .styleClass("game-description")
         .build();

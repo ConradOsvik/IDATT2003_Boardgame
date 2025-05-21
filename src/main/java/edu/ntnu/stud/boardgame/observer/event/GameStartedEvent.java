@@ -13,8 +13,17 @@ public class GameStartedEvent extends GameEvent {
 
   public GameStartedEvent(Player currentPlayer, List<Player> players, Board board) {
     super(EventType.GAME_STARTED);
+    if (currentPlayer == null) {
+      throw new IllegalArgumentException("CurrentPlayer cannot be null for GameStartedEvent.");
+    }
+    if (players == null) {
+      throw new IllegalArgumentException("Players list cannot be null for GameStartedEvent.");
+    }
+    if (board == null) {
+      throw new IllegalArgumentException("Board cannot be null for GameStartedEvent.");
+    }
     this.currentPlayer = currentPlayer;
-    this.players = players;
+    this.players = players; // Consider defensive copy
     this.board = board;
   }
 
@@ -23,7 +32,7 @@ public class GameStartedEvent extends GameEvent {
   }
 
   public List<Player> getPlayers() {
-    return players;
+    return players; // Consider defensive copy
   }
 
   public Board getBoard() {

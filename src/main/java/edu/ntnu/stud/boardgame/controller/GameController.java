@@ -25,6 +25,10 @@ public class GameController {
 
   public void selectGameType(BoardGameType gameType) {
     try {
+      if (gameType == null) {
+        showError("Game Type Error", "Game type cannot be null.");
+        return;
+      }
       gameFacade.setCurrentGameType(gameType);
       mainController.showBoardSelectionView();
     } catch (Exception e) {
@@ -43,6 +47,14 @@ public class GameController {
 
   public boolean saveSelectedBoardAs(String selectedBoard, String newName) {
     try {
+      if (selectedBoard == null || selectedBoard.trim().isEmpty()) {
+        showError("Save Error", "Board name cannot be empty.");
+        return false;
+      }
+      if (newName == null || newName.trim().isEmpty()) {
+        showError("Save Error", "New board name cannot be empty.");
+        return false;
+      }
       if (gameFacade.getCurrentGameType() == null) {
         showError("Save Error", "No game type selected.");
         return false;
@@ -62,6 +74,10 @@ public class GameController {
 
   public boolean selectBoard(String boardName) {
     try {
+      if (boardName == null || boardName.trim().isEmpty()) {
+        showError("Board Selection Error", "Board name cannot be empty.");
+        return false;
+      }
       gameFacade.createGame(boardName);
       mainController.showPlayerSetupView();
       return true;
@@ -73,6 +89,14 @@ public class GameController {
 
   public boolean addPlayer(String name, PieceType pieceType) {
     try {
+      if (name == null || name.trim().isEmpty()) {
+        showError("Input Error", "Player name cannot be empty.");
+        return false;
+      }
+      if (pieceType == null) {
+        showError("Input Error", "Piece type cannot be null.");
+        return false;
+      }
       for (Player player : gameFacade.getCurrentGame().getPlayers()) {
         if (player.getPiece() == pieceType) {
           showError("Input Error",
@@ -91,6 +115,10 @@ public class GameController {
 
   public boolean savePlayers(String fileName) {
     try {
+      if (fileName == null || fileName.trim().isEmpty()) {
+        showError("Save Error", "File name cannot be empty.");
+        return false;
+      }
       List<Player> players = gameFacade.getCurrentGame().getPlayers();
       if (players.isEmpty()) {
         showError("Input Error", "No players to save.");
@@ -108,6 +136,10 @@ public class GameController {
 
   public boolean loadPlayers(String fileName) {
     try {
+      if (fileName == null || fileName.trim().isEmpty()) {
+        showError("Load Error", "File name cannot be empty.");
+        return false;
+      }
       List<Player> loadedPlayers = playerFileService.loadPlayers(fileName);
 
       for (Player player : loadedPlayers) {
@@ -115,8 +147,11 @@ public class GameController {
       }
 
       return true;
-    } catch (Exception e) {
+    } catch (BoardGameException e) {
       showError("Load Error", "Failed to load players: " + e.getMessage());
+      return false;
+    } catch (Exception e) {
+      showError("Load Error", "An unexpected error occurred while loading players: " + e.getMessage());
       return false;
     }
   }
@@ -143,10 +178,17 @@ public class GameController {
     } catch (BoardGameException e) {
       showError("Game Error", "Failed to play turn: " + e.getMessage());
       return false;
+    } catch (Exception e) {
+      showError("Game Error", "An unexpected error occurred during the turn: " + e.getMessage());
+      return false;
     }
   }
 
   public void registerObserver(BoardGameObserver observer) {
+    if (observer == null) {
+      System.err.println("Attempted to register a null observer.");
+      return;
+    }
     gameFacade.registerObserver(observer);
   }
 

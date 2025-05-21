@@ -11,7 +11,13 @@ public class PropertyPurchasedEvent extends GameEvent {
   private final int price;
 
   public PropertyPurchasedEvent(Player player, Tile property, int price) {
-    super(EventType.PLAYER_MOVED);
+    super(EventType.PROPERTY_PURCHASED);
+    if (player == null) {
+      throw new IllegalArgumentException("Player cannot be null for PropertyPurchasedEvent.");
+    }
+    if (property == null) {
+      throw new IllegalArgumentException("Property cannot be null for PropertyPurchasedEvent.");
+    }
     this.player = player;
     this.property = property;
     this.price = price;

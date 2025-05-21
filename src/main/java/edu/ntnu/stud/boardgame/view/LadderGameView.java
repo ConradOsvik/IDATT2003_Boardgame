@@ -65,7 +65,7 @@ public class LadderGameView extends AbstractGameView {
 
   private void handleDiceRolled(DiceRolledEvent event) {
     soundManager.playSound("dice_roll");
-    controlPanel.updateDiceValue(event.getValue());
+    controlPanel.updateDiceValue(event.getDiceValue());
   }
 
   private void handleLadderClimbed(LadderClimbedEvent event) {

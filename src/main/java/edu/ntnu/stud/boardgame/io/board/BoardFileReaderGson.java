@@ -53,12 +53,15 @@ public class BoardFileReaderGson implements BoardFileReader {
 
   @Override
   public Board readBoard(Path path) throws BoardParsingException {
+    if (path == null) {
+      throw new IllegalArgumentException("Path cannot be null.");
+    }
     try (Reader reader = Files.newBufferedReader(path)) {
       JsonObject boardJson = JsonParser.parseReader(reader).getAsJsonObject();
 
       if (!boardJson.has("rows") || !boardJson.has("columns") || !boardJson.has("name")
           || !boardJson.has("description") || !boardJson.has("startTileId") || !boardJson.has(
-          "endTileId")) {
+              "endTileId")) {
         throw new BoardParsingException("Board must have name, description, rows, and columns");
       }
 

@@ -5,10 +5,13 @@ import edu.ntnu.stud.boardgame.observer.GameEvent;
 
 public class TurnChangedEvent extends GameEvent {
 
-  private Player currentPlayer;
+  private final Player currentPlayer;
 
   public TurnChangedEvent(Player currentPlayer) {
     super(EventType.TURN_CHANGED);
+    if (currentPlayer == null) {
+      throw new IllegalArgumentException("CurrentPlayer cannot be null for TurnChangedEvent.");
+    }
     this.currentPlayer = currentPlayer;
   }
 

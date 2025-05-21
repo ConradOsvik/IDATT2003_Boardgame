@@ -88,10 +88,18 @@ public class PlayerFileService {
       }
     } catch (IOException e) {
       LOGGER.severe("Failed to create directory: " + directory + ". Error: " + e.getMessage());
+      // Consider rethrowing as a runtime exception if this directory is critical
+      // throw new RuntimeException("Failed to create essential directory: " +
+      // directory, e);
     }
   }
 
   private String ensureFileExtension(String fileName) {
+    if (fileName == null || fileName.trim().isEmpty()) {
+      // Or throw IllegalArgumentException, depending on desired handling
+      LOGGER.warning("File name is null or empty in ensureFileExtension. Returning as is.");
+      return fileName;
+    }
     if (!fileName.toLowerCase().endsWith(".csv")) {
       return fileName + ".csv";
     }

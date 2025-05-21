@@ -7,19 +7,37 @@ import edu.ntnu.stud.boardgame.observer.GameEvent;
 
 public class PlayerMovedEvent extends GameEvent {
 
-  protected final Player player;
-  protected final Tile fromTile;
-  protected final Tile toTile;
-  protected final int steps;
-  protected final Board board;
+  private final Player player;
+  private final Tile fromTile;
+  private final Tile toTile;
+  private final int steps;
+  private final Board board;
 
-  public PlayerMovedEvent(Player player, Tile fromTile, Tile toTile, int steps, Board board) {
-    super(EventType.PLAYER_MOVED);
+  public PlayerMovedEvent(EventType type, Player player, Tile fromTile, Tile toTile, int steps,
+      Board board) {
+    super(type);
+    if (player == null) {
+      throw new IllegalArgumentException("Player cannot be null for PlayerMovedEvent.");
+    }
+    if (fromTile == null) {
+      throw new IllegalArgumentException("FromTile cannot be null for PlayerMovedEvent.");
+    }
+    if (toTile == null) {
+      throw new IllegalArgumentException("ToTile cannot be null for PlayerMovedEvent.");
+    }
+    if (board == null) {
+      throw new IllegalArgumentException("Board cannot be null for PlayerMovedEvent.");
+    }
     this.player = player;
     this.fromTile = fromTile;
     this.toTile = toTile;
     this.steps = steps;
     this.board = board;
+  }
+
+  // Convenience constructor for direct PLAYER_MOVED events
+  public PlayerMovedEvent(Player player, Tile fromTile, Tile toTile, int steps, Board board) {
+    this(EventType.PLAYER_MOVED, player, fromTile, toTile, steps, board);
   }
 
   public Player getPlayer() {

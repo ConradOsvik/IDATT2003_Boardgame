@@ -87,6 +87,13 @@ public class BoardFileWriterGson implements BoardFileWriter {
 
   @Override
   public void writeBoard(Path path, Board board) throws BoardWritingException {
+    if (path == null) {
+      throw new IllegalArgumentException("Path cannot be null.");
+    }
+    if (board == null) {
+      throw new IllegalArgumentException("Board cannot be null.");
+    }
+
     try {
       JsonObject boardJson = new JsonObject();
 

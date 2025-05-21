@@ -18,10 +18,20 @@ public class BoardGameFactory {
   private final BoardFileService boardFileService;
 
   public BoardGameFactory(BoardFileService boardFileService) {
+    if (boardFileService == null) {
+      throw new IllegalArgumentException("BoardFileService cannot be null.");
+    }
     this.boardFileService = boardFileService;
   }
 
   public BoardGame createGame(BoardGameType type, String boardName) throws BoardFileException {
+    if (type == null) {
+      throw new IllegalArgumentException("BoardGameType cannot be null.");
+    }
+    if (boardName == null || boardName.trim().isEmpty()) {
+      throw new IllegalArgumentException("Board name cannot be null or empty.");
+    }
+
     Board board;
 
     if (boardName.startsWith("Predefined:")) {
@@ -46,6 +56,9 @@ public class BoardGameFactory {
   }
 
   public List<String> getAvailableGameBoards(BoardGameType gameType) {
+    if (gameType == null) {
+      throw new IllegalArgumentException("GameType cannot be null.");
+    }
     List<String> result = new ArrayList<>();
 
     List<String> predefinedBoards = switch (gameType) {
@@ -64,6 +77,9 @@ public class BoardGameFactory {
   }
 
   private BoardGame createEmptyGame(BoardGameType type) {
+    if (type == null) {
+      throw new IllegalArgumentException("BoardGameType cannot be null for createEmptyGame.");
+    }
     return switch (type) {
       case LADDER -> new LadderGame();
       case MONOPOLY -> new MonopolyGame();

@@ -9,12 +9,18 @@ public class PropertyAction implements TileAction {
   private Player owner;
 
   public PropertyAction(int price) {
+    if (price < 0) {
+      throw new IllegalArgumentException("Property price cannot be negative.");
+    }
     this.price = price;
     this.owner = null;
   }
 
   @Override
   public void perform(Player player) {
+    if (player == null) {
+      throw new IllegalArgumentException("Player cannot be null for PropertyAction.");
+    }
     MonopolyActionRegistry.getInstance().executePropertyAction(player, this);
   }
 

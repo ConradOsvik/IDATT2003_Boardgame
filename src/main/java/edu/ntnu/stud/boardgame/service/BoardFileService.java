@@ -42,13 +42,19 @@ public class BoardFileService {
   }
 
   private Path getGameTypeDirectory(BoardGameType gameType) {
+    if (gameType == null) {
+      throw new IllegalArgumentException("Game type cannot be null when getting game type directory.");
+    }
     Path gameTypeDir = boardsBaseDirectory.resolve(gameType.name().toLowerCase());
     createDirectoryIfNotExists(gameTypeDir);
     return gameTypeDir;
   }
 
   public Board loadBoard(BoardGameType gameType, String fileName) throws BoardFileException {
-    if (fileName == null || fileName.isEmpty()) {
+    if (gameType == null) {
+      throw new IllegalArgumentException("Game type cannot be null.");
+    }
+    if (fileName == null || fileName.trim().isEmpty()) {
       throw new IllegalArgumentException("File name cannot be null or empty.");
     }
 
@@ -70,7 +76,10 @@ public class BoardFileService {
 
   public void saveBoard(BoardGameType gameType, String fileName, Board board)
       throws BoardFileException {
-    if (fileName == null || fileName.isEmpty()) {
+    if (gameType == null) {
+      throw new IllegalArgumentException("Game type cannot be null.");
+    }
+    if (fileName == null || fileName.trim().isEmpty()) {
       throw new IllegalArgumentException("File name cannot be null or empty.");
     }
 
@@ -92,6 +101,11 @@ public class BoardFileService {
 
   public List<String> listAvailableBoards(BoardGameType gameType) {
     List<String> boardNames = new ArrayList<>();
+
+    if (gameType == null) {
+      LOGGER.warning("Cannot list boards: game type is null.");
+      return boardNames;
+    }
 
     Path gameTypeDir = getGameTypeDirectory(gameType);
 
@@ -118,13 +132,16 @@ public class BoardFileService {
         Files.createDirectories(directory);
         LOGGER.info("Created directory: " + directory);
       }
-    } catch (Exception e) {
+    } catch (IOException e) {
       LOGGER.severe("Failed to create directory: " + directory + ". Error: " + e.getMessage());
     }
   }
 
   private String ensureFileExtension(String fileName) {
-    if (!fileName.endsWith(".json")) {
+    if (fileName == null || fileName.trim().isEmpty()) {
+      throw new IllegalArgumentException("File name cannot be null or empty in ensureFileExtension.");
+    }
+    if (!fileName.toLowerCase().endsWith(".json")) {
       return fileName + ".json";
     }
     return fileName;

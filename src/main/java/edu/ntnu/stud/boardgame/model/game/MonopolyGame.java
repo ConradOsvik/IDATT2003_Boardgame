@@ -61,12 +61,40 @@ public class MonopolyGame extends BoardGame {
     notifyObservers(new DiceRolledEvent(steps, currentPlayer));
 
     Tile fromTile = currentPlayer.getCurrentTile();
+    if (fromTile == null) {
+      // This should ideally not happen if startGame correctly places players
+      // and player logic prevents them from being on a null tile.
+      LOGGER.severe("Current player " + currentPlayer.getName() + " is not on any tile. Cannot play turn.");
+      // Consider throwing InvalidGameStateException or attempting recovery if
+      // possible.
+      // For now, log and return to prevent NPE, but this indicates a deeper issue.
+      return;
+    }
     int startPosition = fromTile.getTileId();
 
     Tile toTile = currentPlayer.getDestinationTile(steps);
-    int endPosition = toTile.getTileId();
+    // Player.getDestinationTile should handle invalid step counts or broken paths.
+    // Player.placeOnTile will throw if toTile is null (e.g. from a broken board
+    // loop).
+    if (toTile == null) {
+      LOGGER.severe("Player " + currentPlayer.getName() + " could not determine destination tile for steps: " + steps
+          + " from tile " + fromTile.getName());
+      // This likely indicates a board configuration issue (e.g. broken loop)
+      // or an issue in Player.getDestinationTile. Game cannot proceed for this
+      // player's turn.
+      // Depending on rules, could skip turn or throw error.
+      // For robustness in current turn, we might skip or end, but throwing helps
+      // identify config issues.
+      // For now, let it proceed to placeOnTile which will throw if toTile is null.
+    }
 
-    if (endPosition < startPosition && endPosition != 0) {
+    int endPosition = toTile.getTileId(); // This will NPE if toTile is null; Player.placeOnTile will also throw.
+
+    // GO Detection: Assumes tile IDs are 0-indexed, sequential, and GO is at/before
+    // the lowest tile ID.
+    // More robust GO detection might involve a dedicated GO tile flag or different
+    // board traversal logic.
+    if (endPosition < startPosition && endPosition != 0) { // Simplified GO check
       receiveStartMoney(currentPlayer, START_BONUS);
     }
 
@@ -229,10 +257,18 @@ public class MonopolyGame extends BoardGame {
   }
 
   public int getPlayerMoney(Player player) {
+    if (player == null) {
+      LOGGER.warning("Attempted to get money for a null player. Returning 0.");
+      return 0;
+    }
     return playerMoney.getOrDefault(player, 0);
   }
 
   public boolean isBankrupt(Player player) {
+    if (player == null) {
+      LOGGER.warning("Attempted to check bankruptcy status for a null player. Returning false.");
+      return false; // Or throw, depending on whether this state should be allowed
+    }
     return bankruptPlayers.contains(player);
   }
 

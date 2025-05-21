@@ -27,6 +27,9 @@ public class LadderGameBoardFactory {
   }
 
   public static Board createBoard(String boardName) {
+    if (boardName == null || boardName.trim().isEmpty()) {
+      throw new IllegalArgumentException("Board name cannot be null or empty.");
+    }
     if (!PREDEFINED_BOARDS.containsKey(boardName)) {
       throw new IllegalArgumentException("Unknown board name: " + boardName);
     }
@@ -201,17 +204,32 @@ public class LadderGameBoardFactory {
   private static void addLadder(Board board, int fromTileId, int toTileId) {
     Tile fromTile = board.getTile(fromTileId);
     Tile toTile = board.getTile(toTileId);
+    if (fromTile == null) {
+      throw new IllegalStateException("Ladder 'from' tile not found: " + fromTileId + ". Check factory configuration.");
+    }
+    if (toTile == null) {
+      throw new IllegalStateException("Ladder 'to' tile not found: " + toTileId + ". Check factory configuration.");
+    }
     fromTile.setLandAction(new LadderAction(toTile));
   }
 
   private static void addSnake(Board board, int fromTileId, int toTileId) {
     Tile fromTile = board.getTile(fromTileId);
     Tile toTile = board.getTile(toTileId);
+    if (fromTile == null) {
+      throw new IllegalStateException("Snake 'from' tile not found: " + fromTileId + ". Check factory configuration.");
+    }
+    if (toTile == null) {
+      throw new IllegalStateException("Snake 'to' tile not found: " + toTileId + ". Check factory configuration.");
+    }
     fromTile.setLandAction(new SnakeAction(toTile));
   }
 
   private static void addSkipTurnAction(Board board, int tileId) {
     Tile tile = board.getTile(tileId);
+    if (tile == null) {
+      throw new IllegalStateException("SkipTurnAction tile not found: " + tileId + ". Check factory configuration.");
+    }
     tile.setLandAction(new SkipTurnAction());
   }
 }

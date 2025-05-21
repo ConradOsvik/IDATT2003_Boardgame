@@ -66,6 +66,10 @@ public abstract class BoardGame {
 
     for (Player player : players) {
       Tile startTile = board.getTile(board.getStartTileId());
+      if (startTile == null) {
+        throw new InvalidGameStateException(
+            "Start tile (ID: " + board.getStartTileId() + ") not found on the board.");
+      }
       player.placeOnTile(startTile);
     }
 
@@ -97,6 +101,9 @@ public abstract class BoardGame {
   }
 
   protected void endGame(Player winner) {
+    // Assuming winner is non-null when a player wins.
+    // If a draw or other non-winner end is possible, this might need adjustment
+    // or the winner parameter might be @Nullable with checks in event handlers.
     this.winner = winner;
     this.gameOver = true;
 
@@ -105,18 +112,30 @@ public abstract class BoardGame {
   }
 
   public void registerObserver(BoardGameObserver observer) {
+    if (observer == null) {
+      LOGGER.warning("Attempted to register a null observer.");
+      return; // Do not add null observer
+    }
     if (!observers.contains(observer)) {
       observers.add(observer);
     }
   }
 
   public void registerObservers(List<BoardGameObserver> observers) {
+    if (observers == null) {
+      LOGGER.warning("Attempted to register a null list of observers.");
+      return;
+    }
     for (BoardGameObserver observer : observers) {
-      registerObserver(observer);
+      registerObserver(observer); // This will handle individual null checks
     }
   }
 
   protected void notifyObservers(GameEvent event) {
+    if (event == null) {
+      LOGGER.warning("Attempted to notify observers with a null event.");
+      return;
+    }
     String eventType = event.getClass().getSimpleName();
     LOGGER.info(
         String.format("Notifying %d observers about event: %s", observers.size(), eventType));
@@ -135,6 +154,9 @@ public abstract class BoardGame {
   }
 
   public void setBoard(Board board) {
+    if (board == null) {
+      throw new IllegalArgumentException("Board cannot be set to null.");
+    }
     this.board = board;
   }
 

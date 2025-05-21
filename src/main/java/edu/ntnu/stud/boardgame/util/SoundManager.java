@@ -44,6 +44,14 @@ public class SoundManager {
   }
 
   public void loadSound(String name, String path) {
+    if (name == null || name.trim().isEmpty()) {
+      LOGGER.warning("Sound name cannot be null or empty.");
+      return;
+    }
+    if (path == null || path.trim().isEmpty()) {
+      LOGGER.warning("Sound path cannot be null or empty for sound: " + name);
+      return;
+    }
     try {
       URL resource = getClass().getResource(path);
       if (resource != null) {
@@ -59,6 +67,10 @@ public class SoundManager {
   }
 
   public void playSound(String name) {
+    if (name == null || name.trim().isEmpty()) {
+      LOGGER.warning("Cannot play sound: name is null or empty.");
+      return;
+    }
     if (muted) {
       return;
     }

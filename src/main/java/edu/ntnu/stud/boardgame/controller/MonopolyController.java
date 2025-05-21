@@ -31,6 +31,11 @@ public class MonopolyController {
       return false;
     }
 
+    if (property == null) {
+      LOGGER.warning("Cannot buy property: tile property is null");
+      return false;
+    }
+
     Player currentPlayer = monopolyGame.getCurrentPlayer();
     if (currentPlayer == null) {
       LOGGER.warning("Cannot buy property: current player is null");
