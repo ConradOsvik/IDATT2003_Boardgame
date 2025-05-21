@@ -6,7 +6,6 @@ import edu.ntnu.stud.boardgame.model.Tile;
 import edu.ntnu.stud.boardgame.view.components.AbstractGameBoard;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -16,8 +15,6 @@ public class MonopolyGameBoard extends AbstractGameBoard {
 
   private final MonopolyController controller;
   private final Map<TileType, Color> tileColors;
-
-  private static final Logger LOGGER = Logger.getLogger(MonopolyGameBoard.class.getName());
 
   public MonopolyGameBoard(MonopolyController controller) {
     super();
