@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -29,9 +30,13 @@ class BoardFileReaderGsonTest {
     @Mock
     private Path mockPath;
 
+    @Mock
+    private BasicFileAttributes mockAttributes;
+
     @BeforeEach
     void setUp() {
         boardReader = new BoardFileReaderGson();
+        when(mockAttributes.isDirectory()).thenReturn(false);
     }
 
     private StringReader createJsonReader(String json) {
@@ -59,6 +64,8 @@ class BoardFileReaderGsonTest {
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(createJsonReader(validJson)));
+            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
+                    .thenReturn(mockAttributes);
 
             Board board = boardReader.readBoard(mockPath);
 
@@ -111,6 +118,8 @@ class BoardFileReaderGsonTest {
     void readBoard_ioException_throwsBoardParsingException() throws IOException {
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath)).thenThrow(new IOException("Disk error"));
+            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
+                    .thenReturn(mockAttributes);
             BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
             assertTrue(ex.getMessage().contains("Failed to read board file: Disk error"));
         }
@@ -122,6 +131,8 @@ class BoardFileReaderGsonTest {
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(createJsonReader(invalidJson)));
+            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
+                    .thenReturn(mockAttributes);
             BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
             assertTrue(ex.getMessage().contains("Invalid JSON syntax"));
         }
@@ -133,6 +144,8 @@ class BoardFileReaderGsonTest {
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(createJsonReader(json)));
+            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
+                    .thenReturn(mockAttributes);
             BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
             assertEquals("Unexpected error: Board must have name, description, rows, and columns", ex.getMessage());
         }
@@ -144,6 +157,8 @@ class BoardFileReaderGsonTest {
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(createJsonReader(json)));
+            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
+                    .thenReturn(mockAttributes);
             BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
             assertEquals("Unexpected error: Tile must have id, row, and column", ex.getMessage());
         }
@@ -155,6 +170,8 @@ class BoardFileReaderGsonTest {
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(createJsonReader(json)));
+            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
+                    .thenReturn(mockAttributes);
             BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
             assertEquals("Unexpected error: Action must have type", ex.getMessage());
         }
