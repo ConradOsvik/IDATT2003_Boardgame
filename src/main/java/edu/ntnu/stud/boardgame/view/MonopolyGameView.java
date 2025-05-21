@@ -22,9 +22,6 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
-import javafx.geometry.Pos;
-import javafx.scene.layout.Priority;
 
 public class MonopolyGameView extends AbstractGameView {
 
@@ -40,15 +37,12 @@ public class MonopolyGameView extends AbstractGameView {
     super(mainController, gameController);
     this.monopolyController = new MonopolyController(gameController);
 
-    getStyleClass().add("game-view");
-    getStyleClass().add("monopoly-game-view");
-
     this.gameBoard = new MonopolyGameBoard(monopolyController);
     this.playerScoreboard = new MonopolyPlayerScoreboard(monopolyController);
 
     this.statusLabel = new LabelBuilder()
-        .text("Welcome to Monopoly Lite!")
-        .styleClass("game-status")
+        .text("Welcome to Monopoly")
+        .styleClass("title")
         .wrapText(true)
         .build();
 
@@ -60,8 +54,8 @@ public class MonopolyGameView extends AbstractGameView {
         .build();
 
     this.buyPropertyButton = new ButtonBuilder()
-        .text("Buy This Property")
-        .styleClass("create-button")
+        .text("Buy Property")
+        .styleClass("action-button")
         .onClick(e -> buyProperty())
         .disabled(true)
         .build();
@@ -70,46 +64,35 @@ public class MonopolyGameView extends AbstractGameView {
   }
 
   private void initializeLayout() {
-    VBox controlPanelContent = new VBox(15);
-    controlPanelContent.setPadding(new Insets(20));
-    controlPanelContent.getStyleClass().add("control-panel");
-    controlPanelContent.setAlignment(Pos.TOP_CENTER);
+    VBox controlPanel = new VBox(15);
+    controlPanel.setPadding(new Insets(15));
+    controlPanel.setSpacing(15);
+    controlPanel.getStyleClass().add("card");
 
     Label titleLabel = new LabelBuilder()
-        .text("Monopoly Lite")
-        .styleClass("panel-title")
+        .text("Monopoly")
+        .styleClass("text-h2")
         .build();
 
     Button restartButton = new ButtonBuilder()
         .text("Restart Game")
-        .styleClass("secondary-button")
+        .styleClass("btn-secondary")
         .onClick(e -> restartGame())
         .build();
 
-    controlPanelContent.getChildren().addAll(
+    controlPanel.getChildren().addAll(
         titleLabel,
         statusLabel,
         rollDiceButton,
         buyPropertyButton,
         restartButton);
-    VBox.setVgrow(statusLabel, Priority.SOMETIMES);
 
-    VBox leftPanel = new VBox(25);
+    VBox leftPanel = new VBox(20);
     leftPanel.setPadding(new Insets(10));
-    leftPanel.getChildren().addAll(controlPanelContent, playerScoreboard);
-    leftPanel.setPrefWidth(350);
-    VBox.setVgrow(playerScoreboard, Priority.ALWAYS);
+    leftPanel.getChildren().addAll(controlPanel, playerScoreboard);
+    leftPanel.setPrefWidth(300);
 
-    HBox gameBoardContainer = new HBox(gameBoard);
-    gameBoardContainer.setAlignment(Pos.CENTER);
-    gameBoardContainer.getStyleClass().add("game-board-container");
-    gameBoardContainer.setPadding(new Insets(10));
-
-    if (gameArea.getChildren().contains(gameBoard)) {
-      gameArea.getChildren().remove(gameBoard);
-    }
-    gameArea.getChildren().clear();
-    gameArea.getChildren().add(gameBoardContainer);
+    gameArea.getChildren().add(0, gameBoard);
 
     setLeft(leftPanel);
   }
@@ -177,31 +160,31 @@ public class MonopolyGameView extends AbstractGameView {
 
     gameBoard.setBoard(event.getBoard());
     playerScoreboard.updatePlayers(event.getPlayers());
-    statusLabel.setText("Game Started! " + event.getCurrentPlayer().getName() + ", roll the dice!");
+    statusLabel.setText("Game Started - Roll the Dice");
 
     Player currentPlayer = event.getCurrentPlayer();
     playerScoreboard.highlightCurrentPlayer(currentPlayer);
-    rollDiceButton.setDisable(monopolyController.isPlayerBankrupt(currentPlayer));
+    rollDiceButton.setDisable(false);
     updateBuyButton(currentPlayer);
     victoryScreen.setVisible(false);
 
-    for (Player p : event.getPlayers()) {
-      if (p.getCurrentTile() != null) {
-        gameBoard.updatePlayerPosition(p, p.getCurrentTile());
+    for (Player player : event.getPlayers()) {
+      if (player.getCurrentTile() != null) {
+        gameBoard.updatePlayerPosition(player, player.getCurrentTile());
       }
     }
   }
 
   private void handleDiceRolled(DiceRolledEvent event) {
     soundManager.playSound("dice_roll");
-    statusLabel.setText(event.getPlayer().getName() + " rolled a " + event.getValue() + "!");
+    statusLabel.setText(event.getPlayer().getName() + " rolled " + event.getValue());
   }
 
   private void handlePlayerMoved(PlayerMovedEvent event) {
     soundManager.playSound("move");
     gameBoard.animatePlayerMove(event.getPlayer(), event.getFromTile(), event.getToTile());
     statusLabel.setText(event.getPlayer().getName() +
-        " moved to " + event.getToTile().getName() + ".");
+        " moved to " + event.getToTile().getName());
 
     if (event.getPlayer().equals(gameController.getGame().getCurrentPlayer())) {
       updateBuyButton(event.getPlayer());
@@ -210,15 +193,11 @@ public class MonopolyGameView extends AbstractGameView {
 
   private void handleTurnChanged(TurnChangedEvent event) {
     Player currentPlayer = event.getCurrentPlayer();
-    statusLabel.setText("It's " + currentPlayer.getName() + "'s turn. Roll the dice!");
+    statusLabel.setText(currentPlayer.getName() + "'s turn");
     playerScoreboard.highlightCurrentPlayer(currentPlayer);
 
-    boolean isBankrupt = monopolyController.isPlayerBankrupt(currentPlayer);
-    rollDiceButton.setDisable(isBankrupt);
-    buyPropertyButton.setDisable(true);
-    if (!isBankrupt) {
-      updateBuyButton(currentPlayer);
-    }
+    rollDiceButton.setDisable(monopolyController.isPlayerBankrupt(currentPlayer));
+    updateBuyButton(currentPlayer);
   }
 
   private void handlePropertyPurchased(PropertyPurchasedEvent event) {
