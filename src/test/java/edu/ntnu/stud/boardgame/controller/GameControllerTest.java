@@ -25,10 +25,6 @@ class GameControllerTest {
   @Mock
   private BoardGameFacade gameFacade;
 
-  // This mock might not be used if GameController creates its own instance via
-  // PlayerFileService.getInstance()
-  // This is a known issue addressed in the comments within tests for save/load
-  // players.
   @Mock
   private PlayerFileService playerFileServiceMock;
 
@@ -37,38 +33,11 @@ class GameControllerTest {
 
   private GameController gameController;
 
-  // This field is to hold the actual PlayerFileService instance that
-  // GameController creates.
-  // We will use this to verify interactions if direct mocking via @Mock doesn't
-  // work due to getInstance().
-  // However, for proper unit testing, GameController should allow injection.
-  // For now, tests that interact with playerFileService will try to verify on
-  // playerFileServiceMock,
-  // acknowledging this limitation.
-
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    // Because GameController internally news up BoardGameFacade and calls
-    // PlayerFileService.getInstance(),
-    // the @InjectMocks won't fully replace these unless the GameController is
-    // designed for it (e.g. constructor injection).
-    // For gameFacade, it's newed up in GameController constructor. We'd ideally
-    // inject it.
-    // For playerFileService, it's obtained via getInstance().
-
-    // To properly mock gameFacade, we would need to change GameController's
-    // constructor or add a setter.
-    // For now, methods in GameController that use gameFacade will be tested
-    // assuming we can control gameFacade's behavior via when/thenReturn.
-
     gameController = new GameController(mainController, gameFacade, playerFileServiceMock);
     when(gameFacade.getCurrentGame()).thenReturn(mockGame);
-    // For methods directly calling `this.playerFileService.someMethod()` where
-    // `this.playerFileService` was set by `PlayerFileService.getInstance()`,
-    // `playerFileServiceMock` will not be used. This is a limitation of the current
-    // GameController design for testability.
-    // The tests for savePlayers/loadPlayers will reflect this challenge.
   }
 
   @Test
@@ -181,11 +150,6 @@ class GameControllerTest {
         eq("The piece " + PieceType.RED + " is already in use by another player."));
   }
 
-  // Tests for savePlayers and loadPlayers are challenging due to
-  // PlayerFileService.getInstance()
-  // The following tests assume that playerFileServiceMock *could* be used.
-  // If GameController is not refactored for PlayerFileService injection, these
-  // tests might not truly mock file I/O.
   @Test
   void savePlayers_validFileNameAndPlayers_attemptsSave()
       throws edu.ntnu.stud.boardgame.exception.files.PlayerFileException {
@@ -241,14 +205,14 @@ class GameControllerTest {
 
   @Test
   void startGame_notEnoughPlayers_showsError() throws edu.ntnu.stud.boardgame.exception.BoardGameException {
-    when(mockGame.getPlayers()).thenReturn(List.of(mock(Player.class))); // Only one player
+    when(mockGame.getPlayers()).thenReturn(List.of(mock(Player.class)));
     assertFalse(gameController.startGame());
     verify(mainController).showErrorDialog(eq("Player Error"), eq("You need at least 2 players to start the game."));
   }
 
   @Test
   void playTurn_facadePlaysTurn_returnsTrue() throws Exception {
-    doNothing().when(gameFacade).playTurn(); // gameFacade.playTurn() is void
+    doNothing().when(gameFacade).playTurn();
     assertTrue(gameController.playTurn());
     verify(gameFacade).playTurn();
   }

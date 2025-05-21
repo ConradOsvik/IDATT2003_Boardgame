@@ -47,13 +47,11 @@ class PlayerFileWriterCsvTest {
     @Test
     void writePlayers_validPlayersAndPath_writesCorrectCsv() throws PlayerWritingException, IOException {
         StringWriter stringWriter = new StringWriter();
-        // Expected CSV output, note the system-dependent newline character
+
         String expectedCsv = "Alice,RedToken" + System.lineSeparator() +
                 "Bob,BlueToken" + System.lineSeparator() +
                 "Charlie,GreenToken" + System.lineSeparator();
 
-        // Mock Files.newBufferedWriter to return a BufferedWriter wrapping our
-        // StringWriter
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedWriter(mockPath))
                     .thenReturn(new BufferedWriter(stringWriter));
@@ -86,13 +84,11 @@ class PlayerFileWriterCsvTest {
 
     @Test
     void writePlayers_ioExceptionDuringWrite_throwsPlayerWritingException() throws IOException {
-        // Mock Files.newBufferedWriter to return a BufferedWriter that will throw
-        // IOException on write
+
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             BufferedWriter mockBufferedWriter = mock(BufferedWriter.class);
             lenient().doThrow(new IOException("Disk is full")).when(mockBufferedWriter).write(anyString());
-            // Also mock newLine as it might be called after write and could also throw or
-            // cause issues if not mocked.
+
             lenient().doThrow(new IOException("Disk is full")).when(mockBufferedWriter).newLine();
 
             mockedFiles.when(() -> Files.newBufferedWriter(mockPath))

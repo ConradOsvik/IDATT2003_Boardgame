@@ -35,11 +35,9 @@ class MonopolyControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        // Instantiate MonopolyController here, after mocks are initialized.
         monopolyController = new MonopolyController(gameController);
-        // Ensure that updateGameReference correctly sets up mockMonopolyGame
         when(gameController.getGame()).thenReturn(mockMonopolyGame);
-        monopolyController.updateGameReference(); // Call this explicitly to set the game
+        monopolyController.updateGameReference();
     }
 
     @Test
@@ -50,7 +48,7 @@ class MonopolyControllerTest {
 
     @Test
     void updateGameReference_whenGameIsNotMonopoly_setsGameToNull() {
-        when(gameController.getGame()).thenReturn(null); // Or a different game type
+        when(gameController.getGame()).thenReturn(null);
         monopolyController.updateGameReference();
         assertNull(monopolyController.getGame());
     }
@@ -69,7 +67,7 @@ class MonopolyControllerTest {
     @Test
     void buyProperty_nullGame_returnsFalse() {
         when(gameController.getGame()).thenReturn(null);
-        monopolyController.updateGameReference(); // Game becomes null
+        monopolyController.updateGameReference();
         assertFalse(monopolyController.buyProperty(mockTile));
     }
 
@@ -99,7 +97,7 @@ class MonopolyControllerTest {
     void canBuyProperty_alreadyOwned_returnsFalse() {
         when(mockMonopolyGame.getCurrentPlayer()).thenReturn(mockPlayer);
         when(mockTile.getLandAction()).thenReturn(mockPropertyAction);
-        when(mockPropertyAction.getOwner()).thenReturn(mock(Player.class)); // Owned by someone
+        when(mockPropertyAction.getOwner()).thenReturn(mock(Player.class));
 
         assertFalse(monopolyController.canBuyProperty(mockTile));
     }
@@ -136,7 +134,7 @@ class MonopolyControllerTest {
     @Test
     void canBuyProperty_notPropertyAction_returnsFalse() {
         when(mockMonopolyGame.getCurrentPlayer()).thenReturn(mockPlayer);
-        when(mockTile.getLandAction()).thenReturn(null); // Not a PropertyAction
+        when(mockTile.getLandAction()).thenReturn(null);
         assertFalse(monopolyController.canBuyProperty(mockTile));
     }
 

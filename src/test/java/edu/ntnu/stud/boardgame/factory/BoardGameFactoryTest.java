@@ -50,7 +50,7 @@ class BoardGameFactoryTest {
             assertNotNull(game);
             assertTrue(game instanceof LadderGame);
             assertEquals(mockBoard, game.getBoard());
-            assertNotNull(game.getDice()); // Should have dice created
+            assertNotNull(game.getDice());
             mockedFactory.verify(() -> LadderGameBoardFactory.createBoard("Default"));
         }
     }

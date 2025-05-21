@@ -82,7 +82,7 @@ class PlayerFileReaderCsvTest {
 
     @Test
     void readPlayers_invalidCsvLineFormat_throwsPlayerParsingException() throws IOException {
-        String invalidCsv = "Alice, RedToken\nBobBlueTokenCharlieGreenToken"; // Missing comma
+        String invalidCsv = "Alice, RedToken\nBobBlueTokenCharlieGreenToken";
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(createCsvReader(invalidCsv)));
@@ -95,7 +95,7 @@ class PlayerFileReaderCsvTest {
 
     @Test
     void readPlayers_emptyNameOrPiece_throwsPlayerParsingException() throws IOException {
-        String invalidCsv = "Alice, RedToken\n, BlueToken"; // Empty name
+        String invalidCsv = "Alice, RedToken\n, BlueToken";
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(createCsvReader(invalidCsv)));

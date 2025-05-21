@@ -118,7 +118,7 @@ class BoardFileReaderGsonTest {
 
     @Test
     void readBoard_invalidJsonSyntax_throwsBoardParsingException() throws IOException {
-        String invalidJson = "{\"name\": \"Test Board\", ..."; // Incomplete JSON
+        String invalidJson = "{\"name\": \"Test Board\", ...";
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(createJsonReader(invalidJson)));
@@ -129,8 +129,7 @@ class BoardFileReaderGsonTest {
 
     @Test
     void readBoard_missingBoardField_throwsBoardParsingException() throws IOException {
-        String json = "{\"description\":\"A board for testing\", \"rows\":10, \"columns\":10, \"tiles\":[]}"; // Missing
-                                                                                                              // 'name'
+        String json = "{\"description\":\"A board for testing\", \"rows\":10, \"columns\":10, \"tiles\":[]}";
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(createJsonReader(json)));
@@ -141,9 +140,7 @@ class BoardFileReaderGsonTest {
 
     @Test
     void readBoard_missingTileId_throwsBoardParsingException() throws IOException {
-        String json = "{\"name\":\"Test\",\"description\":\"Desc\",\"rows\":1,\"columns\":1,\"startTileId\":0,\"endTileId\":0,\"tiles\":[{\"row\":0,\"column\":0}]}"; // Missing
-                                                                                                                                                                      // tile
-                                                                                                                                                                      // 'id'
+        String json = "{\"name\":\"Test\",\"description\":\"Desc\",\"rows\":1,\"columns\":1,\"startTileId\":0,\"endTileId\":0,\"tiles\":[{\"row\":0,\"column\":0}]}";
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(createJsonReader(json)));
@@ -154,9 +151,7 @@ class BoardFileReaderGsonTest {
 
     @Test
     void readBoard_missingActionType_throwsBoardParsingException() throws IOException {
-        String json = "{\"name\":\"T\",\"description\":\"D\",\"rows\":1,\"columns\":1,\"startTileId\":0,\"endTileId\":0,\"tiles\":[{\"id\":0,\"action\":{\"destinationTileId\":0}}]}"; // Missing
-                                                                                                                                                                                       // action
-                                                                                                                                                                                       // 'type'
+        String json = "{\"name\":\"T\",\"description\":\"D\",\"rows\":1,\"columns\":1,\"startTileId\":0,\"endTileId\":0,\"tiles\":[{\"id\":0,\"action\":{\"destinationTileId\":0}}]}";
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
                     .thenReturn(new BufferedReader(createJsonReader(json)));

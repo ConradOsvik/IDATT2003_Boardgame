@@ -19,6 +19,11 @@ public class LadderGame extends BoardGame {
       return;
     }
 
+    if (currentPlayer.shouldSkipNextTurn()) {
+      currentPlayer.setSkipNextTurn(false);
+      return;
+    }
+
     int steps = dice.roll();
     notifyObservers(new DiceRolledEvent(steps, currentPlayer));
 

@@ -47,9 +47,8 @@ class BoardFileWriterGsonTest {
 
         lenient().when(mockPath.toFile()).thenReturn(mockFile);
 
-        // Setup a detailed test board
         testBoard = new Board("Test Board", "A test description", 5, 5, 0, 24);
-        Tile tile0 = new Tile(0); // Start
+        Tile tile0 = new Tile(0);
         tile0.setName("Start");
         tile0.setRow(4);
         tile0.setColumn(0);
@@ -71,7 +70,7 @@ class BoardFileWriterGsonTest {
         tile5.setName("LadderTop");
         tile5.setRow(3);
         tile5.setColumn(2);
-        testBoard.addTile(tile5); // Add destination first
+        testBoard.addTile(tile5);
         tile2.setLandAction(new LadderAction(tile5));
         testBoard.addTile(tile2);
 
@@ -79,7 +78,7 @@ class BoardFileWriterGsonTest {
         tile3.setName("SnakeTile");
         tile3.setRow(4);
         tile3.setColumn(3);
-        Tile tile0Ref = testBoard.getTile(0); // Destination for snake
+        Tile tile0Ref = testBoard.getTile(0);
         tile3.setLandAction(new SnakeAction(tile0Ref));
         testBoard.addTile(tile3);
 
@@ -90,19 +89,17 @@ class BoardFileWriterGsonTest {
         tile4.setLandAction(new TaxAction(100));
         testBoard.addTile(tile4);
 
-        Tile tile6 = new Tile(6); // Skip Turn
+        Tile tile6 = new Tile(6);
         tile6.setName("Skip");
         tile6.setRow(3);
         tile6.setColumn(1);
         tile6.setLandAction(new SkipTurnAction());
         testBoard.addTile(tile6);
 
-        // Link tiles (simplified for this test focus on writer)
         tile0.setNextTile(tile1);
         tile1.setNextTile(tile2);
         tile2.setNextTile(tile3);
         tile3.setNextTile(tile4);
-        // ... and so on for a full board, not strictly necessary for writer logic test
     }
 
     @Test
@@ -111,7 +108,6 @@ class BoardFileWriterGsonTest {
 
         try (MockedConstruction<FileWriter> mockedConstruction = Mockito.mockConstruction(FileWriter.class,
                 (mock, context) -> {
-                    // Ensure the mock FileWriter uses our StringWriter
                     doAnswer(invocation -> {
                         stringWriter.write((int) invocation.getArgument(0));
                         return null;
@@ -123,7 +119,6 @@ class BoardFileWriterGsonTest {
                     }).when(mock).write(any(char[].class));
 
                     doAnswer(invocation -> {
-                        // This mock is for write(char[], int, int)
                         stringWriter.write((char[]) invocation.getArgument(0), invocation.getArgument(1),
                                 invocation.getArgument(2));
                         return null;
@@ -137,7 +132,6 @@ class BoardFileWriterGsonTest {
                         return null;
                     }).when(mock).write(anyString());
 
-                    // Adding mock for write(String, int, int)
                     doAnswer(invocation -> {
                         stringWriter.write((String) invocation.getArgument(0), invocation.getArgument(1),
                                 invocation.getArgument(2));
@@ -162,7 +156,7 @@ class BoardFileWriterGsonTest {
 
                     doAnswer(invocation -> {
                         stringWriter.flush();
-                        return null; // void method
+                        return null;
                     }).when(mock).flush();
 
                     doAnswer(invocation -> {
@@ -173,12 +167,8 @@ class BoardFileWriterGsonTest {
 
             boardWriter.writeBoard(mockPath, testBoard);
 
-            // Verify FileWriter was constructed with the mockFile
             assertEquals(1, mockedConstruction.constructed().size());
             FileWriter constructedWriter = mockedConstruction.constructed().get(0);
-            // We can't easily verify the file argument of the constructor without more
-            // complex context matching
-            // but we know it was called.
 
             String expectedJson = "{\"name\":\"Test Board\",\"description\":\"A test description\",\"rows\":5,\"columns\":5,\"startTileId\":0,\"endTileId\":24,\"tiles\":["
                     +
@@ -216,7 +206,6 @@ class BoardFileWriterGsonTest {
     void writeBoard_ioExceptionDuringWrite_throwsBoardWritingException() throws IOException {
         try (MockedConstruction<FileWriter> mockedConstruction = Mockito.mockConstruction(FileWriter.class,
                 (mock, context) -> {
-                    // Throw IOException when FileWriter is closed
                     doThrow(new IOException("Disk full")).when(mock).close();
                 })) {
 

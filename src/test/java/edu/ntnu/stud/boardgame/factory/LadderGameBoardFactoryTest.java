@@ -29,7 +29,7 @@ class LadderGameBoardFactoryTest {
             assertEquals(boardName + " Snakes and Ladders", board.getName(),
                     "Board name should match for: " + boardName);
             assertTrue(board.getTiles().size() > 0, "Board should have tiles for: " + boardName);
-            // Check for start and end tiles
+
             assertNotNull(board.getTile(0), "Board should have a starting tile (ID 0).");
             assertNotNull(board.getTile(board.getTiles().size() - 1), "Board should have an ending tile.");
         }
@@ -39,13 +39,12 @@ class LadderGameBoardFactoryTest {
     void createBoard_classicBoard_hasSpecificLadderAndSnake() {
         Board classicBoard = LadderGameBoardFactory.createBoard("Classic");
         assertNotNull(classicBoard);
-        // Check a known ladder (e.g., from tile 1 to 40)
+
         Tile tile1 = classicBoard.getTile(1);
         assertNotNull(tile1.getLandAction());
         assertTrue(tile1.getLandAction() instanceof LadderAction);
         assertEquals(classicBoard.getTile(40), ((LadderAction) tile1.getLandAction()).getDestinationTile());
 
-        // Check a known snake (e.g., from tile 24 to 5)
         Tile tile24 = classicBoard.getTile(24);
         assertNotNull(tile24.getLandAction());
         assertTrue(tile24.getLandAction() instanceof SnakeAction);
