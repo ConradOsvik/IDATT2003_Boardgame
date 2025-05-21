@@ -17,10 +17,11 @@ public class GameController {
   private final BoardGameFacade gameFacade;
   private final PlayerFileService playerFileService;
 
-  public GameController(MainController mainController) {
+  public GameController(MainController mainController, BoardGameFacade gameFacade,
+      PlayerFileService playerFileService) {
     this.mainController = mainController;
-    this.playerFileService = PlayerFileService.getInstance();
-    this.gameFacade = new BoardGameFacade();
+    this.gameFacade = gameFacade;
+    this.playerFileService = playerFileService;
   }
 
   public void selectGameType(BoardGameType gameType) {

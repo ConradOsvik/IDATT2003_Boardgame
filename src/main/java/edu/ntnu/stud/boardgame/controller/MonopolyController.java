@@ -22,6 +22,8 @@ public class MonopolyController {
   public void updateGameReference() {
     if (gameController.getGame() instanceof MonopolyGame) {
       this.monopolyGame = (MonopolyGame) gameController.getGame();
+    } else {
+      this.monopolyGame = null;
     }
   }
 

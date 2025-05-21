@@ -106,7 +106,7 @@ public class PlayerFileService {
     return fileName;
   }
 
-  public List<String> getAvailablePlayerListFileNames() {
+  public List<String> getAvailablePlayerListFileNames() throws PlayerFileException {
     List<String> playerListNames = new ArrayList<>();
 
     File playersDirFile = playersDirectory.toFile();
@@ -114,20 +114,22 @@ public class PlayerFileService {
     if (!playersDirFile.exists() || !playersDirFile.isDirectory()) {
       LOGGER.warning("Player save directory does not exist or is not a directory: " +
           playersDirectory.toAbsolutePath());
-      return playerListNames;
+      throw new PlayerFileException("Player save directory not found: " + playersDirectory.toAbsolutePath());
     }
 
     File[] files = playersDirFile.listFiles((dir, name) -> name.toLowerCase().endsWith(".csv"));
 
-    if (files != null) {
-      for (File file : files) {
-        String fileName = file.getName();
-        int lastDot = fileName.lastIndexOf('.');
-        if (lastDot > 0 && fileName.substring(lastDot).equalsIgnoreCase(".csv")) {
-          playerListNames.add(fileName.substring(0, lastDot));
-        } else {
-          playerListNames.add(fileName);
-        }
+    if (files == null) {
+      throw new PlayerFileException("Could not list files in player directory: " + playersDirectory.toAbsolutePath());
+    }
+
+    for (File file : files) {
+      String fileName = file.getName();
+      int lastDot = fileName.lastIndexOf('.');
+      if (lastDot > 0 && fileName.substring(lastDot).equalsIgnoreCase(".csv")) {
+        playerListNames.add(fileName.substring(0, lastDot));
+      } else {
+        playerListNames.add(fileName);
       }
     }
     return playerListNames;

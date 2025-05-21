@@ -1,0 +1,167 @@
+package edu.ntnu.stud.boardgame.io.board;
+
+import edu.ntnu.stud.boardgame.exception.files.BoardParsingException;
+import edu.ntnu.stud.boardgame.model.Board;
+import edu.ntnu.stud.boardgame.model.Tile;
+import edu.ntnu.stud.boardgame.model.action.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class BoardFileReaderGsonTest {
+
+    private BoardFileReaderGson boardReader;
+
+    @Mock
+    private Path mockPath;
+
+    @BeforeEach
+    void setUp() {
+        boardReader = new BoardFileReaderGson();
+    }
+
+    private StringReader createJsonReader(String json) {
+        return new StringReader(json);
+    }
+
+    @Test
+    void readBoard_validJson_parsesBoardCorrectly() throws BoardParsingException, IOException {
+        String validJson = "{\"name\":\"Test Board\", \"description\":\"A board for testing\", \"rows\":10, \"columns\":10, \"startTileId\":0, \"endTileId\":99, \"tiles\":[\n"
+                +
+                "  {\"id\":0, \"row\":9, \"column\":0, \"name\":\"Start\", \"action\":{\"type\":\"StartAction\", \"amount\":200}},\n"
+                +
+                "  {\"id\":1, \"row\":9, \"column\":1, \"name\":\"Property 1\", \"action\":{\"type\":\"PropertyAction\", \"price\":60}, \"nextTileId\":2},\n"
+                +
+                "  {\"id\":2, \"row\":9, \"column\":2, \"name\":\"Ladder Up\", \"action\":{\"type\":\"LadderAction\", \"destinationTileId\":5}},\n"
+                +
+                "  {\"id\":3, \"row\":9, \"column\":3, \"name\":\"Tax\", \"action\":{\"type\":\"TaxAction\", \"amount\":100}},\n"
+                +
+                "  {\"id\":4, \"row\":9, \"column\":4, \"name\":\"Snake Down\", \"action\":{\"type\":\"SnakeAction\", \"destinationTileId\":1}},\n"
+                +
+                "  {\"id\":5, \"row\":8, \"column\":2, \"name\":\"Top of Ladder\"},\n" +
+                "  {\"id\":6, \"row\":9, \"column\":6, \"name\":\"Skip\", \"action\":{\"type\":\"SkipTurnAction\"}}\n" +
+                "]}";
+
+        try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.newBufferedReader(mockPath))
+                    .thenReturn(new BufferedReader(createJsonReader(validJson)));
+
+            Board board = boardReader.readBoard(mockPath);
+
+            assertNotNull(board);
+            assertEquals("Test Board", board.getName());
+            assertEquals("A board for testing", board.getDescription());
+            assertEquals(10, board.getRows());
+            assertEquals(10, board.getColumns());
+            assertEquals(0, board.getStartTileId());
+            assertEquals(99, board.getEndTileId());
+            assertEquals(7, board.getTiles().size());
+
+            Tile tile0 = board.getTile(0);
+            assertNotNull(tile0);
+            assertEquals("Start", tile0.getName());
+            assertTrue(tile0.getLandAction() instanceof StartAction);
+            assertEquals(200, ((StartAction) tile0.getLandAction()).getAmount());
+
+            Tile tile1 = board.getTile(1);
+            assertNotNull(tile1);
+            assertEquals("Property 1", tile1.getName());
+            assertTrue(tile1.getLandAction() instanceof PropertyAction);
+            assertEquals(60, ((PropertyAction) tile1.getLandAction()).getPrice());
+            assertNotNull(tile1.getNextTile());
+            assertEquals(2, tile1.getNextTile().getTileId());
+
+            Tile tile2 = board.getTile(2);
+            assertTrue(tile2.getLandAction() instanceof LadderAction);
+            assertEquals(board.getTile(5), ((LadderAction) tile2.getLandAction()).getDestinationTile());
+
+            Tile tile3 = board.getTile(3);
+            assertTrue(tile3.getLandAction() instanceof TaxAction);
+            assertEquals(100, ((TaxAction) tile3.getLandAction()).getAmount());
+
+            Tile tile4 = board.getTile(4);
+            assertTrue(tile4.getLandAction() instanceof SnakeAction);
+            assertEquals(board.getTile(1), ((SnakeAction) tile4.getLandAction()).getDestinationTile());
+
+            Tile tile6 = board.getTile(6);
+            assertTrue(tile6.getLandAction() instanceof SkipTurnAction);
+        }
+    }
+
+    @Test
+    void readBoard_nullPath_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> boardReader.readBoard(null));
+    }
+
+    @Test
+    void readBoard_ioException_throwsBoardParsingException() throws IOException {
+        try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.newBufferedReader(mockPath)).thenThrow(new IOException("Disk error"));
+            BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
+            assertTrue(ex.getMessage().contains("Failed to read board file: Disk error"));
+        }
+    }
+
+    @Test
+    void readBoard_invalidJsonSyntax_throwsBoardParsingException() throws IOException {
+        String invalidJson = "{\"name\": \"Test Board\", ..."; // Incomplete JSON
+        try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.newBufferedReader(mockPath))
+                    .thenReturn(new BufferedReader(createJsonReader(invalidJson)));
+            BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
+            assertTrue(ex.getMessage().contains("Invalid JSON syntax"));
+        }
+    }
+
+    @Test
+    void readBoard_missingBoardField_throwsBoardParsingException() throws IOException {
+        String json = "{\"description\":\"A board for testing\", \"rows\":10, \"columns\":10, \"tiles\":[]}"; // Missing
+                                                                                                              // 'name'
+        try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.newBufferedReader(mockPath))
+                    .thenReturn(new BufferedReader(createJsonReader(json)));
+            BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
+            assertEquals("Unexpected error: Board must have name, description, rows, and columns", ex.getMessage());
+        }
+    }
+
+    @Test
+    void readBoard_missingTileId_throwsBoardParsingException() throws IOException {
+        String json = "{\"name\":\"Test\",\"description\":\"Desc\",\"rows\":1,\"columns\":1,\"startTileId\":0,\"endTileId\":0,\"tiles\":[{\"row\":0,\"column\":0}]}"; // Missing
+                                                                                                                                                                      // tile
+                                                                                                                                                                      // 'id'
+        try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.newBufferedReader(mockPath))
+                    .thenReturn(new BufferedReader(createJsonReader(json)));
+            BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
+            assertEquals("Unexpected error: Tile must have id, row, and column", ex.getMessage());
+        }
+    }
+
+    @Test
+    void readBoard_missingActionType_throwsBoardParsingException() throws IOException {
+        String json = "{\"name\":\"T\",\"description\":\"D\",\"rows\":1,\"columns\":1,\"startTileId\":0,\"endTileId\":0,\"tiles\":[{\"id\":0,\"action\":{\"destinationTileId\":0}}]}"; // Missing
+                                                                                                                                                                                       // action
+                                                                                                                                                                                       // 'type'
+        try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.newBufferedReader(mockPath))
+                    .thenReturn(new BufferedReader(createJsonReader(json)));
+            BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
+            assertEquals("Unexpected error: Action must have type", ex.getMessage());
+        }
+    }
+}

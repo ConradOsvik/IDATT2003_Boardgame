@@ -1,6 +1,9 @@
 package edu.ntnu.stud.boardgame.controller;
 
+import edu.ntnu.stud.boardgame.model.BoardGameFacade;
 import edu.ntnu.stud.boardgame.model.enums.BoardGameType;
+import edu.ntnu.stud.boardgame.service.PlayerFileService;
+
 import edu.ntnu.stud.boardgame.view.BoardSelectionView;
 import edu.ntnu.stud.boardgame.view.GameSelectionView;
 import edu.ntnu.stud.boardgame.view.LadderGameView;
@@ -30,7 +33,7 @@ public class MainController {
     this.primaryStage = primaryStage;
     this.mainContainer = new BorderPane();
 
-    this.gameController = new GameController(this);
+    this.gameController = new GameController(this, new BoardGameFacade(), PlayerFileService.getInstance());
 
     Scene scene = new Scene(mainContainer, 1200, 900);
     URL cssUrl = getClass().getResource("/styles/styles.css");
