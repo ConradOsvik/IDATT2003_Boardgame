@@ -74,7 +74,15 @@ public class BoardFileReaderGson implements BoardFileReader {
 
       Board board = new Board(name, description, rows, cols, startTileId, endTileId);
 
+      if (!boardJson.has("tiles")) {
+        throw new BoardParsingException("Board must have a 'tiles' array");
+      }
+
       JsonArray tilesArray = boardJson.getAsJsonArray("tiles");
+
+      if (tilesArray == null) {
+        throw new BoardParsingException("Board 'tiles' field must be a valid array");
+      }
 
       for (JsonElement tileElement : tilesArray) {
         Tile tile = getTile(tileElement);
@@ -175,6 +183,8 @@ public class BoardFileReaderGson implements BoardFileReader {
       throw new BoardParsingException("Invalid JSON syntax: " + e.getMessage(), e);
     } catch (JsonParseException e) {
       throw new BoardParsingException("Failed to parse JSON: " + e.getMessage(), e);
+    } catch (BoardParsingException e) {
+      throw e;
     } catch (Exception e) {
       throw new BoardParsingException("Unexpected error: " + e.getMessage(), e);
     }

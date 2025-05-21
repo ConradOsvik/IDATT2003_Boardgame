@@ -14,6 +14,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.quality.Strictness;
 import org.mockito.junit.jupiter.MockitoSettings;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -35,21 +37,13 @@ class BoardFileReaderGsonTest {
     @Mock
     private Path mockPath;
 
-    @Mock
-    private BasicFileAttributes mockAttributes;
-
     @BeforeEach
     void setUp() {
         boardReader = new BoardFileReaderGson();
-        when(mockAttributes.isDirectory()).thenReturn(false);
-    }
-
-    private StringReader createJsonReader(String json) {
-        return new StringReader(json);
     }
 
     @Test
-    void readBoard_validJson_parsesBoardCorrectly() throws BoardParsingException, IOException {
+    void readBoard_validJson_parsesBoardCorrectly() throws BoardParsingException {
         String validJson = "{\"name\":\"Test Board\", \"description\":\"A board for testing\", \"rows\":10, \"columns\":10, \"startTileId\":0, \"endTileId\":99, \"tiles\":[\n"
                 +
                 "  {\"id\":0, \"row\":9, \"column\":0, \"name\":\"Start\", \"action\":{\"type\":\"StartAction\", \"amount\":200}},\n"
@@ -68,9 +62,7 @@ class BoardFileReaderGsonTest {
 
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
-                    .thenReturn(new BufferedReader(createJsonReader(validJson)));
-            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
-                    .thenReturn(mockAttributes);
+                    .thenReturn(new BufferedReader(new StringReader(validJson)));
             mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(true);
 
             Board board = boardReader.readBoard(mockPath);
@@ -124,8 +116,6 @@ class BoardFileReaderGsonTest {
     void readBoard_ioException_throwsBoardParsingException() throws IOException {
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath)).thenThrow(new IOException("Disk error"));
-            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
-                    .thenReturn(mockAttributes);
             mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(true);
             BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
             assertTrue(ex.getMessage().contains("Failed to read board file: Disk error"));
@@ -137,9 +127,7 @@ class BoardFileReaderGsonTest {
         String invalidJson = "{\"name\": \"Test Board\", ...";
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
-                    .thenReturn(new BufferedReader(createJsonReader(invalidJson)));
-            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
-                    .thenReturn(mockAttributes);
+                    .thenReturn(new BufferedReader(new StringReader(invalidJson)));
             mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(true);
             BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
             assertTrue(ex.getMessage().contains("Invalid JSON syntax"));
@@ -151,11 +139,11 @@ class BoardFileReaderGsonTest {
         String json = "{\"description\":\"A board for testing\", \"rows\":10, \"columns\":10, \"tiles\":[]}";
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
-                    .thenReturn(new BufferedReader(createJsonReader(json)));
+                    .thenReturn(new BufferedReader(new StringReader(json)));
             mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(true);
 
             BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
-            assertEquals("Unexpected error: Board must have name, description, rows, and columns", ex.getMessage());
+            assertEquals("Board must have name, description, rows, and columns", ex.getMessage());
         }
     }
 
@@ -164,12 +152,10 @@ class BoardFileReaderGsonTest {
         String json = "{\"name\":\"Test\",\"description\":\"Desc\",\"rows\":1,\"columns\":1,\"startTileId\":0,\"endTileId\":0,\"tiles\":[{\"row\":0,\"column\":0}]}";
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
-                    .thenReturn(new BufferedReader(createJsonReader(json)));
-            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
-                    .thenReturn(mockAttributes);
+                    .thenReturn(new BufferedReader(new StringReader(json)));
             mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(true);
             BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
-            assertEquals("Unexpected error: Tile must have id, row, and column", ex.getMessage());
+            assertEquals("Tile must have id, row, and column", ex.getMessage());
         }
     }
 
@@ -178,12 +164,35 @@ class BoardFileReaderGsonTest {
         String json = "{\"name\":\"T\",\"description\":\"D\",\"rows\":1,\"columns\":1,\"startTileId\":0,\"endTileId\":0,\"tiles\":[{\"id\":0,\"action\":{\"destinationTileId\":0}}]}";
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.newBufferedReader(mockPath))
-                    .thenReturn(new BufferedReader(createJsonReader(json)));
-            mockedFiles.when(() -> Files.readAttributes(any(Path.class), eq(BasicFileAttributes.class)))
-                    .thenReturn(mockAttributes);
+                    .thenReturn(new BufferedReader(new StringReader(json)));
             mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(true);
             BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
-            assertEquals("Unexpected error: Action must have type", ex.getMessage());
+            assertEquals("Action must have type", ex.getMessage());
+        }
+    }
+
+    @Test
+    void readBoard_missingTilesArray_throwsBoardParsingException() throws IOException {
+        String json = "{\"name\":\"Test\",\"description\":\"Desc\",\"rows\":1,\"columns\":1,\"startTileId\":0,\"endTileId\":0}";
+        try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.newBufferedReader(mockPath))
+                    .thenReturn(new BufferedReader(new StringReader(json)));
+            mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(true);
+            BoardParsingException ex = assertThrows(BoardParsingException.class, () -> boardReader.readBoard(mockPath));
+            assertEquals("Board must have a 'tiles' array", ex.getMessage());
+        }
+    }
+
+    @Test
+    void readBoard_emptyTilesArray_parsesSuccessfully() throws IOException, BoardParsingException {
+        String json = "{\"name\":\"Test\",\"description\":\"Desc\",\"rows\":1,\"columns\":1,\"startTileId\":0,\"endTileId\":0,\"tiles\":[]}";
+        try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.newBufferedReader(mockPath))
+                    .thenReturn(new BufferedReader(new StringReader(json)));
+            mockedFiles.when(() -> Files.exists(any(Path.class))).thenReturn(true);
+            Board board = boardReader.readBoard(mockPath);
+            assertNotNull(board);
+            assertEquals(0, board.getTiles().size());
         }
     }
 }
