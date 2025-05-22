@@ -90,14 +90,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.2.5</version>
-        <configuration>
-          <argLine>
-            --add-opens edu.ntnu.stud.boardgame/edu.ntnu.stud.boardgame.io.board=ALL-UNNAMED
-            --add-opens edu.ntnu.stud.boardgame/edu.ntnu.stud.boardgame.model=ALL-UNNAMED
-            --add-opens edu.ntnu.stud.boardgame/edu.ntnu.stud.boardgame.model.action=ALL-UNNAMED
-            --add-opens edu.ntnu.stud.boardgame/edu.ntnu.stud.boardgame.exception.files=ALL-UNNAMED
-          </argLine>
-        </configuration>
       </plugin>
 
       <!-- JavaFX Maven plugin -->
@@ -128,11 +120,6 @@
 
       <!-- JaCoCo test coverage -->
       <plugin>
-        <configuration>
-              <excludes>
-                <exclude>**/view/**</exclude>
-              </excludes>
-            </configuration>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
         <version>${jacoco.version}</version>
@@ -142,6 +129,11 @@
             <goals>
               <goal>prepare-agent</goal>
             </goals>
+            <configuration>
+              <excludes>
+                <exclude>**/view/**</exclude>
+              </excludes>
+            </configuration>
           </execution>
           <execution>
             <id>report</id>
@@ -149,7 +141,11 @@
             <goals>
               <goal>report</goal>
             </goals>
-            
+            <configuration>
+              <excludes>
+                <exclude>**/view/**</exclude>
+              </excludes>
+            </configuration>
           </execution>
         </executions>
       </plugin>
