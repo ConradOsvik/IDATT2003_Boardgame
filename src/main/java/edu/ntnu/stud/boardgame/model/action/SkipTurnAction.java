@@ -2,6 +2,9 @@ package edu.ntnu.stud.boardgame.model.action;
 
 import edu.ntnu.stud.boardgame.model.Player;
 
+/**
+ * Represents a tile action that causes a player to skip their next turn.
+ */
 public class SkipTurnAction implements TileAction {
 
   @Override

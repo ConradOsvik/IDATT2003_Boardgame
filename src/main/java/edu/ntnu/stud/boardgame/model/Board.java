@@ -3,6 +3,13 @@ package edu.ntnu.stud.boardgame.model;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Represents a game board with tiles and their connections.
+ * 
+ * <p>
+ * Manages the board's dimensions, tile layout, and start/end positions.
+ * </p>
+ */
 public class Board {
 
   private final Map<Integer, Tile> tiles;
@@ -13,6 +20,17 @@ public class Board {
   private final int startTileId;
   private final int endTileId;
 
+  /**
+   * Creates a new board with the specified dimensions and properties.
+   *
+   * @param name        board name
+   * @param description board description
+   * @param rows        number of rows
+   * @param columns     number of columns
+   * @param startTileId ID of the starting tile
+   * @param endTileId   ID of the ending tile
+   * @throws IllegalArgumentException if any parameter is invalid
+   */
   public Board(String name, String description, int rows, int columns, int startTileId,
       int endTileId) {
     if (name == null || name.trim().isEmpty()) {
@@ -43,6 +61,12 @@ public class Board {
     this.endTileId = endTileId;
   }
 
+  /**
+   * Adds a tile to the board.
+   *
+   * @param tile the tile to add
+   * @throws IllegalArgumentException if tile is null
+   */
   public void addTile(Tile tile) {
     if (tile == null) {
       throw new IllegalArgumentException("Cannot add a null tile to the board.");
@@ -50,10 +74,21 @@ public class Board {
     tiles.put(tile.getTileId(), tile);
   }
 
+  /**
+   * Gets a tile by its ID.
+   *
+   * @param tileId the ID of the tile
+   * @return the tile, or null if not found
+   */
   public Tile getTile(int tileId) {
     return tiles.get(tileId);
   }
 
+  /**
+   * Gets all tiles on the board.
+   *
+   * @return map of tile IDs to tiles
+   */
   public Map<Integer, Tile> getTiles() {
     return tiles;
   }

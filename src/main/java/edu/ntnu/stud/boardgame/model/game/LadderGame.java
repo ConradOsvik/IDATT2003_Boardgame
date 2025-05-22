@@ -9,6 +9,14 @@ import edu.ntnu.stud.boardgame.observer.event.SnakeEncounteredEvent;
 import edu.ntnu.stud.boardgame.exception.InvalidGameStateException;
 import java.util.logging.Logger;
 
+/**
+ * Implementation of Snakes and Ladders board game.
+ * 
+ * <p>
+ * Handles game mechanics including dice rolls, player movement,
+ * snake/ladder actions, and bounce-back from the end tile.
+ * </p>
+ */
 public class LadderGame extends BoardGame {
 
   private static final Logger LOGGER = Logger.getLogger(LadderGame.class.getName());
@@ -81,6 +89,15 @@ public class LadderGame extends BoardGame {
     }
   }
 
+  /**
+   * Triggers any actions associated with landing on a tile.
+   * 
+   * <p>
+   * Handles snake and ladder actions, notifying observers of the movement.
+   * </p>
+   *
+   * @param targetTile the tile to check for actions
+   */
   private void triggerLandAction(Tile targetTile) {
     if (targetTile == null) {
       LOGGER.warning("triggerLandAction called with a null targetTile.");
