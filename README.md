@@ -12,7 +12,7 @@ This project is a GUI-based board game application that supports multiple board 
 The application currently supports:
 
 - **Snakes and Ladders** - Classic game with ladders, snakes, and special actions
-- **Monopoly Lite** - Simplified Monopoly with property buying and money management
+- **Simplified Monopoly** - Simplified Monopoly with property buying and money management
 
 ### Features
 
@@ -84,3 +84,9 @@ mvn clean package
 ```bash
 mvn javafx:run
 ```
+
+### Generate JavaDocs
+```bash
+mvn javadoc:javadoc
+```
+After running this command, JavaDocs will be available in the `target/site/apidocs/` directory.
