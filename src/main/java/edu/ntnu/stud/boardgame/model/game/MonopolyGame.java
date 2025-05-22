@@ -18,6 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+/**
+ * Implementation of the Monopoly board game.
+ *
+ * <p>Handles game mechanics including property ownership, money transactions, and bankruptcy
+ * conditions.
+ */
 public class MonopolyGame extends BoardGame {
 
   private static final Logger LOGGER = Logger.getLogger(MonopolyGame.class.getName());
@@ -28,6 +34,7 @@ public class MonopolyGame extends BoardGame {
   private final Map<Player, Integer> playerMoney = new HashMap<>();
   private final List<Player> bankruptPlayers = new ArrayList<>();
 
+  /** Creates a new Monopoly game and registers it with the action registry. */
   public MonopolyGame() {
     super();
     MonopolyActionRegistry.getInstance().registerGame(this);
@@ -62,15 +69,21 @@ public class MonopolyGame extends BoardGame {
 
     Tile fromTile = currentPlayer.getCurrentTile();
     if (fromTile == null) {
-      LOGGER.severe("Current player " + currentPlayer.getName() + " is not on any tile. Cannot play turn.");
+      LOGGER.severe(
+          "Current player " + currentPlayer.getName() + " is not on any tile. Cannot play turn.");
       return;
     }
     int startPosition = fromTile.getTileId();
 
     Tile toTile = currentPlayer.getDestinationTile(steps);
     if (toTile == null) {
-      LOGGER.severe("Player " + currentPlayer.getName() + " could not determine destination tile for steps: " + steps
-          + " from tile " + fromTile.getName());
+      LOGGER.severe(
+          "Player "
+              + currentPlayer.getName()
+              + " could not determine destination tile for steps: "
+              + steps
+              + " from tile "
+              + fromTile.getName());
     }
 
     int endPosition = toTile.getTileId();
@@ -124,6 +137,13 @@ public class MonopolyGame extends BoardGame {
     notifyObservers(new GameEndedEvent(winner));
   }
 
+  /**
+   * Attempts to purchase a property for a player.
+   *
+   * @param player the player attempting to buy
+   * @param property the property tile to buy
+   * @return true if purchase was successful
+   */
   public boolean buyProperty(Player player, Tile property) {
     if (player == null || property == null) {
       return false;
@@ -155,6 +175,13 @@ public class MonopolyGame extends BoardGame {
     return true;
   }
 
+  /**
+   * Handles rent payment between players.
+   *
+   * @param tenant the player paying rent
+   * @param owner the player receiving rent
+   * @param amount the rent amount
+   */
   public void payRent(Player tenant, Player owner, int amount) {
     if (tenant == null || owner == null || amount <= 0) {
       return;
@@ -182,6 +209,12 @@ public class MonopolyGame extends BoardGame {
     }
   }
 
+  /**
+   * Handles tax payment for a player.
+   *
+   * @param player the player paying tax
+   * @param amount the tax amount
+   */
   public void payTax(Player player, int amount) {
     if (player == null || amount <= 0) {
       return;
@@ -207,6 +240,12 @@ public class MonopolyGame extends BoardGame {
     }
   }
 
+  /**
+   * Awards money to a player for passing the start tile.
+   *
+   * @param player the player receiving money
+   * @param amount the bonus amount
+   */
   public void receiveStartMoney(Player player, int amount) {
     if (player == null || amount <= 0) {
       return;
@@ -221,6 +260,7 @@ public class MonopolyGame extends BoardGame {
     notifyObservers(new MoneyTransferEvent(null, player, amount, "passing GO"));
   }
 
+  /** Checks if the game should end due to bankruptcy conditions. */
   private void checkGameEnd() {
     int activePlayers = 0;
     Player lastActivePlayer = null;
@@ -237,6 +277,12 @@ public class MonopolyGame extends BoardGame {
     }
   }
 
+  /**
+   * Gets the current money amount for a player.
+   *
+   * @param player the player to check
+   * @return the player's money amount, or 0 if player is null
+   */
   public int getPlayerMoney(Player player) {
     if (player == null) {
       LOGGER.warning("Attempted to get money for a null player. Returning 0.");
@@ -245,6 +291,12 @@ public class MonopolyGame extends BoardGame {
     return playerMoney.getOrDefault(player, 0);
   }
 
+  /**
+   * Checks if a player is bankrupt.
+   *
+   * @param player the player to check
+   * @return true if the player is bankrupt
+   */
   public boolean isBankrupt(Player player) {
     if (player == null) {
       LOGGER.warning("Attempted to check bankruptcy status for a null player. Returning false.");
@@ -253,6 +305,11 @@ public class MonopolyGame extends BoardGame {
     return bankruptPlayers.contains(player);
   }
 
+  /**
+   * Gets a list of all bankrupt players.
+   *
+   * @return list of bankrupt players
+   */
   public List<Player> getBankruptPlayers() {
     return new ArrayList<>(bankruptPlayers);
   }

@@ -12,6 +12,14 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.util.Duration;
 
+/**
+ * Handles animations for game pieces on the board. Provides smooth movement animations for regular
+ * moves, ladder climbs, snake slides, and bounce-back effects. Uses JavaFX path transitions for
+ * fluid motion.
+ *
+ * @see PathTransition
+ * @see PlayerPiece
+ */
 public class PieceAnimation {
 
   private static final Duration REGULAR_MOVE_DURATION = Duration.seconds(0.3);
@@ -21,8 +29,20 @@ public class PieceAnimation {
   private final Map<PlayerPiece, Queue<PathTransition>> animationQueues = new HashMap<>();
   private final Map<PlayerPiece, Boolean> isAnimating = new HashMap<>();
 
-  public void animateRegularMove(PlayerPiece piece, Tile fromTile, Tile toTile, double cellSize,
-      double padding, int steps) {
+  /**
+   * Animates a piece moving from one tile to another in a regular movement.
+   *
+   * <p>For moves of more than one step, the piece will move tile by tile.
+   *
+   * @param piece The player piece to animate
+   * @param fromTile The starting tile
+   * @param toTile The destination tile
+   * @param cellSize The size of each board cell
+   * @param padding The board padding
+   * @param steps Number of steps in the movement
+   */
+  public void animateRegularMove(
+      PlayerPiece piece, Tile fromTile, Tile toTile, double cellSize, double padding, int steps) {
     if (fromTile == null || toTile == null) {
       return;
     }
@@ -35,8 +55,19 @@ public class PieceAnimation {
     }
   }
 
-  public void animateLadderClimb(PlayerPiece piece, Tile fromTile, Tile toTile, double cellSize,
-      double padding) {
+  /**
+   * Animates a piece climbing up a ladder.
+   *
+   * <p>Creates a curved upward animation path for smooth ladder movement.
+   *
+   * @param piece The player piece to animate
+   * @param fromTile The bottom of the ladder
+   * @param toTile The top of the ladder
+   * @param cellSize The size of each board cell
+   * @param padding The board padding
+   */
+  public void animateLadderClimb(
+      PlayerPiece piece, Tile fromTile, Tile toTile, double cellSize, double padding) {
     if (fromTile == null || toTile == null) {
       return;
     }
@@ -44,8 +75,19 @@ public class PieceAnimation {
     queueAnimation(piece, path, SPECIAL_MOVE_DURATION);
   }
 
-  public void animateSnakeSlide(PlayerPiece piece, Tile fromTile, Tile toTile, double cellSize,
-      double padding) {
+  /**
+   * Animates a piece sliding down a snake.
+   *
+   * <p>Creates a curved downward animation path for smooth snake movement.
+   *
+   * @param piece The player piece to animate
+   * @param fromTile The head of the snake
+   * @param toTile The tail of the snake
+   * @param cellSize The size of each board cell
+   * @param padding The board padding
+   */
+  public void animateSnakeSlide(
+      PlayerPiece piece, Tile fromTile, Tile toTile, double cellSize, double padding) {
     if (fromTile == null || toTile == null) {
       return;
     }
@@ -53,8 +95,8 @@ public class PieceAnimation {
     queueAnimation(piece, path, SPECIAL_MOVE_DURATION);
   }
 
-  private void animateStepByStep(PlayerPiece piece, Tile fromTile, Tile toTile, double cellSize,
-      double padding, int steps) {
+  private void animateStepByStep(
+      PlayerPiece piece, Tile fromTile, Tile toTile, double cellSize, double padding, int steps) {
     Tile currentTile = fromTile;
     Tile nextTile = currentTile.getNextTile();
 
@@ -71,11 +113,25 @@ public class PieceAnimation {
     }
   }
 
-  public void animateBounceBack(PlayerPiece piece, Tile fromTile, Tile toTile, double cellSize,
-      double padding) {
-    if (fromTile == null || toTile == null || fromTile.getRow() == null
+  /**
+   * Animates a piece bouncing back to its previous position.
+   *
+   * <p>Used when a player cannot complete their move (e.g., overshooting the end).
+   *
+   * @param piece The player piece to animate
+   * @param fromTile The tile to bounce from
+   * @param toTile The tile to bounce back to
+   * @param cellSize The size of each board cell
+   * @param padding The board padding
+   */
+  public void animateBounceBack(
+      PlayerPiece piece, Tile fromTile, Tile toTile, double cellSize, double padding) {
+    if (fromTile == null
+        || toTile == null
+        || fromTile.getRow() == null
         || fromTile.getColumn() == null
-        || toTile.getRow() == null || toTile.getColumn() == null) {
+        || toTile.getRow() == null
+        || toTile.getColumn() == null) {
       return;
     }
 
@@ -96,8 +152,12 @@ public class PieceAnimation {
   }
 
   private Path createDirectPath(Tile fromTile, Tile toTile, double cellSize, double padding) {
-    if (fromTile == null || toTile == null || fromTile.getRow() == null
-        || fromTile.getColumn() == null || toTile.getRow() == null || toTile.getColumn() == null) {
+    if (fromTile == null
+        || toTile == null
+        || fromTile.getRow() == null
+        || fromTile.getColumn() == null
+        || toTile.getRow() == null
+        || toTile.getColumn() == null) {
       return null;
     }
 
@@ -114,8 +174,12 @@ public class PieceAnimation {
   }
 
   private Path createLadderPath(Tile fromTile, Tile toTile, double cellSize, double padding) {
-    if (fromTile == null || toTile == null || fromTile.getRow() == null
-        || fromTile.getColumn() == null || toTile.getRow() == null || toTile.getColumn() == null) {
+    if (fromTile == null
+        || toTile == null
+        || fromTile.getRow() == null
+        || fromTile.getColumn() == null
+        || toTile.getRow() == null
+        || toTile.getColumn() == null) {
       return null;
     }
 
@@ -137,8 +201,12 @@ public class PieceAnimation {
   }
 
   private Path createSnakePath(Tile fromTile, Tile toTile, double cellSize, double padding) {
-    if (fromTile == null || toTile == null || fromTile.getRow() == null
-        || fromTile.getColumn() == null || toTile.getRow() == null || toTile.getColumn() == null) {
+    if (fromTile == null
+        || toTile == null
+        || fromTile.getRow() == null
+        || fromTile.getColumn() == null
+        || toTile.getRow() == null
+        || toTile.getColumn() == null) {
       return null;
     }
 
@@ -176,7 +244,7 @@ public class PieceAnimation {
     PathTransition transition = new PathTransition(duration, path, piece);
     queue.add(transition);
 
-    if (!isAnimating.get(piece)) {
+    if (Boolean.FALSE.equals(isAnimating.get(piece))) {
       playNextAnimation(piece);
     }
   }
@@ -184,7 +252,7 @@ public class PieceAnimation {
   private void playNextAnimation(PlayerPiece piece) {
     Queue<PathTransition> queue = animationQueues.get(piece);
 
-    if (queue.isEmpty()) {
+    if (queue == null || queue.isEmpty()) {
       isAnimating.put(piece, false);
       return;
     }
@@ -192,10 +260,27 @@ public class PieceAnimation {
     isAnimating.put(piece, true);
     PathTransition nextAnimation = queue.poll();
 
-    nextAnimation.setOnFinished(e -> playNextAnimation(piece));
+    if (nextAnimation == null) {
+      isAnimating.put(piece, false);
+      return;
+    }
+
+    nextAnimation.setOnFinished(
+        e -> {
+          if (animationQueues.containsKey(piece)) {
+            playNextAnimation(piece);
+          }
+        });
     nextAnimation.play();
   }
 
+  /**
+   * Clears all pending animations for a specific piece.
+   *
+   * <p>Useful when resetting the game or when a piece needs to be moved immediately.
+   *
+   * @param piece The player piece whose animations should be cleared
+   */
   public void clearAnimations(PlayerPiece piece) {
     if (animationQueues.containsKey(piece)) {
       animationQueues.get(piece).clear();
@@ -203,6 +288,11 @@ public class PieceAnimation {
     }
   }
 
+  /**
+   * Clears all pending animations for all pieces.
+   *
+   * <p>Useful when resetting the game or changing game state.
+   */
   public void clearAllAnimations() {
     for (Queue<PathTransition> queue : animationQueues.values()) {
       queue.clear();

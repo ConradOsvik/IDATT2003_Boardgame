@@ -17,78 +17,83 @@ import org.junit.jupiter.api.Test;
 
 class StartActionTest {
 
-    private StartAction startAction;
-    private final int validAmount = 200;
-    private MonopolyGame mockGame;
-    private MonopolyActionRegistry registry;
+  private final int validAmount = 200;
+  private StartAction startAction;
+  private MonopolyGame mockGame;
+  private MonopolyActionRegistry registry;
 
-    @BeforeEach
-    void setUp() {
-        startAction = new StartAction(validAmount);
-        mockGame = mock(MonopolyGame.class);
+  @BeforeEach
+  void setUp() {
+    startAction = new StartAction(validAmount);
+    mockGame = mock(MonopolyGame.class);
 
-        registry = MonopolyActionRegistry.getInstance();
-        registry.registerGame(mockGame);
+    registry = MonopolyActionRegistry.getInstance();
+    registry.registerGame(mockGame);
+  }
+
+  @AfterEach
+  void tearDown() {
+    if (registry != null) {
+      registry.clearGame();
     }
+  }
 
-    @AfterEach
-    void tearDown() {
-        if (registry != null) {
-            registry.clearGame();
-        }
-    }
+  @Test
+  void constructor_withAnyAmount_shouldCreateInstance() {
+    assertNotNull(startAction);
+    assertEquals(validAmount, startAction.getAmount());
 
-    @Test
-    void constructor_withAnyAmount_shouldCreateInstance() {
-        assertNotNull(startAction);
-        assertEquals(validAmount, startAction.getAmount());
+    StartAction negativeAmountAction = new StartAction(-50);
+    assertNotNull(negativeAmountAction);
+    assertEquals(
+        -50,
+        negativeAmountAction.getAmount(),
+        "Constructor should accept negative amounts as per current implementation.");
+  }
 
-        StartAction negativeAmountAction = new StartAction(-50);
-        assertNotNull(negativeAmountAction);
-        assertEquals(-50, negativeAmountAction.getAmount(),
-                "Constructor should accept negative amounts as per current implementation.");
-    }
+  @Test
+  void getAmount_shouldReturnCorrectAmount() {
+    assertEquals(validAmount, startAction.getAmount());
+  }
 
-    @Test
-    void getAmount_shouldReturnCorrectAmount() {
-        assertEquals(validAmount, startAction.getAmount());
-    }
+  @Test
+  void perform_withNullPlayer_shouldThrowIllegalArgumentException() {
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> {
+              startAction.perform(null);
+            });
+    assertEquals("Player cannot be null for StartAction.", exception.getMessage());
+    verify(mockGame, never()).receiveStartMoney(null, validAmount);
+  }
 
-    @Test
-    void perform_withNullPlayer_shouldThrowIllegalArgumentException() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            startAction.perform(null);
-        });
-        assertEquals("Player cannot be null for StartAction.", exception.getMessage());
-        verify(mockGame, never()).receiveStartMoney(null, validAmount);
-    }
+  @Test
+  void perform_withValidPlayer_shouldDelegateToMonopolyActionRegistry() {
+    Player mockPlayer = mock(Player.class);
 
-    @Test
-    void perform_withValidPlayer_shouldDelegateToMonopolyActionRegistry() {
-        Player mockPlayer = mock(Player.class);
+    startAction.perform(mockPlayer);
 
-        startAction.perform(mockPlayer);
+    verify(mockGame, times(1)).receiveStartMoney(mockPlayer, validAmount);
+  }
 
-        verify(mockGame, times(1)).receiveStartMoney(mockPlayer, validAmount);
-    }
+  @Test
+  void perform_withNegativeAmountInAction_shouldDelegateAndRegistryHandlesNegative() {
+    Player mockPlayer = mock(Player.class);
+    int negativeAmount = -100;
+    StartAction negativeStartAction = new StartAction(negativeAmount);
 
-    @Test
-    void perform_withNegativeAmountInAction_shouldDelegateAndRegistryHandlesNegative() {
-        Player mockPlayer = mock(Player.class);
-        int negativeAmount = -100;
-        StartAction negativeStartAction = new StartAction(negativeAmount);
+    negativeStartAction.perform(mockPlayer);
 
-        negativeStartAction.perform(mockPlayer);
+    verify(mockGame, never()).receiveStartMoney(mockPlayer, negativeAmount);
+  }
 
-        verify(mockGame, never()).receiveStartMoney(mockPlayer, negativeAmount);
-    }
+  @Test
+  void perform_whenNoGameRegisteredInRegistry_shouldStillAttemptCallButRegistryHandlesIt() {
+    registry.clearGame();
+    Player mockPlayer = mock(Player.class);
 
-    @Test
-    void perform_whenNoGameRegisteredInRegistry_shouldStillAttemptCallButRegistryHandlesIt() {
-        registry.clearGame();
-        Player mockPlayer = mock(Player.class);
-
-        startAction.perform(mockPlayer);
-        verify(mockGame, never()).receiveStartMoney(mockPlayer, validAmount);
-    }
+    startAction.perform(mockPlayer);
+    verify(mockGame, never()).receiveStartMoney(mockPlayer, validAmount);
+  }
 }

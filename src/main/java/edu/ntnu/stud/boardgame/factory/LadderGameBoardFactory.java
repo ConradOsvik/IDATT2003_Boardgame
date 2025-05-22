@@ -1,5 +1,6 @@
 package edu.ntnu.stud.boardgame.factory;
 
+import edu.ntnu.stud.boardgame.exception.InvalidGameStateException;
 import edu.ntnu.stud.boardgame.model.Board;
 import edu.ntnu.stud.boardgame.model.Tile;
 import edu.ntnu.stud.boardgame.model.action.LadderAction;
@@ -10,6 +11,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Factory for creating predefined Snakes and Ladders game boards.
+ *
+ * <p>This factory class provides several predefined board configurations for the Snakes and Ladders
+ * game with varying difficulty levels. Each board includes different arrangements of ladders,
+ * snakes, and special actions.
+ *
+ * <p>Available predefined boards include:
+ *
+ * <ul>
+ *   <li><b>Classic</b> - Traditional game with balanced snakes and ladders
+ *   <li><b>Easy</b> - Beginner-friendly game with more ladders than snakes
+ *   <li><b>Hard</b> - Challenging game with more snakes than ladders
+ *   <li><b>Extreme</b> - Extremely challenging game with many snakes and few ladders
+ *   <li><b>Small</b> - A compact 30-tile game
+ * </ul>
+ *
+ * <p>This factory is used by the {@link BoardGameFactory} to provide predefined board
+ * configurations when creating new Ladder games.
+ *
+ * @see edu.ntnu.stud.boardgame.model.Board
+ * @see edu.ntnu.stud.boardgame.model.action.LadderAction
+ * @see edu.ntnu.stud.boardgame.model.action.SnakeAction
+ * @see edu.ntnu.stud.boardgame.model.action.SkipTurnAction
+ */
 public class LadderGameBoardFactory {
 
   private static final Map<String, Board> PREDEFINED_BOARDS = new HashMap<>();
@@ -22,10 +48,25 @@ public class LadderGameBoardFactory {
     PREDEFINED_BOARDS.put("Small", createSmallBoard());
   }
 
+  private LadderGameBoardFactory() {}
+
+  /**
+   * Returns a list of names for all available predefined board configurations.
+   *
+   * @return a list of predefined board names
+   */
   public static List<String> getAvailableBoards() {
     return Arrays.asList("Classic", "Easy", "Hard", "Extreme", "Small");
   }
 
+  /**
+   * Creates a board instance for the specified predefined board configuration.
+   *
+   * @param boardName the name of the predefined board configuration to create
+   * @return a fully configured {@link Board} instance
+   * @throws IllegalArgumentException if boardName is null, empty, or not a recognized predefined
+   *     board name
+   */
   public static Board createBoard(String boardName) {
     if (boardName == null || boardName.trim().isEmpty()) {
       throw new IllegalArgumentException("Board name cannot be null or empty.");
@@ -36,9 +77,22 @@ public class LadderGameBoardFactory {
     return PREDEFINED_BOARDS.get(boardName);
   }
 
+  /**
+   * Creates the classic Snakes and Ladders board configuration.
+   *
+   * <p>This is the traditional game with balanced numbers of snakes and ladders.
+   *
+   * @return a configured classic board
+   */
   private static Board createClassicBoard() {
-    Board board = new Board("Classic Snakes and Ladders",
-        "The traditional game with balanced snakes and ladders", 10, 9, 0, 90);
+    Board board =
+        new Board(
+            "Classic Snakes and Ladders",
+            "The traditional game with balanced snakes and ladders",
+            10,
+            9,
+            0,
+            90);
 
     initializeLadderBoard(board);
 
@@ -61,9 +115,22 @@ public class LadderGameBoardFactory {
     return board;
   }
 
+  /**
+   * Creates an easy Snakes and Ladders board configuration.
+   *
+   * <p>This is a beginner-friendly game with more ladders than snakes.
+   *
+   * @return a configured easy board
+   */
   private static Board createEasyBoard() {
-    Board board = new Board("Easy Snakes and Ladders",
-        "A beginner-friendly game with more ladders than snakes", 10, 9, 0, 90);
+    Board board =
+        new Board(
+            "Easy Snakes and Ladders",
+            "A beginner-friendly game with more ladders than snakes",
+            10,
+            9,
+            0,
+            90);
 
     initializeLadderBoard(board);
 
@@ -86,9 +153,22 @@ public class LadderGameBoardFactory {
     return board;
   }
 
+  /**
+   * Creates a hard Snakes and Ladders board configuration.
+   *
+   * <p>This is a challenging game with more snakes than ladders.
+   *
+   * @return a configured hard board
+   */
   private static Board createHardBoard() {
-    Board board = new Board("Hard Snakes and Ladders",
-        "A challenging game with more snakes than ladders", 10, 9, 0, 90);
+    Board board =
+        new Board(
+            "Hard Snakes and Ladders",
+            "A challenging game with more snakes than ladders",
+            10,
+            9,
+            0,
+            90);
 
     initializeLadderBoard(board);
 
@@ -116,9 +196,23 @@ public class LadderGameBoardFactory {
     return board;
   }
 
+  /**
+   * Creates an extreme Snakes and Ladders board configuration.
+   *
+   * <p>This is an extremely challenging game with many snakes, few ladders, and multiple skip turn
+   * tiles.
+   *
+   * @return a configured extreme board
+   */
   private static Board createExtremeBoard() {
-    Board board = new Board("Extreme Snakes and Ladders",
-        "An extremely challenging game with many snakes and few ladders", 10, 9, 0, 90);
+    Board board =
+        new Board(
+            "Extreme Snakes and Ladders",
+            "An extremely challenging game with many snakes and few ladders",
+            10,
+            9,
+            0,
+            90);
 
     initializeLadderBoard(board);
 
@@ -149,9 +243,17 @@ public class LadderGameBoardFactory {
     return board;
   }
 
+  /**
+   * Creates a small Snakes and Ladders board configuration.
+   *
+   * <p>This is a compact 30-tile game with fewer game elements.
+   *
+   * @return a configured small board
+   */
   private static Board createSmallBoard() {
-    Board board = new Board("Small Snakes and Ladders", "A small 30-tile Snakes and Ladders game",
-        6, 5, 0, 30);
+    Board board =
+        new Board(
+            "Small Snakes and Ladders", "A small 30-tile Snakes and Ladders game", 6, 5, 0, 30);
 
     initializeLadderBoard(board);
 
@@ -168,6 +270,15 @@ public class LadderGameBoardFactory {
     return board;
   }
 
+  /**
+   * Initializes the basic structure of a ladder board with the specified dimensions.
+   *
+   * <p>This method creates all tiles and arranges them in the serpentine pattern typical of Snakes
+   * and Ladders boards, where each row alternates direction.
+   *
+   * @param board the board to initialize
+   * @throws InvalidGameStateException if the board is improperly configured
+   */
   private static void initializeLadderBoard(Board board) {
     int rows = board.getRows();
     int cols = board.getColumns();
@@ -201,34 +312,70 @@ public class LadderGameBoardFactory {
     }
   }
 
+  /**
+   * Adds a ladder action from one tile to another.
+   *
+   * <p>When a player lands on the source tile, they immediately move to the destination tile
+   * (moving up the board).
+   *
+   * @param board the board to add the ladder to
+   * @param fromTileId the ID of the tile where the ladder starts
+   * @param toTileId the ID of the tile where the ladder ends
+   * @throws InvalidGameStateException if either the source or destination tile doesn't exist
+   */
   private static void addLadder(Board board, int fromTileId, int toTileId) {
     Tile fromTile = board.getTile(fromTileId);
     Tile toTile = board.getTile(toTileId);
     if (fromTile == null) {
-      throw new IllegalStateException("Ladder 'from' tile not found: " + fromTileId + ". Check factory configuration.");
+      throw new InvalidGameStateException(
+          "Ladder 'from' tile not found: " + fromTileId + ". Check factory configuration.");
     }
     if (toTile == null) {
-      throw new IllegalStateException("Ladder 'to' tile not found: " + toTileId + ". Check factory configuration.");
+      throw new InvalidGameStateException(
+          "Ladder 'to' tile not found: " + toTileId + ". Check factory configuration.");
     }
     fromTile.setLandAction(new LadderAction(toTile));
   }
 
+  /**
+   * Adds a snake action from one tile to another.
+   *
+   * <p>When a player lands on the source tile, they immediately move to the destination tile
+   * (moving down the board).
+   *
+   * @param board the board to add the snake to
+   * @param fromTileId the ID of the tile where the snake head is
+   * @param toTileId the ID of the tile where the snake tail is
+   * @throws InvalidGameStateException if either the source or destination tile doesn't exist
+   */
   private static void addSnake(Board board, int fromTileId, int toTileId) {
     Tile fromTile = board.getTile(fromTileId);
     Tile toTile = board.getTile(toTileId);
     if (fromTile == null) {
-      throw new IllegalStateException("Snake 'from' tile not found: " + fromTileId + ". Check factory configuration.");
+      throw new InvalidGameStateException(
+          "Snake 'from' tile not found: " + fromTileId + ". Check factory configuration.");
     }
     if (toTile == null) {
-      throw new IllegalStateException("Snake 'to' tile not found: " + toTileId + ". Check factory configuration.");
+      throw new InvalidGameStateException(
+          "Snake 'to' tile not found: " + toTileId + ". Check factory configuration.");
     }
     fromTile.setLandAction(new SnakeAction(toTile));
   }
 
+  /**
+   * Adds a skip turn action to a specific tile.
+   *
+   * <p>When a player lands on the specified tile, they will miss their next turn.
+   *
+   * @param board the board to add the skip turn action to
+   * @param tileId the ID of the tile where the skip turn action should be placed
+   * @throws InvalidGameStateException if the specified tile doesn't exist
+   */
   private static void addSkipTurnAction(Board board, int tileId) {
     Tile tile = board.getTile(tileId);
     if (tile == null) {
-      throw new IllegalStateException("SkipTurnAction tile not found: " + tileId + ". Check factory configuration.");
+      throw new InvalidGameStateException(
+          "SkipTurnAction tile not found: " + tileId + ". Check factory configuration.");
     }
     tile.setLandAction(new SkipTurnAction());
   }

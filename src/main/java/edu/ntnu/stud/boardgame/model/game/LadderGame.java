@@ -1,14 +1,20 @@
 package edu.ntnu.stud.boardgame.model.game;
 
+import edu.ntnu.stud.boardgame.exception.InvalidGameStateException;
 import edu.ntnu.stud.boardgame.model.Tile;
 import edu.ntnu.stud.boardgame.observer.event.BounceBackEvent;
 import edu.ntnu.stud.boardgame.observer.event.DiceRolledEvent;
 import edu.ntnu.stud.boardgame.observer.event.LadderClimbedEvent;
 import edu.ntnu.stud.boardgame.observer.event.PlayerMovedEvent;
 import edu.ntnu.stud.boardgame.observer.event.SnakeEncounteredEvent;
-import edu.ntnu.stud.boardgame.exception.InvalidGameStateException;
 import java.util.logging.Logger;
 
+/**
+ * Implementation of Snakes and Ladders board game.
+ *
+ * <p>Handles game mechanics including dice rolls, player movement, snake/ladder actions, and
+ * bounce-back from the end tile.
+ */
 public class LadderGame extends BoardGame {
 
   private static final Logger LOGGER = Logger.getLogger(LadderGame.class.getName());
@@ -36,7 +42,9 @@ public class LadderGame extends BoardGame {
     Tile endTile = board.getTile(board.getEndTileId());
     if (endTile == null) {
       throw new InvalidGameStateException(
-          "End tile (ID: " + board.getEndTileId() + ") not found on the board. Cannot determine game end.");
+          "End tile (ID: "
+              + board.getEndTileId()
+              + ") not found on the board. Cannot determine game end.");
     }
 
     int targetTileId = currentTile.getTileId() + steps;
@@ -64,8 +72,12 @@ public class LadderGame extends BoardGame {
       Tile targetTile = currentPlayer.getDestinationTile(steps);
       if (targetTile == null) {
         throw new InvalidGameStateException(
-            "Player " + currentPlayer.getName() + " attempted to move to a null tile from tile ID: "
-                + currentTile.getTileId() + " with steps: " + steps);
+            "Player "
+                + currentPlayer.getName()
+                + " attempted to move to a null tile from tile ID: "
+                + currentTile.getTileId()
+                + " with steps: "
+                + steps);
       }
       Tile beforeTile = currentPlayer.getCurrentTile();
 
@@ -81,6 +93,13 @@ public class LadderGame extends BoardGame {
     }
   }
 
+  /**
+   * Triggers any actions associated with landing on a tile.
+   *
+   * <p>Handles snake and ladder actions, notifying observers of the movement.
+   *
+   * @param targetTile the tile to check for actions
+   */
   private void triggerLandAction(Tile targetTile) {
     if (targetTile == null) {
       LOGGER.warning("triggerLandAction called with a null targetTile.");
@@ -92,13 +111,15 @@ public class LadderGame extends BoardGame {
       Tile afterActionTile = currentPlayer.getCurrentTile();
 
       if (!afterActionTile.equals(beforeActionTile)) {
-        if (targetTile.getLandAction() instanceof edu.ntnu.stud.boardgame.model.action.LadderAction) {
+        if (targetTile.getLandAction()
+            instanceof edu.ntnu.stud.boardgame.model.action.LadderAction) {
           notifyObservers(
               new LadderClimbedEvent(currentPlayer, beforeActionTile, afterActionTile, 0, board));
-        } else if (targetTile.getLandAction() instanceof edu.ntnu.stud.boardgame.model.action.SnakeAction) {
+        } else if (targetTile.getLandAction()
+            instanceof edu.ntnu.stud.boardgame.model.action.SnakeAction) {
           notifyObservers(
-              new SnakeEncounteredEvent(currentPlayer, beforeActionTile, afterActionTile, 0,
-                  board));
+              new SnakeEncounteredEvent(
+                  currentPlayer, beforeActionTile, afterActionTile, 0, board));
         }
       }
     }

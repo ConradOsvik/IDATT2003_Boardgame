@@ -6,7 +6,6 @@ import edu.ntnu.stud.boardgame.view.components.builder.ButtonBuilder;
 import edu.ntnu.stud.boardgame.view.components.builder.LabelBuilder;
 import java.io.InputStream;
 import java.util.logging.Logger;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,14 +13,29 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
+/**
+ * A view for selecting which board game to play. Displays available game options with images and
+ * descriptions. Extends {@link BorderPane} to organize game selection cards.
+ *
+ * @see GameController
+ * @see BoardGameType
+ */
 public class GameSelectionView extends BorderPane {
 
   private static final Logger LOGGER = Logger.getLogger(GameSelectionView.class.getName());
   private final GameController controller;
 
+  /**
+   * Creates a new game selection view with available game options.
+   *
+   * <p>Initializes the view with game cards for each available game type.
+   *
+   * @param controller The game controller to handle game type selection
+   * @throws IllegalArgumentException if controller is null
+   */
   public GameSelectionView(GameController controller) {
     if (controller == null) {
       throw new IllegalArgumentException("GameController cannot be null.");
@@ -30,29 +44,31 @@ public class GameSelectionView extends BorderPane {
 
     getStyleClass().add("game-selection-view");
 
-    initializeUI();
+    initializeUi();
   }
 
-  private void initializeUI() {
-    Label titleLabel = new LabelBuilder()
-        .text("Choose Your Adventure!")
-        .styleClass("title")
-        .build();
+  private void initializeUi() {
+    Label titleLabel =
+        new LabelBuilder().text("Choose Your Adventure!").styleClass("title").build();
 
     HBox gameOptionsContainer = new HBox(40);
     gameOptionsContainer.setAlignment(Pos.CENTER);
 
-    VBox ladderGameCard = createGameCard(
-        "Snakes & Ladders",
-        "/images/games/ladder_game.png",
-        "Classic fun! Roll the dice, climb ladders, and dodge those sneaky snakes to reach the finish line first.",
-        event -> controller.selectGameType(BoardGameType.LADDER));
+    VBox ladderGameCard =
+        createGameCard(
+            "Snakes & Ladders",
+            "/images/games/ladder_game.png",
+            "Classic fun! Roll the dice, climb ladders, and dodge those sneaky snakes to reach"
+                + " the finish line first.",
+            event -> controller.selectGameType(BoardGameType.LADDER));
 
-    VBox monopolyGameCard = createGameCard(
-        "Monopoly Lite",
-        "/images/games/monopoly_game.png",
-        "Become a property tycoon! Buy, sell, and trade your way to riches in this fast-paced version of Monopoly.",
-        event -> controller.selectGameType(BoardGameType.MONOPOLY));
+    VBox monopolyGameCard =
+        createGameCard(
+            "Monopoly Lite",
+            "/images/games/monopoly_game.png",
+            "Become a property tycoon! Buy, sell, and trade your way to riches in this fast-paced"
+                + " version of Monopoly.",
+            event -> controller.selectGameType(BoardGameType.MONOPOLY));
 
     gameOptionsContainer.getChildren().addAll(ladderGameCard, monopolyGameCard);
 
@@ -62,7 +78,10 @@ public class GameSelectionView extends BorderPane {
     setCenter(mainLayout);
   }
 
-  private VBox createGameCard(String title, String imagePath, String description,
+  private VBox createGameCard(
+      String title,
+      String imagePath,
+      String description,
       javafx.event.EventHandler<javafx.event.ActionEvent> onSelect) {
 
     String cardTitle = (title == null || title.trim().isEmpty()) ? "Untitled Game" : title;
@@ -70,25 +89,23 @@ public class GameSelectionView extends BorderPane {
       LOGGER.warning("Game card title is null or empty. Using default.");
     }
 
-    String cardDescription = (description == null || description.trim().isEmpty()) ? "No description available."
-        : description;
     if (description == null || description.trim().isEmpty()) {
-      LOGGER.warning("Game card description is null or empty. Using default for title: " + cardTitle);
+      LOGGER.warning(
+          "Game card description is null or empty. Using default for title: " + cardTitle);
     }
 
     if (onSelect == null) {
-      LOGGER.severe("onSelect event handler is null for game card: " + cardTitle + ". Button will be unresponsive.");
-
+      LOGGER.severe(
+          "onSelect event handler is null for game card: "
+              + cardTitle
+              + ". Button will be unresponsive.");
     }
 
     VBox card = new VBox();
     card.getStyleClass().add("game-card");
     card.setAlignment(Pos.CENTER);
 
-    Label gameTitle = new LabelBuilder()
-        .text(cardTitle)
-        .styleClass("game-title")
-        .build();
+    Label gameTitle = new LabelBuilder().text(cardTitle).styleClass("game-title").build();
 
     ImageView imageView = new ImageView();
     if (imagePath != null && !imagePath.trim().isEmpty()) {
@@ -115,19 +132,20 @@ public class GameSelectionView extends BorderPane {
       Label errorLabel = new Label("Image not provided");
       card.getChildren().add(errorLabel);
     }
-
-    Label descriptionLabel = new LabelBuilder()
-        .text(cardDescription)
-        .wrapText(true)
-        .styleClass("game-description")
-        .build();
+    String cardDescription =
+        (description == null || description.trim().isEmpty())
+            ? "No description available."
+            : description;
+    Label descriptionLabel =
+        new LabelBuilder()
+            .text(cardDescription)
+            .wrapText(true)
+            .styleClass("game-description")
+            .build();
     descriptionLabel.setMinHeight(Label.USE_PREF_SIZE);
 
-    Button selectButton = new ButtonBuilder()
-        .text("Play Now!")
-        .styleClass("action-button")
-        .onClick(onSelect)
-        .build();
+    Button selectButton =
+        new ButtonBuilder().text("Play Now!").styleClass("action-button").onClick(onSelect).build();
 
     if (imageView.getImage() != null) {
       card.getChildren().addAll(gameTitle, imageView, descriptionLabel, selectButton);

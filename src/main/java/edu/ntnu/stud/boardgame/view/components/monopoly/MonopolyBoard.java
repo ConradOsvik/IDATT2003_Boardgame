@@ -17,6 +17,17 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+/**
+ * A JavaFX component that represents the Monopoly game board. Handles the
+ * rendering of the board,
+ * player pieces, and their animations. Extends {@link StackPane} to layer the
+ * board canvas and
+ * player pieces.
+ *
+ * @see MonopolyController
+ * @see StackPane
+ * @see Canvas
+ */
 public class MonopolyBoard extends StackPane {
 
   private final Canvas boardCanvas;
@@ -30,6 +41,11 @@ public class MonopolyBoard extends StackPane {
   private double cellSize;
   private boolean needsRedraw = true;
 
+  /**
+   * Creates a new Monopoly board with the specified controller.
+   *
+   * @param controller the {@link MonopolyController} managing game logic
+   */
   public MonopolyBoard(MonopolyController controller) {
     this.controller = controller;
     this.pieceAnimation = new PieceAnimation();
@@ -43,25 +59,34 @@ public class MonopolyBoard extends StackPane {
     boardCanvas.heightProperty().bind(heightProperty());
     piecesLayer.setPickOnBounds(false);
 
-    widthProperty().addListener((obs, oldVal, newVal) -> {
-      if (newVal.doubleValue() > 0) {
-        needsRedraw = true;
-        calculateCellSize();
-        Platform.runLater(this::drawBoard);
-      }
-    });
+    widthProperty()
+        .addListener(
+            (obs, oldVal, newVal) -> {
+              if (newVal.doubleValue() > 0) {
+                needsRedraw = true;
+                calculateCellSize();
+                Platform.runLater(this::drawBoard);
+              }
+            });
 
-    heightProperty().addListener((obs, oldVal, newVal) -> {
-      if (newVal.doubleValue() > 0) {
-        needsRedraw = true;
-        calculateCellSize();
-        Platform.runLater(this::drawBoard);
-      }
-    });
+    heightProperty()
+        .addListener(
+            (obs, oldVal, newVal) -> {
+              if (newVal.doubleValue() > 0) {
+                needsRedraw = true;
+                calculateCellSize();
+                Platform.runLater(this::drawBoard);
+              }
+            });
 
     getChildren().addAll(boardCanvas, piecesLayer);
   }
 
+  /**
+   * Sets the game board and triggers a redraw.
+   *
+   * @param board the {@link Board} to display
+   */
   public void setBoard(Board board) {
     this.board = board;
     needsRedraw = true;
@@ -69,6 +94,12 @@ public class MonopolyBoard extends StackPane {
     drawBoard();
   }
 
+  /**
+   * Updates a player's piece position on the board.
+   *
+   * @param player the {@link Player} whose position to update
+   * @param tile   the {@link Tile} where the player should be placed
+   */
   public void updatePlayerPositions(Player player, Tile tile) {
     PlayerPiece piece = playerPieces.get(player);
 
@@ -88,6 +119,12 @@ public class MonopolyBoard extends StackPane {
     positionPieceAtTile(piece, tile);
   }
 
+  /**
+   * Positions a player piece at the specified tile coordinates.
+   *
+   * @param piece the {@link PlayerPiece} to position
+   * @param tile  the {@link Tile} where the piece should be placed
+   */
   private void positionPieceAtTile(PlayerPiece piece, Tile tile) {
     if (tile == null || tile.getRow() == null || tile.getColumn() == null) {
       return;
@@ -101,6 +138,13 @@ public class MonopolyBoard extends StackPane {
     piece.setTranslateY(y - pieceSize / 2);
   }
 
+  /**
+   * Animates a player's movement from one tile to another.
+   *
+   * @param player   the {@link Player} to move
+   * @param fromTile the starting {@link Tile}
+   * @param toTile   the destination {@link Tile}
+   */
   public void animatePlayerMove(Player player, Tile fromTile, Tile toTile) {
     PlayerPiece piece = playerPieces.get(player);
     if (piece == null) {
@@ -126,6 +170,9 @@ public class MonopolyBoard extends StackPane {
     pieceAnimation.animateRegularMove(piece, fromTile, toTile, cellSize, padding, steps);
   }
 
+  /**
+   * Calculates the size of each board cell based on canvas dimensions.
+   */
   private void calculateCellSize() {
     if (board == null || boardCanvas.getWidth() <= 0 || boardCanvas.getHeight() <= 0) {
       return;
@@ -142,26 +189,35 @@ public class MonopolyBoard extends StackPane {
     updateAllPiecePositions();
   }
 
+  /**
+   * Updates positions of all player pieces on the board.
+   */
   private void updateAllPiecePositions() {
     double pieceSize = Math.max(15, cellSize * 0.6);
     playerPieces.values().forEach(piece -> piece.updateSize(pieceSize));
 
-    playerPieces.forEach((player, piece) -> {
-      if (player.getCurrentTile() != null) {
-        if (player.getCurrentTile().getTileId() == 0) {
-          piece.setVisible(false);
-        } else {
-          piece.setVisible(true);
-          positionPieceAtTile(piece, player.getCurrentTile());
-        }
-      } else {
-        piece.setVisible(false);
-      }
-    });
+    playerPieces.forEach(
+        (player, piece) -> {
+          if (player.getCurrentTile() != null) {
+            if (player.getCurrentTile().getTileId() == 0) {
+              piece.setVisible(false);
+            } else {
+              piece.setVisible(true);
+              positionPieceAtTile(piece, player.getCurrentTile());
+            }
+          } else {
+            piece.setVisible(false);
+          }
+        });
   }
 
+  /**
+   * Draws the game board with current state if redraw is needed.
+   */
   private void drawBoard() {
-    if (board == null || boardCanvas.getWidth() <= 0 || boardCanvas.getHeight() <= 0
+    if (board == null
+        || boardCanvas.getWidth() <= 0
+        || boardCanvas.getHeight() <= 0
         || !needsRedraw) {
       return;
     }
@@ -223,11 +279,17 @@ public class MonopolyBoard extends StackPane {
     needsRedraw = false;
   }
 
+  /**
+   * Forces a board refresh by marking it for redraw.
+   */
   public void refreshBoard() {
     needsRedraw = true;
     drawBoard();
   }
 
+  /**
+   * Removes all player pieces from the board and clears animations.
+   */
   public void clearPlayerPieces() {
     pieceAnimation.clearAllAnimations();
     piecesLayer.getChildren().clear();

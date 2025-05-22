@@ -1,4 +1,4 @@
-package edu.ntnu.stud.boardgame.util;
+package edu.ntnu.stud.boardgame.service;
 
 import java.net.URL;
 import java.util.HashMap;
@@ -8,29 +8,42 @@ import java.util.logging.Logger;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
-public class SoundManager {
+/**
+ * Singleton Service for managing game sound effects, including loading, caching, and playing
+ * sounds. Provides volume control and muting capabilities.
+ */
+public class SoundManagerService {
 
-  private static final Logger LOGGER = Logger.getLogger(SoundManager.class.getName());
+  private static final Logger LOGGER = Logger.getLogger(SoundManagerService.class.getName());
 
-  private static SoundManager instance;
+  private static SoundManagerService instance;
 
   private final Map<String, Media> soundCache;
 
   private double volume = 0.5;
   private boolean muted = false;
 
-  private SoundManager() {
+  private SoundManagerService() {
     this.soundCache = new HashMap<>();
     preloadSounds();
   }
 
-  public static synchronized SoundManager getInstance() {
+  /**
+   * Gets the singleton instance of SoundManagerService.
+   *
+   * @return the SoundManagerService instance
+   */
+  public static synchronized SoundManagerService getInstance() {
     if (instance == null) {
-      instance = new SoundManager();
+      instance = new SoundManagerService();
     }
     return instance;
   }
 
+  /**
+   * Preloads all game sound effects into the sound cache. This method is called during
+   * initialization to ensure sounds are ready to play.
+   */
   private void preloadSounds() {
     loadSound("dice_roll", "/sounds/dice_roll.wav");
     loadSound("move", "/sounds/move.wav");
@@ -43,6 +56,12 @@ public class SoundManager {
     loadSound("receipt", "/sounds/receipt.wav");
   }
 
+  /**
+   * Loads a sound file into the sound cache.
+   *
+   * @param name the identifier for the sound
+   * @param path the resource path to the sound file
+   */
   public void loadSound(String name, String path) {
     if (name == null || name.trim().isEmpty()) {
       LOGGER.warning("Sound name cannot be null or empty.");
@@ -66,6 +85,11 @@ public class SoundManager {
     }
   }
 
+  /**
+   * Plays a sound by its name if it exists in the cache and the sound is not muted.
+   *
+   * @param name the identifier of the sound to play
+   */
   public void playSound(String name) {
     if (name == null || name.trim().isEmpty()) {
       LOGGER.warning("Cannot play sound: name is null or empty.");
@@ -87,10 +111,21 @@ public class SoundManager {
     }
   }
 
+  /**
+   * Gets the current volume level.
+   *
+   * @return the current volume level between 0.0 and 1.0
+   */
   public double getVolume() {
     return volume;
   }
 
+  /**
+   * Sets the volume level for all sounds.
+   *
+   * @param volume the volume level between 0.0 and 1.0
+   * @throws IllegalArgumentException if volume is not between 0.0 and 1.0
+   */
   public void setVolume(double volume) {
     if (volume < 0.0 || volume > 1.0) {
       throw new IllegalArgumentException("Volume must be between 0.0 and 1.0");
@@ -98,15 +133,30 @@ public class SoundManager {
     this.volume = volume;
   }
 
+  /**
+   * Toggles the mute state.
+   *
+   * @return the new mute state (true if muted, false if unmuted)
+   */
   public boolean toggleMute() {
     muted = !muted;
     return muted;
   }
 
+  /**
+   * Gets the current mute state.
+   *
+   * @return true if sound is muted, false otherwise
+   */
   public boolean isMuted() {
     return muted;
   }
 
+  /**
+   * Sets the mute state.
+   *
+   * @param muted true to mute sound, false to unmute
+   */
   public void setMuted(boolean muted) {
     this.muted = muted;
   }

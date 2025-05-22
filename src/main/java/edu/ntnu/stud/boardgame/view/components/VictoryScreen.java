@@ -18,16 +18,25 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
+/**
+ * A victory screen overlay that appears when a game is won. Features animated transitions, winner
+ * display, and a play again option. Extends {@link StackPane} to center content and provide overlay
+ * functionality.
+ *
+ * @see GameController
+ * @see StackPane
+ */
 public class VictoryScreen extends StackPane {
 
   private final Label victoryLabel;
   private final Label winnerLabel;
-  private final Label messageLabel;
-  private final Rectangle background;
-  private final GameController gameController;
 
+  /**
+   * Creates a new victory screen with animated elements and play again button.
+   *
+   * @param gameController The controller to handle game restart
+   */
   public VictoryScreen(GameController gameController) {
-    this.gameController = gameController;
 
     setAlignment(Pos.CENTER);
 
@@ -37,7 +46,7 @@ public class VictoryScreen extends StackPane {
     setPrefWidth(400);
     setPrefHeight(300);
 
-    background = new Rectangle();
+    Rectangle background = new Rectangle();
     background.setFill(Color.rgb(0, 0, 0, 0.7));
     background.setArcWidth(20);
     background.setArcHeight(20);
@@ -63,12 +72,21 @@ public class VictoryScreen extends StackPane {
     winnerLabel = new LabelBuilder().text("").styleClass("winner-label").build();
     winnerLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;");
 
-    messageLabel = new LabelBuilder().text("Congratulations on winning the game!").wrapText(true)
-        .textAlignment(TextAlignment.CENTER).styleClass("victory-message").build();
+    Label messageLabel =
+        new LabelBuilder()
+            .text("Congratulations on winning the game!")
+            .wrapText(true)
+            .textAlignment(TextAlignment.CENTER)
+            .styleClass("victory-message")
+            .build();
     messageLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: white;");
 
-    Button playAgainButton = new ButtonBuilder().text("Play Again").styleClass("victory-button")
-        .onClick(e -> gameController.startGame()).build();
+    Button playAgainButton =
+        new ButtonBuilder()
+            .text("Play Again")
+            .styleClass("victory-button")
+            .onClick(e -> gameController.startGame())
+            .build();
     playAgainButton.setStyle(
         "-fx-font-size: 16px; -fx-padding: 10 20 10 20; -fx-background-color: gold; "
             + "-fx-text-fill: black;");
@@ -82,6 +100,13 @@ public class VictoryScreen extends StackPane {
     setVisible(false);
   }
 
+  /**
+   * Displays the victory screen with the winning player's name.
+   *
+   * <p>Triggers victory animations and sound effects.
+   *
+   * @param winner The winning player, or null for a game over state
+   */
   public void showVictory(Player winner) {
     if (winner != null) {
       winnerLabel.setText(winner.getName() + " wins!");
@@ -93,6 +118,7 @@ public class VictoryScreen extends StackPane {
     playVictoryAnimation();
   }
 
+  /** Plays the victory screen entrance and celebration animations. */
   private void playVictoryAnimation() {
     setOpacity(0);
     setScaleX(0.8);

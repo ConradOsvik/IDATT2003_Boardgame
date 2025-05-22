@@ -1,5 +1,8 @@
 package edu.ntnu.stud.boardgame.controller;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import edu.ntnu.stud.boardgame.model.BoardGameFacade;
 import edu.ntnu.stud.boardgame.model.Player;
 import edu.ntnu.stud.boardgame.model.enums.BoardGameType;
@@ -7,29 +10,22 @@ import edu.ntnu.stud.boardgame.model.enums.PieceType;
 import edu.ntnu.stud.boardgame.model.game.BoardGame;
 import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
 import edu.ntnu.stud.boardgame.service.PlayerFileService;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import java.util.List;
-import java.util.ArrayList;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class GameControllerTest {
 
-  @Mock
-  private MainController mainController;
+  @Mock private MainController mainController;
 
-  @Mock
-  private BoardGameFacade gameFacade;
+  @Mock private BoardGameFacade gameFacade;
 
-  @Mock
-  private PlayerFileService playerFileServiceMock;
+  @Mock private PlayerFileService playerFileServiceMock;
 
-  @Mock
-  private BoardGame mockGame;
+  @Mock private BoardGame mockGame;
 
   private GameController gameController;
 
@@ -68,8 +64,9 @@ class GameControllerTest {
   void getAvailableBoards_facadeThrowsException_showsErrorAndReturnsDefault() {
     when(gameFacade.getAvailableGameBoards()).thenThrow(new RuntimeException("Test Exception"));
     List<String> actualBoards = gameController.getAvailableBoards();
-    verify(mainController).showErrorDialog(eq("Board List Error"),
-        eq("Failed to get available boards: Test Exception"));
+    verify(mainController)
+        .showErrorDialog(
+            eq("Board List Error"), eq("Failed to get available boards: Test Exception"));
     assertEquals(List.of("Default"), actualBoards);
   }
 
@@ -82,25 +79,30 @@ class GameControllerTest {
     assertTrue(gameController.saveSelectedBoardAs(selectedBoard, newName));
     verify(gameFacade).createGame(selectedBoard);
     verify(gameFacade).saveCurrentBoard(newName);
-    verify(mainController).showInfoDialog(eq("Success"), eq("Board saved successfully as: " + newName));
+    verify(mainController)
+        .showInfoDialog(eq("Success"), eq("Board saved successfully as: " + newName));
   }
 
   @Test
-  void saveSelectedBoardAs_nullBoardName_showsError() throws edu.ntnu.stud.boardgame.exception.BoardGameException {
-    when(gameFacade.getCurrentGameType()).thenReturn(BoardGameType.LADDER); // Avoid NPE on getCurrentGameType
+  void saveSelectedBoardAs_nullBoardName_showsError()
+      throws edu.ntnu.stud.boardgame.exception.BoardGameException {
+    when(gameFacade.getCurrentGameType())
+        .thenReturn(BoardGameType.LADDER); // Avoid NPE on getCurrentGameType
     assertFalse(gameController.saveSelectedBoardAs(null, "NewName"));
     verify(mainController).showErrorDialog(eq("Save Error"), eq("Board name cannot be empty."));
   }
 
   @Test
-  void saveSelectedBoardAs_emptyNewName_showsError() throws edu.ntnu.stud.boardgame.exception.BoardGameException {
+  void saveSelectedBoardAs_emptyNewName_showsError()
+      throws edu.ntnu.stud.boardgame.exception.BoardGameException {
     when(gameFacade.getCurrentGameType()).thenReturn(BoardGameType.LADDER);
     assertFalse(gameController.saveSelectedBoardAs("Board", " "));
     verify(mainController).showErrorDialog(eq("Save Error"), eq("New board name cannot be empty."));
   }
 
   @Test
-  void saveSelectedBoardAs_noGameTypeSelected_showsError() throws edu.ntnu.stud.boardgame.exception.BoardGameException {
+  void saveSelectedBoardAs_noGameTypeSelected_showsError()
+      throws edu.ntnu.stud.boardgame.exception.BoardGameException {
     when(gameFacade.getCurrentGameType()).thenReturn(null);
     assertFalse(gameController.saveSelectedBoardAs("Board", "NewName"));
     verify(mainController).showErrorDialog(eq("Save Error"), eq("No game type selected."));
@@ -116,13 +118,16 @@ class GameControllerTest {
   }
 
   @Test
-  void selectBoard_emptyName_showsError() throws edu.ntnu.stud.boardgame.exception.BoardGameException {
+  void selectBoard_emptyName_showsError()
+      throws edu.ntnu.stud.boardgame.exception.BoardGameException {
     assertFalse(gameController.selectBoard(""));
-    verify(mainController).showErrorDialog(eq("Board Selection Error"), eq("Board name cannot be empty."));
+    verify(mainController)
+        .showErrorDialog(eq("Board Selection Error"), eq("Board name cannot be empty."));
   }
 
   @Test
-  void addPlayer_validPlayer_addsPlayer() throws edu.ntnu.stud.boardgame.exception.BoardGameException {
+  void addPlayer_validPlayer_addsPlayer()
+      throws edu.ntnu.stud.boardgame.exception.BoardGameException {
     when(mockGame.getPlayers()).thenReturn(List.of());
     assertTrue(gameController.addPlayer("Player1", PieceType.RED));
     verify(gameFacade).addPlayer("Player1", PieceType.RED);
@@ -141,13 +146,16 @@ class GameControllerTest {
   }
 
   @Test
-  void addPlayer_pieceInUse_showsError() throws edu.ntnu.stud.boardgame.exception.BoardGameException {
+  void addPlayer_pieceInUse_showsError()
+      throws edu.ntnu.stud.boardgame.exception.BoardGameException {
     Player existingPlayer = mock(Player.class);
     when(existingPlayer.getPiece()).thenReturn(PieceType.RED);
     when(mockGame.getPlayers()).thenReturn(List.of(existingPlayer));
     assertFalse(gameController.addPlayer("Player2", PieceType.RED));
-    verify(mainController).showErrorDialog(eq("Input Error"),
-        eq("The piece " + PieceType.RED + " is already in use by another player."));
+    verify(mainController)
+        .showErrorDialog(
+            eq("Input Error"),
+            eq("The piece " + PieceType.RED + " is already in use by another player."));
   }
 
   @Test
@@ -158,11 +166,13 @@ class GameControllerTest {
     String fileName = "testPlayers";
     gameController.savePlayers(fileName);
     verify(playerFileServiceMock).savePlayers(eq(fileName), anyList());
-    verify(mainController).showInfoDialog(eq("Success"), eq("Players saved successfully to " + fileName + ".csv"));
+    verify(mainController)
+        .showInfoDialog(eq("Success"), eq("Players saved successfully to " + fileName + ".csv"));
   }
 
   @Test
-  void savePlayers_emptyFileName_showsError() throws edu.ntnu.stud.boardgame.exception.files.PlayerFileException {
+  void savePlayers_emptyFileName_showsError()
+      throws edu.ntnu.stud.boardgame.exception.files.PlayerFileException {
     when(mockGame.getPlayers()).thenReturn(List.of(mock(Player.class)));
     assertFalse(gameController.savePlayers(""));
     verify(mainController).showErrorDialog(eq("Save Error"), eq("File name cannot be empty."));
@@ -170,7 +180,8 @@ class GameControllerTest {
   }
 
   @Test
-  void savePlayers_noPlayers_showsError() throws edu.ntnu.stud.boardgame.exception.files.PlayerFileException {
+  void savePlayers_noPlayers_showsError()
+      throws edu.ntnu.stud.boardgame.exception.files.PlayerFileException {
     when(mockGame.getPlayers()).thenReturn(List.of());
     assertFalse(gameController.savePlayers("fileName"));
     verify(mainController).showErrorDialog(eq("Input Error"), eq("No players to save."));
@@ -197,17 +208,20 @@ class GameControllerTest {
   }
 
   @Test
-  void startGame_enoughPlayers_startsGame() throws edu.ntnu.stud.boardgame.exception.BoardGameException {
+  void startGame_enoughPlayers_startsGame()
+      throws edu.ntnu.stud.boardgame.exception.BoardGameException {
     when(mockGame.getPlayers()).thenReturn(List.of(mock(Player.class), mock(Player.class)));
     assertTrue(gameController.startGame());
     verify(gameFacade).startGame();
   }
 
   @Test
-  void startGame_notEnoughPlayers_showsError() throws edu.ntnu.stud.boardgame.exception.BoardGameException {
+  void startGame_notEnoughPlayers_showsError()
+      throws edu.ntnu.stud.boardgame.exception.BoardGameException {
     when(mockGame.getPlayers()).thenReturn(List.of(mock(Player.class)));
     assertFalse(gameController.startGame());
-    verify(mainController).showErrorDialog(eq("Player Error"), eq("You need at least 2 players to start the game."));
+    verify(mainController)
+        .showErrorDialog(eq("Player Error"), eq("You need at least 2 players to start the game."));
   }
 
   @Test
@@ -219,9 +233,12 @@ class GameControllerTest {
 
   @Test
   void playTurn_facadeThrowsBoardGameException_returnsFalseAndShowsError() throws Exception {
-    doThrow(new edu.ntnu.stud.boardgame.exception.BoardGameException("Facade Error")).when(gameFacade).playTurn();
+    doThrow(new edu.ntnu.stud.boardgame.exception.BoardGameException("Facade Error"))
+        .when(gameFacade)
+        .playTurn();
     assertFalse(gameController.playTurn());
-    verify(mainController).showErrorDialog(eq("Game Error"), eq("Failed to play turn: Facade Error"));
+    verify(mainController)
+        .showErrorDialog(eq("Game Error"), eq("Failed to play turn: Facade Error"));
   }
 
   @Test
@@ -262,13 +279,16 @@ class GameControllerTest {
   }
 
   @Test
-  void getAvailablePlayerListNames_serviceThrowsException_showsErrorAndReturnsEmptyList() throws Exception {
+  void getAvailablePlayerListNames_serviceThrowsException_showsErrorAndReturnsEmptyList()
+      throws Exception {
     when(playerFileServiceMock.getAvailablePlayerListFileNames())
-        .thenThrow(new edu.ntnu.stud.boardgame.exception.files.PlayerFileException("Service Exception"));
+        .thenThrow(
+            new edu.ntnu.stud.boardgame.exception.files.PlayerFileException("Service Exception"));
     List<String> names = gameController.getAvailablePlayerListNames();
     assertTrue(names.isEmpty());
-    verify(mainController).showErrorDialog(eq("Load Error"),
-        eq("Failed to retrieve saved player lists: Service Exception"));
+    verify(mainController)
+        .showErrorDialog(
+            eq("Load Error"), eq("Failed to retrieve saved player lists: Service Exception"));
     verify(playerFileServiceMock).getAvailablePlayerListFileNames();
   }
 }

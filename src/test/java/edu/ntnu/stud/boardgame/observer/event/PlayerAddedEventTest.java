@@ -11,28 +11,31 @@ import org.junit.jupiter.api.Test;
 
 class PlayerAddedEventTest {
 
-    @Test
-    void constructor_withValidPlayer_shouldCreateEvent() {
-        Player mockPlayer = mock(Player.class);
-        PlayerAddedEvent event = new PlayerAddedEvent(mockPlayer);
+  @Test
+  void constructor_withValidPlayer_shouldCreateEvent() {
+    Player mockPlayer = mock(Player.class);
+    PlayerAddedEvent event = new PlayerAddedEvent(mockPlayer);
 
-        assertNotNull(event);
-        assertEquals(EventType.PLAYER_ADDED, event.getEventType());
-        assertEquals(mockPlayer, event.getPlayer());
-    }
+    assertNotNull(event);
+    assertEquals(EventType.PLAYER_ADDED, event.getEventType());
+    assertEquals(mockPlayer, event.getPlayer());
+  }
 
-    @Test
-    void constructor_withNullPlayer_shouldThrowIllegalArgumentException() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            new PlayerAddedEvent(null);
-        });
-        assertEquals("Player cannot be null for PlayerAddedEvent.", exception.getMessage());
-    }
+  @Test
+  void constructor_withNullPlayer_shouldThrowIllegalArgumentException() {
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> {
+              new PlayerAddedEvent(null);
+            });
+    assertEquals("Player cannot be null for PlayerAddedEvent.", exception.getMessage());
+  }
 
-    @Test
-    void getPlayer_shouldReturnCorrectPlayer() {
-        Player mockPlayer = mock(Player.class);
-        PlayerAddedEvent event = new PlayerAddedEvent(mockPlayer);
-        assertEquals(mockPlayer, event.getPlayer());
-    }
+  @Test
+  void getPlayer_shouldReturnCorrectPlayer() {
+    Player mockPlayer = mock(Player.class);
+    PlayerAddedEvent event = new PlayerAddedEvent(mockPlayer);
+    assertEquals(mockPlayer, event.getPlayer());
+  }
 }

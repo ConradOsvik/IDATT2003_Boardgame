@@ -11,6 +11,9 @@ import edu.ntnu.stud.boardgame.observer.event.PlayerAddedEvent;
 import edu.ntnu.stud.boardgame.view.components.builder.ButtonBuilder;
 import edu.ntnu.stud.boardgame.view.components.builder.LabelBuilder;
 import edu.ntnu.stud.boardgame.view.components.builder.TextFieldBuilder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -22,34 +25,45 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.ColumnConstraints;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+/**
+ * A view for setting up players before starting a game. Allows users to add players, select their
+ * pieces, and manage player lists. Extends {@link BorderPane} to organize player setup components.
+ *
+ * @see MainController
+ * @see GameController
+ * @see BoardGameObserver
+ */
 public class PlayerSetupView extends BorderPane implements BoardGameObserver {
 
   private final MainController controller;
   private final GameController gameController;
   private final ObservableList<String> playersList = FXCollections.observableArrayList();
+  private final ObservableList<String> savedPlayerListItems = FXCollections.observableArrayList();
+  private final List<PieceType> allPieceTypes = new ArrayList<>(Arrays.asList(PieceType.values()));
+  private final ObservableList<PieceType> availablePieceTypesObservableList =
+      FXCollections.observableArrayList();
   private TextField playerNameField;
   private ComboBox<PieceType> pieceTypeComboBox;
   private TextField newPlayerListNameField;
   private Button savePlayersButton;
-
   private ListView<String> savedPlayerListsView;
-  private final ObservableList<String> savedPlayerListItems = FXCollections.observableArrayList();
   private Button loadSelectedPlayerListButton;
 
-  private final List<PieceType> allPieceTypes = new ArrayList<>(Arrays.asList(PieceType.values()));
-  private final ObservableList<PieceType> availablePieceTypesObservableList = FXCollections.observableArrayList();
-
+  /**
+   * Creates a new player setup view.
+   *
+   * <p>Initializes the view with player creation controls and saved player lists.
+   *
+   * @param controller The main application controller
+   * @param gameController The game-specific controller
+   */
   public PlayerSetupView(MainController controller, GameController gameController) {
     this.controller = controller;
     this.gameController = gameController;
@@ -57,17 +71,18 @@ public class PlayerSetupView extends BorderPane implements BoardGameObserver {
 
     getStyleClass().add("player-setup-view");
 
-    initializeUI();
+    initializeUi();
     resetAvailablePieces();
     refreshSavedPlayerLists();
   }
 
-  private void initializeUI() {
-    Button backButton = new ButtonBuilder()
-        .text("Back")
-        .styleClass("secondary-button")
-        .onClick(event -> controller.showBoardSelectionView())
-        .build();
+  private void initializeUi() {
+    Button backButton =
+        new ButtonBuilder()
+            .text("Back")
+            .styleClass("secondary-button")
+            .onClick(event -> controller.showBoardSelectionView())
+            .build();
 
     Label titleLabel = new LabelBuilder().text("Set Up Your Players").styleClass("title").build();
     StackPane titleContainer = new StackPane(titleLabel);
@@ -107,8 +122,6 @@ public class PlayerSetupView extends BorderPane implements BoardGameObserver {
     panel.setPrefWidth(380);
     panel.setMaxWidth(Double.MAX_VALUE);
 
-    Label sectionTitle = new LabelBuilder().text("Add Players Manually").styleClass("section-title").build();
-
     GridPane inputGrid = new GridPane();
     inputGrid.setHgap(10);
     inputGrid.setVgap(15);
@@ -120,36 +133,44 @@ public class PlayerSetupView extends BorderPane implements BoardGameObserver {
     col2.setHgrow(Priority.ALWAYS);
     inputGrid.getColumnConstraints().addAll(col1, col2);
 
-    Label nameLabel = new LabelBuilder().text("Player Name:").build();
-    playerNameField = new TextFieldBuilder().promptText("E.g., Alex")
-        .styleClass("input-field").build();
+    playerNameField =
+        new TextFieldBuilder().promptText("E.g., Alex").styleClass("input-field").build();
     playerNameField.setMaxWidth(Double.MAX_VALUE);
 
-    Label pieceLabel = new LabelBuilder().text("Select Piece:").build();
     pieceTypeComboBox = new ComboBox<>(availablePieceTypesObservableList);
     pieceTypeComboBox.getStyleClass().add("combo-box");
     pieceTypeComboBox.setPromptText("Choose an available piece");
     pieceTypeComboBox.setMaxWidth(Double.MAX_VALUE);
-
+    Label nameLabel = new LabelBuilder().text("Player Name:").build();
     inputGrid.add(nameLabel, 0, 0);
     inputGrid.add(playerNameField, 1, 0);
+    Label pieceLabel = new LabelBuilder().text("Select Piece:").build();
     inputGrid.add(pieceLabel, 0, 1);
     inputGrid.add(pieceTypeComboBox, 1, 1);
 
-    Button addPlayerButton = new ButtonBuilder().text("Add This Player")
-        .styleClass("action-button")
-        .onClick(event -> addPlayer()).build();
+    Button addPlayerButton =
+        new ButtonBuilder()
+            .text("Add This Player")
+            .styleClass("action-button")
+            .onClick(event -> addPlayer())
+            .build();
     HBox addPlayerButtonContainer = new HBox(addPlayerButton);
     addPlayerButtonContainer.setAlignment(Pos.CENTER_RIGHT);
-
-    Label playersLabel = new LabelBuilder().text("Current Players for This Game:").styleClass("text-body-bold").build();
 
     ListView<String> playersListView = new ListView<>(playersList);
     playersListView.getStyleClass().add("player-list");
     playersListView.setPrefHeight(180);
     VBox.setVgrow(playersListView, Priority.ALWAYS);
 
-    panel.getChildren()
+    Label sectionTitle =
+        new LabelBuilder().text("Add Players Manually").styleClass("section-title").build();
+    Label playersLabel =
+        new LabelBuilder()
+            .text("Current Players for This Game:")
+            .styleClass("text-body-bold")
+            .build();
+    panel
+        .getChildren()
         .addAll(sectionTitle, inputGrid, addPlayerButtonContainer, playersLabel, playersListView);
 
     return panel;
@@ -161,49 +182,62 @@ public class PlayerSetupView extends BorderPane implements BoardGameObserver {
     panel.setPrefWidth(380);
     panel.setMaxWidth(Double.MAX_VALUE);
 
-    Label sectionTitle = new LabelBuilder().text("Manage Player Lists").styleClass("section-title").build();
-
-    Label availableListsLabel = new LabelBuilder().text("Available Saved Lists:").styleClass("text-body-bold").build();
     savedPlayerListsView = new ListView<>(savedPlayerListItems);
     savedPlayerListsView.getStyleClass().add("player-list");
     savedPlayerListsView.setPrefHeight(150);
     VBox.setVgrow(savedPlayerListsView, Priority.SOMETIMES);
 
-    loadSelectedPlayerListButton = new ButtonBuilder().text("Load Selected List")
-        .styleClass("secondary-button")
-        .onClick(event -> loadSelectedPlayerList())
-        .build();
-
-    VBox loadingSection = new VBox(10, availableListsLabel, savedPlayerListsView, loadSelectedPlayerListButton);
+    loadSelectedPlayerListButton =
+        new ButtonBuilder()
+            .text("Load Selected List")
+            .styleClass("secondary-button")
+            .onClick(event -> loadSelectedPlayerList())
+            .build();
+    Label availableListsLabel =
+        new LabelBuilder().text("Available Saved Lists:").styleClass("text-body-bold").build();
+    VBox loadingSection =
+        new VBox(10, availableListsLabel, savedPlayerListsView, loadSelectedPlayerListButton);
     loadingSection.setAlignment(Pos.CENTER_LEFT);
 
-    Label saveAsLabel = new LabelBuilder().text("Save Current Player List As:").styleClass("text-body-bold").build();
-
-    newPlayerListNameField = new TextFieldBuilder().promptText("Enter name for new list")
-        .styleClass("input-field")
-        .build();
+    newPlayerListNameField =
+        new TextFieldBuilder()
+            .promptText("Enter name for new list")
+            .styleClass("input-field")
+            .build();
     newPlayerListNameField.setMaxWidth(Double.MAX_VALUE);
 
-    savePlayersButton = new ButtonBuilder().text("Save List")
-        .styleClass("secondary-button")
-        .onClick(event -> saveCurrentPlayersAs())
-        .build();
-
+    savePlayersButton =
+        new ButtonBuilder()
+            .text("Save List")
+            .styleClass("secondary-button")
+            .onClick(event -> saveCurrentPlayersAs())
+            .build();
+    Label saveAsLabel =
+        new LabelBuilder()
+            .text("Save Current Player List As:")
+            .styleClass("text-body-bold")
+            .build();
     VBox savingSection = new VBox(10, saveAsLabel, newPlayerListNameField, savePlayersButton);
     savingSection.setAlignment(Pos.CENTER_LEFT);
 
-    Label fileInfoLabel = new LabelBuilder()
-        .text("Select a list to load, or save the current set of players with a new name.")
-        .wrapText(true)
-        .styleClass("text-body")
-        .build();
+    Label fileInfoLabel =
+        new LabelBuilder()
+            .text("Select a list to load, or save the current set of players with a new name.")
+            .wrapText(true)
+            .styleClass("text-body")
+            .build();
     fileInfoLabel.setPadding(new Insets(10, 0, 0, 0));
-
+    Label sectionTitle =
+        new LabelBuilder().text("Manage Player Lists").styleClass("section-title").build();
     panel.getChildren().addAll(sectionTitle, loadingSection, savingSection, fileInfoLabel);
 
-    savedPlayerListsView.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-      updateLoadPlayerListButtonState();
-    });
+    savedPlayerListsView
+        .getSelectionModel()
+        .selectedItemProperty()
+        .addListener(
+            (obs, oldVal, newVal) -> {
+              updateLoadPlayerListButtonState();
+            });
 
     return panel;
   }
@@ -212,9 +246,12 @@ public class PlayerSetupView extends BorderPane implements BoardGameObserver {
     HBox buttonsBox = new HBox(20);
     buttonsBox.setAlignment(Pos.CENTER);
 
-    Button startGameButton = new ButtonBuilder().text("Start Game!")
-        .styleClass("action-button")
-        .onClick(event -> startGame()).build();
+    Button startGameButton =
+        new ButtonBuilder()
+            .text("Start Game!")
+            .styleClass("action-button")
+            .onClick(event -> startGame())
+            .build();
 
     buttonsBox.getChildren().addAll(startGameButton);
 
@@ -263,13 +300,15 @@ public class PlayerSetupView extends BorderPane implements BoardGameObserver {
 
   private void startGame() {
     if (playersList.isEmpty()) {
-      controller.showErrorDialog("No Players Added",
+      controller.showErrorDialog(
+          "No Players Added",
           "Please add at least one player to start the game, or load a player list.");
       return;
     }
     if (playersList.size() < 2) {
-      controller.showErrorDialog("Not Enough Players",
-          "Most games require at least 2 players. Please add more players.");
+      controller.showErrorDialog(
+          "Not Enough Players",
+          "Most games require at least 2 players." + " Please add more players.");
       return;
     }
 
@@ -288,8 +327,9 @@ public class PlayerSetupView extends BorderPane implements BoardGameObserver {
 
   private void updateLoadPlayerListButtonState() {
     if (loadSelectedPlayerListButton != null) {
-      boolean selectionExists = savedPlayerListsView != null
-          && savedPlayerListsView.getSelectionModel().getSelectedItem() != null;
+      boolean selectionExists =
+          savedPlayerListsView != null
+              && savedPlayerListsView.getSelectionModel().getSelectedItem() != null;
       loadSelectedPlayerListButton.setDisable(!selectionExists);
     }
   }
@@ -301,7 +341,8 @@ public class PlayerSetupView extends BorderPane implements BoardGameObserver {
     } catch (Exception e) {
       System.err.println("Error fetching saved player lists: " + e.getMessage());
       e.printStackTrace();
-      controller.showErrorDialog("Load Error", "Could not retrieve the list of saved player configurations.");
+      controller.showErrorDialog(
+          "Load Error", "Could not retrieve the list of saved player configurations.");
       savedPlayerListItems.clear();
       updateLoadPlayerListButtonState();
       return;
@@ -334,22 +375,25 @@ public class PlayerSetupView extends BorderPane implements BoardGameObserver {
   public void onGameEvent(GameEvent event) {
     if (event instanceof PlayerAddedEvent playerAddedEvent) {
       Player player = playerAddedEvent.getPlayer();
-      Platform.runLater(() -> {
-        if (!playersList.contains(player.getName() + " (" + player.getPiece() + ")")) {
-          playersList.add(player.getName() + " (" + player.getPiece() + ")");
-        }
-        availablePieceTypesObservableList.remove(player.getPiece());
-        updateSavePlayersButtonState();
-        if (pieceTypeComboBox.getItems().isEmpty()) {
-          controller.showInfoDialog("All Pieces Taken", "All available player pieces have been selected.");
-        }
-      });
+      Platform.runLater(
+          () -> {
+            if (!playersList.contains(player.getName() + " (" + player.getPiece() + ")")) {
+              playersList.add(player.getName() + " (" + player.getPiece() + ")");
+            }
+            availablePieceTypesObservableList.remove(player.getPiece());
+            updateSavePlayersButtonState();
+            if (pieceTypeComboBox.getItems().isEmpty()) {
+              controller.showInfoDialog(
+                  "All Pieces Taken", "All available player pieces have been selected.");
+            }
+          });
     } else if (event instanceof GameCreatedEvent) {
-      Platform.runLater(() -> {
-        playersList.clear();
-        resetAvailablePieces();
-        updateSavePlayersButtonState();
-      });
+      Platform.runLater(
+          () -> {
+            playersList.clear();
+            resetAvailablePieces();
+            updateSavePlayersButtonState();
+          });
     }
   }
 

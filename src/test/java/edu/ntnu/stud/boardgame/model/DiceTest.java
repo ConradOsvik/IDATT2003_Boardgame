@@ -3,10 +3,7 @@ package edu.ntnu.stud.boardgame.model;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,12 +49,15 @@ class DiceTest {
   @Test
   void roll_withMockedDice_returnsCorrectSum() {
     int total = dice.roll();
-    assertTrue(total >= 2 && total <= 12,
+    assertTrue(
+        total >= 2 && total <= 12,
         "Total roll for two dice should be between 2 and 12. Actual: " + total);
 
-    assertTrue(dice.getDie(0) >= 1 && dice.getDie(0) <= 6,
+    assertTrue(
+        dice.getDie(0) >= 1 && dice.getDie(0) <= 6,
         "Value of die 0 should be between 1 and 6. Actual: " + dice.getDie(0));
-    assertTrue(dice.getDie(1) >= 1 && dice.getDie(1) <= 6,
+    assertTrue(
+        dice.getDie(1) >= 1 && dice.getDie(1) <= 6,
         "Value of die 1 should be between 1 and 6. Actual: " + dice.getDie(1));
   }
 

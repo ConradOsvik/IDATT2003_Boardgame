@@ -6,15 +6,19 @@ import edu.ntnu.stud.boardgame.io.player.PlayerFileReaderCsv;
 import edu.ntnu.stud.boardgame.io.player.PlayerFileWriter;
 import edu.ntnu.stud.boardgame.io.player.PlayerFileWriterCsv;
 import edu.ntnu.stud.boardgame.model.Player;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.io.File;
-import java.util.ArrayList;
 
+/**
+ * Singleton Service for handling player file operations such as loading, saving, and listing
+ * available player lists.
+ */
 public class PlayerFileService {
 
   private static final Logger LOGGER = Logger.getLogger(PlayerFileService.class.getName());
@@ -33,6 +37,11 @@ public class PlayerFileService {
     createDirectoryIfNotExists(playersDirectory);
   }
 
+  /**
+   * Gets the singleton instance of PlayerFileService.
+   *
+   * @return the PlayerFileService instance
+   */
   public static synchronized PlayerFileService getInstance() {
     if (instance == null) {
       instance = new PlayerFileService();
@@ -40,6 +49,14 @@ public class PlayerFileService {
     return instance;
   }
 
+  /**
+   * Loads a list of players from a file.
+   *
+   * @param fileName the name of the file
+   * @return the loaded list of players
+   * @throws PlayerFileException if the players cannot be loaded
+   * @throws IllegalArgumentException if fileName is null or empty
+   */
   public List<Player> loadPlayers(String fileName) throws PlayerFileException {
     if (fileName == null || fileName.isEmpty()) {
       throw new IllegalArgumentException("File name cannot be null or empty.");
@@ -60,6 +77,14 @@ public class PlayerFileService {
     }
   }
 
+  /**
+   * Saves a list of players to a file.
+   *
+   * @param fileName the name of the file
+   * @param players the list of players to save
+   * @throws PlayerFileException if the players cannot be saved
+   * @throws IllegalArgumentException if fileName is null or empty, or if players is null
+   */
   public void savePlayers(String fileName, List<Player> players) throws PlayerFileException {
     if (fileName == null || fileName.isEmpty()) {
       throw new IllegalArgumentException("File name cannot be null or empty.");
@@ -80,6 +105,11 @@ public class PlayerFileService {
     }
   }
 
+  /**
+   * Creates a directory if it does not exist.
+   *
+   * @param directory the directory to create
+   */
   private void createDirectoryIfNotExists(Path directory) {
     try {
       if (!Files.exists(directory)) {
@@ -88,13 +118,18 @@ public class PlayerFileService {
       }
     } catch (IOException e) {
       LOGGER.severe("Failed to create directory: " + directory + ". Error: " + e.getMessage());
-
     }
   }
 
+  /**
+   * Ensures that the file name has a .csv extension.
+   *
+   * @param fileName the file name to check
+   * @return the file name with .csv extension
+   * @throws IllegalArgumentException if fileName is null or empty
+   */
   private String ensureFileExtension(String fileName) {
     if (fileName == null || fileName.trim().isEmpty()) {
-
       LOGGER.warning("File name is null or empty in ensureFileExtension. Returning as is.");
       return fileName;
     }
@@ -104,21 +139,30 @@ public class PlayerFileService {
     return fileName;
   }
 
+  /**
+   * Gets a list of available player list file names.
+   *
+   * @return a list of available player list names (without extension)
+   * @throws PlayerFileException if the player directory cannot be accessed or listed
+   */
   public List<String> getAvailablePlayerListFileNames() throws PlayerFileException {
     List<String> playerListNames = new ArrayList<>();
 
     File playersDirFile = playersDirectory.toFile();
 
     if (!playersDirFile.exists() || !playersDirFile.isDirectory()) {
-      LOGGER.warning("Player save directory does not exist or is not a directory: " +
-          playersDirectory.toAbsolutePath());
-      throw new PlayerFileException("Player save directory not found: " + playersDirectory.toAbsolutePath());
+      LOGGER.warning(
+          "Player save directory does not exist or is not a directory: "
+              + playersDirectory.toAbsolutePath());
+      throw new PlayerFileException(
+          "Player save directory not found: " + playersDirectory.toAbsolutePath());
     }
 
     File[] files = playersDirFile.listFiles((dir, name) -> name.toLowerCase().endsWith(".csv"));
 
     if (files == null) {
-      throw new PlayerFileException("Could not list files in player directory: " + playersDirectory.toAbsolutePath());
+      throw new PlayerFileException(
+          "Could not list files in player directory: " + playersDirectory.toAbsolutePath());
     }
 
     for (File file : files) {

@@ -12,22 +12,23 @@ import org.junit.jupiter.api.Test;
 
 class BounceBackEventTest {
 
-    @Test
-    void constructor_shouldSetCorrectEventTypeAndPassArgumentsToSuper() {
-        Player mockPlayer = mock(Player.class);
-        Tile mockFromTile = mock(Tile.class);
-        Tile mockToTile = mock(Tile.class);
-        Board mockBoard = mock(Board.class);
-        int steps = -2;
+  @Test
+  void constructor_shouldSetCorrectEventTypeAndPassArgumentsToSuper() {
+    Player mockPlayer = mock(Player.class);
+    Tile mockFromTile = mock(Tile.class);
+    Tile mockToTile = mock(Tile.class);
+    Board mockBoard = mock(Board.class);
+    int steps = -2;
 
-        BounceBackEvent event = new BounceBackEvent(mockPlayer, mockFromTile, mockToTile, steps, mockBoard);
+    BounceBackEvent event =
+        new BounceBackEvent(mockPlayer, mockFromTile, mockToTile, steps, mockBoard);
 
-        assertNotNull(event);
-        assertEquals(EventType.BOUNCE_BACK, event.getEventType());
-        assertEquals(mockPlayer, event.getPlayer());
-        assertEquals(mockFromTile, event.getFromTile());
-        assertEquals(mockToTile, event.getToTile());
-        assertEquals(steps, event.getSteps());
-        assertEquals(mockBoard, event.getBoard());
-    }
+    assertNotNull(event);
+    assertEquals(EventType.BOUNCE_BACK, event.getEventType());
+    assertEquals(mockPlayer, event.getPlayer());
+    assertEquals(mockFromTile, event.getFromTile());
+    assertEquals(mockToTile, event.getToTile());
+    assertEquals(steps, event.getSteps());
+    assertEquals(mockBoard, event.getBoard());
+  }
 }

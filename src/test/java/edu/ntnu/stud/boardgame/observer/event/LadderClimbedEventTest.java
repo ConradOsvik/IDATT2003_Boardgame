@@ -12,22 +12,23 @@ import org.junit.jupiter.api.Test;
 
 class LadderClimbedEventTest {
 
-    @Test
-    void constructor_shouldSetCorrectEventTypeAndPassArgumentsToSuper() {
-        Player mockPlayer = mock(Player.class);
-        Tile mockFromTile = mock(Tile.class);
-        Tile mockToTile = mock(Tile.class);
-        Board mockBoard = mock(Board.class);
-        int steps = 5;
+  @Test
+  void constructor_shouldSetCorrectEventTypeAndPassArgumentsToSuper() {
+    Player mockPlayer = mock(Player.class);
+    Tile mockFromTile = mock(Tile.class);
+    Tile mockToTile = mock(Tile.class);
+    Board mockBoard = mock(Board.class);
+    int steps = 5;
 
-        LadderClimbedEvent event = new LadderClimbedEvent(mockPlayer, mockFromTile, mockToTile, steps, mockBoard);
+    LadderClimbedEvent event =
+        new LadderClimbedEvent(mockPlayer, mockFromTile, mockToTile, steps, mockBoard);
 
-        assertNotNull(event);
-        assertEquals(EventType.LADDER_CLIMBED, event.getEventType());
-        assertEquals(mockPlayer, event.getPlayer());
-        assertEquals(mockFromTile, event.getFromTile());
-        assertEquals(mockToTile, event.getToTile());
-        assertEquals(steps, event.getSteps());
-        assertEquals(mockBoard, event.getBoard());
-    }
+    assertNotNull(event);
+    assertEquals(EventType.LADDER_CLIMBED, event.getEventType());
+    assertEquals(mockPlayer, event.getPlayer());
+    assertEquals(mockFromTile, event.getFromTile());
+    assertEquals(mockToTile, event.getToTile());
+    assertEquals(steps, event.getSteps());
+    assertEquals(mockBoard, event.getBoard());
+  }
 }

@@ -15,6 +15,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
+/**
+ * A scoreboard component for the Monopoly game that displays player information. Shows each
+ * player's current money, bankruptcy status, and highlights the active player. Extends {@link VBox}
+ * to arrange player entries vertically with consistent styling.
+ *
+ * @see MonopolyController
+ * @see VBox
+ */
 public class MonopolyPlayerScoreboard extends VBox {
 
   private final Label titleLabel;
@@ -24,6 +32,11 @@ public class MonopolyPlayerScoreboard extends VBox {
   private final Map<Player, Circle> playerIndicators = new HashMap<>();
   private final MonopolyController controller;
 
+  /**
+   * Konstruktør for resultattavlen.
+   *
+   * @param controller {@link MonopolyController}-instansen som styrer spillogikken
+   */
   public MonopolyPlayerScoreboard(MonopolyController controller) {
     this.controller = controller;
 
@@ -31,10 +44,7 @@ public class MonopolyPlayerScoreboard extends VBox {
     setSpacing(10);
     getStyleClass().add("card");
 
-    titleLabel = new LabelBuilder()
-        .text("Players")
-        .styleClass("text-h3")
-        .build();
+    titleLabel = new LabelBuilder().text("Players").styleClass("text-h3").build();
 
     playersContainer = new VBox(5);
     playersContainer.getStyleClass().add("list-container");
@@ -42,6 +52,12 @@ public class MonopolyPlayerScoreboard extends VBox {
     getChildren().addAll(titleLabel, playersContainer);
   }
 
+  /**
+   * Oppdaterer spillerlisten i resultattavlen.
+   *
+   * @param players listen over {@link Player}-objekter som skal vises
+   * @see Player
+   */
   public void updatePlayers(List<Player> players) {
     playersContainer.getChildren().clear();
     playerRows.clear();
@@ -56,6 +72,12 @@ public class MonopolyPlayerScoreboard extends VBox {
     }
   }
 
+  /**
+   * Oppdaterer pengebeløpet og tilstanden for en spiller. Håndterer også visuelle endringer for
+   * konkurs-status.
+   *
+   * @param player {@link Player}-objektet som skal oppdateres
+   */
   public void updatePlayerMoney(Player player) {
     Label moneyLabel = moneyLabels.get(player);
     if (moneyLabel != null) {
@@ -86,10 +108,16 @@ public class MonopolyPlayerScoreboard extends VBox {
     }
   }
 
+  /**
+   * Fremhever den aktive spilleren i resultattavlen.
+   *
+   * @param currentPlayer {@link Player}-objektet for aktiv spiller, eller <code>null</code>
+   */
   public void highlightCurrentPlayer(Player currentPlayer) {
-    playerRows.forEach((player, row) -> {
-      row.getStyleClass().remove("current-player");
-    });
+    playerRows.forEach(
+        (player, row) -> {
+          row.getStyleClass().remove("current-player");
+        });
 
     if (currentPlayer != null) {
       HBox playerRow = playerRows.get(currentPlayer);
@@ -111,15 +139,14 @@ public class MonopolyPlayerScoreboard extends VBox {
     playerIndicator.getStyleClass().add("player-indicator");
     playerIndicator.setFill(player.getPiece().getColor());
 
-    Label nameLabel = new LabelBuilder()
-        .text(player.getName())
-        .styleClass("text-body-bold")
-        .build();
+    Label nameLabel =
+        new LabelBuilder().text(player.getName()).styleClass("text-body-bold").build();
 
-    Label moneyLabel = new LabelBuilder()
-        .text("$" + controller.getPlayerMoney(player))
-        .styleClass("text-body")
-        .build();
+    Label moneyLabel =
+        new LabelBuilder()
+            .text("$" + controller.getPlayerMoney(player))
+            .styleClass("text-body")
+            .build();
 
     moneyLabels.put(player, moneyLabel);
     playerIndicators.put(player, playerIndicator);

@@ -23,7 +23,6 @@ module edu.ntnu.stud.boardgame {
   exports edu.ntnu.stud.boardgame.observer;
   exports edu.ntnu.stud.boardgame.observer.event;
   exports edu.ntnu.stud.boardgame.service;
-  exports edu.ntnu.stud.boardgame.util;
   exports edu.ntnu.stud.boardgame.factory;
 
   opens edu.ntnu.stud.boardgame.io.board;
@@ -37,6 +36,5 @@ module edu.ntnu.stud.boardgame {
   opens edu.ntnu.stud.boardgame.observer;
   opens edu.ntnu.stud.boardgame.observer.event;
   opens edu.ntnu.stud.boardgame.service;
-  opens edu.ntnu.stud.boardgame.util;
   opens edu.ntnu.stud.boardgame.factory;
 }
