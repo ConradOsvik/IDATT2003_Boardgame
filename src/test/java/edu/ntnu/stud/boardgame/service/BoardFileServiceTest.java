@@ -22,8 +22,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class BoardFileServiceTest {
 
-  @Mock private BoardParser mockBoardParser;
-  @Mock private Board mockBoard;
+  @Mock
+  private BoardParser mockBoardParser;
+  @Mock
+  private Board mockBoard;
   private BoardFileService boardFileService;
 
   @BeforeEach
@@ -59,27 +61,24 @@ class BoardFileServiceTest {
 
   @Test
   void loadBoard_nullGameType_throwsIllegalArgumentException() {
-    Exception e =
-        assertThrows(
-            IllegalArgumentException.class, () -> boardFileService.loadBoard(null, "file"));
+    Exception e = assertThrows(
+        IllegalArgumentException.class, () -> boardFileService.loadBoard(null, "file"));
     assertEquals("Game type cannot be null.", e.getMessage());
   }
 
   @Test
   void loadBoard_nullFileName_throwsIllegalArgumentException() {
-    Exception e =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> boardFileService.loadBoard(BoardGameType.LADDER, null));
+    Exception e = assertThrows(
+        IllegalArgumentException.class,
+        () -> boardFileService.loadBoard(BoardGameType.LADDER, null));
     assertEquals("File name cannot be null or empty.", e.getMessage());
   }
 
   @Test
   void loadBoard_emptyFileName_throwsIllegalArgumentException() {
-    Exception e =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> boardFileService.loadBoard(BoardGameType.LADDER, ""));
+    Exception e = assertThrows(
+        IllegalArgumentException.class,
+        () -> boardFileService.loadBoard(BoardGameType.LADDER, ""));
     assertEquals("File name cannot be null or empty.", e.getMessage());
   }
 
@@ -87,14 +86,13 @@ class BoardFileServiceTest {
   void loadBoard_parserThrowsException_throwsBoardFileException() throws BoardParsingException {
     BoardGameType gameType = BoardGameType.LADDER;
     String fileName = "parserIssue";
-    String testBoardData = "{\"invalid\":\"json\"}";
+    String testBoardData = "{\"valid\":\"json\"}";
 
     BoardParsingException parsingException = new BoardParsingException("Parse error");
     when(mockBoardParser.parseBoard(testBoardData)).thenThrow(parsingException);
 
-    BoardFileException e =
-        assertThrows(
-            BoardFileException.class, () -> boardFileService.loadBoard(gameType, fileName));
+    BoardFileException e = assertThrows(
+        BoardFileException.class, () -> boardFileService.loadBoard(gameType, fileName));
     assertEquals("Failed to load board: Parse error", e.getMessage());
     assertSame(parsingException, e.getCause());
   }
@@ -114,37 +112,33 @@ class BoardFileServiceTest {
 
   @Test
   void saveBoard_nullGameType_throwsIllegalArgumentException() {
-    Exception e =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> boardFileService.saveBoard(null, "file", mockBoard));
+    Exception e = assertThrows(
+        IllegalArgumentException.class,
+        () -> boardFileService.saveBoard(null, "file", mockBoard));
     assertEquals("Game type cannot be null.", e.getMessage());
   }
 
   @Test
   void saveBoard_nullFileName_throwsIllegalArgumentException() {
-    Exception e =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> boardFileService.saveBoard(BoardGameType.LADDER, null, mockBoard));
+    Exception e = assertThrows(
+        IllegalArgumentException.class,
+        () -> boardFileService.saveBoard(BoardGameType.LADDER, null, mockBoard));
     assertEquals("File name cannot be null or empty.", e.getMessage());
   }
 
   @Test
   void saveBoard_emptyFileName_throwsIllegalArgumentException() {
-    Exception e =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> boardFileService.saveBoard(BoardGameType.LADDER, "", mockBoard));
+    Exception e = assertThrows(
+        IllegalArgumentException.class,
+        () -> boardFileService.saveBoard(BoardGameType.LADDER, "", mockBoard));
     assertEquals("File name cannot be null or empty.", e.getMessage());
   }
 
   @Test
   void saveBoard_nullBoard_throwsIllegalArgumentException() {
-    Exception e =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> boardFileService.saveBoard(BoardGameType.MONOPOLY, "file", null));
+    Exception e = assertThrows(
+        IllegalArgumentException.class,
+        () -> boardFileService.saveBoard(BoardGameType.MONOPOLY, "file", null));
     assertEquals("Board cannot be null.", e.getMessage());
   }
 
@@ -156,10 +150,9 @@ class BoardFileServiceTest {
     BoardWritingException writingException = new BoardWritingException("Write error");
     when(mockBoardParser.serializeBoard(mockBoard)).thenThrow(writingException);
 
-    BoardFileException e =
-        assertThrows(
-            BoardFileException.class,
-            () -> boardFileService.saveBoard(gameType, fileName, mockBoard));
+    BoardFileException e = assertThrows(
+        BoardFileException.class,
+        () -> boardFileService.saveBoard(gameType, fileName, mockBoard));
     assertTrue(e.getMessage().contains("Failed to save board"));
     assertSame(writingException, e.getCause());
   }

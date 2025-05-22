@@ -18,13 +18,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Implementation of {@link BoardFileWriter} that uses Google's Gson library for JSON serialization.
+ * Implementation of {@link BoardFileWriter} that uses Google's Gson library for
+ * JSON serialization.
  *
- * <p>This class provides functionality to serialize {@link Board} objects into JSON format and save
- * them to the filesystem. It handles the conversion of complex board structures, including tiles
+ * <p>
+ * This class provides functionality to serialize {@link Board} objects into
+ * JSON format and save
+ * them to the filesystem. It handles the conversion of complex board
+ * structures, including tiles
  * and their associated actions, into a structured JSON representation.
  *
- * <p>The writer handles different types of tile actions by converting them to appropriate JSON
+ * <p>
+ * The writer handles different types of tile actions by converting them to
+ * appropriate JSON
  * objects with type information and relevant properties.
  *
  * @see BoardFileWriter
@@ -106,21 +112,25 @@ public class BoardFileWriterGson implements BoardFileWriter {
   /**
    * Writes a board object to the specified file path in JSON format.
    *
-   * <p>This implementation serializes the board structure including its metadata (name,
+   * <p>
+   * This implementation serializes the board structure including its metadata
+   * (name,
    * description, dimensions), tiles, and actions into a JSON file.
    *
-   * <p>The JSON structure includes:
+   * <p>
+   * The JSON structure includes:
    *
    * <ul>
-   *   <li>Board metadata (name, description, rows, columns)
-   *   <li>Start and end tile references
-   *   <li>An array of all tiles with their properties
-   *   <li>Actions associated with each tile
+   * <li>Board metadata (name, description, rows, columns)
+   * <li>Start and end tile references
+   * <li>An array of all tiles with their properties
+   * <li>Actions associated with each tile
    * </ul>
    *
-   * @param path the path where the board should be written
+   * @param path  the path where the board should be written
    * @param board the board object to serialize and save
-   * @throws BoardWritingException if any errors occur during the writing process
+   * @throws BoardWritingException    if any errors occur during the writing
+   *                                  process
    * @throws IllegalArgumentException if path or board is null
    */
   @Override
