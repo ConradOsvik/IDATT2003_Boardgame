@@ -5,10 +5,8 @@ import edu.ntnu.stud.boardgame.observer.GameEvent;
 
 /**
  * Event fired when dice are rolled during a player's turn.
- * 
- * <p>
- * Contains the dice roll value and the player who rolled.
- * </p>
+ *
+ * <p>Contains the dice roll value and the player who rolled.
  */
 public class DiceRolledEvent extends GameEvent {
 
@@ -18,7 +16,7 @@ public class DiceRolledEvent extends GameEvent {
   /**
    * Creates a new dice rolled event.
    *
-   * @param diceValue     the value rolled on the dice
+   * @param diceValue the value rolled on the dice
    * @param currentPlayer the player who rolled
    * @throws IllegalArgumentException if currentPlayer is null
    */

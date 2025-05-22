@@ -5,11 +5,11 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 
 /**
- * Builder class for creating and configuring JavaFX {@link Button} instances.
- * Provides a fluent interface for setting various button properties.
- * <p>
- * Example usage:
- * 
+ * Builder class for creating and configuring JavaFX {@link Button} instances. Provides a fluent
+ * interface for setting various button properties.
+ *
+ * <p>Example usage:
+ *
  * <pre>{@code
  * Button button = new ButtonBuilder()
  *     .text("Click Me")
@@ -18,7 +18,6 @@ import javafx.scene.control.Button;
  *     .onClick(event -> System.out.println("Button clicked!"))
  *     .build();
  * }</pre>
- * </p>
  *
  * @see Button
  * @see javafx.scene.control.Control
@@ -29,10 +28,9 @@ public class ButtonBuilder {
 
   /**
    * Creates a new ButtonBuilder instance with a default {@link Button}.
-   * <p>
-   * The button is initialized with default JavaFX properties and can be
-   * customized using the builder methods.
-   * </p>
+   *
+   * <p>The button is initialized with default JavaFX properties and can be customized using the
+   * builder methods.
    */
   public ButtonBuilder() {
     this.button = new Button();
@@ -40,9 +38,8 @@ public class ButtonBuilder {
 
   /**
    * Sets the text displayed on the button.
-   * <p>
-   * This text will be shown as the button's label.
-   * </p>
+   *
+   * <p>This text will be shown as the button's label.
    *
    * @param text the text to display
    * @return this builder instance for method chaining
@@ -55,9 +52,8 @@ public class ButtonBuilder {
 
   /**
    * Adds style classes to the button.
-   * <p>
-   * These classes should be defined in your CSS stylesheet.
-   * </p>
+   *
+   * <p>These classes should be defined in your CSS stylesheet.
    *
    * @param styleClasses one or more CSS style classes to apply
    * @return this builder instance for method chaining
@@ -70,9 +66,8 @@ public class ButtonBuilder {
 
   /**
    * Sets the action handler for when the button is clicked.
-   * <p>
-   * The handler will be called whenever the button is clicked by the user.
-   * </p>
+   *
+   * <p>The handler will be called whenever the button is clicked by the user.
    *
    * @param handler the event handler to execute on button click
    * @return this builder instance for method chaining
@@ -85,9 +80,8 @@ public class ButtonBuilder {
 
   /**
    * Sets the preferred width of the button.
-   * <p>
-   * The actual width may vary based on the layout constraints.
-   * </p>
+   *
+   * <p>The actual width may vary based on the layout constraints.
    *
    * @param width the preferred width in pixels
    * @return this builder instance for method chaining
@@ -100,9 +94,8 @@ public class ButtonBuilder {
 
   /**
    * Sets the preferred height of the button.
-   * <p>
-   * The actual height may vary based on the layout constraints.
-   * </p>
+   *
+   * <p>The actual height may vary based on the layout constraints.
    *
    * @param height the preferred height in pixels
    * @return this builder instance for method chaining
@@ -115,9 +108,8 @@ public class ButtonBuilder {
 
   /**
    * Sets whether the button is disabled.
-   * <p>
-   * A disabled button cannot be clicked and appears grayed out.
-   * </p>
+   *
+   * <p>A disabled button cannot be clicked and appears grayed out.
    *
    * @param disabled true to disable the button, false to enable it
    * @return this builder instance for method chaining
@@ -130,9 +122,8 @@ public class ButtonBuilder {
 
   /**
    * Builds and returns the configured {@link Button} instance.
-   * <p>
-   * After this call, the button is ready to be added to a scene graph.
-   * </p>
+   *
+   * <p>After this call, the button is ready to be added to a scene graph.
    *
    * @return the configured JavaFX {@link Button}
    */

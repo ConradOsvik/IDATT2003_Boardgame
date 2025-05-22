@@ -2,11 +2,9 @@ package edu.ntnu.stud.boardgame.observer;
 
 /**
  * Base class for all game events in the observer system.
- * 
- * <p>
- * Provides common functionality for event type identification and
- * validation. All specific game events should extend this class.
- * </p>
+ *
+ * <p>Provides common functionality for event type identification and validation. All specific game
+ * events should extend this class.
  */
 public abstract class GameEvent {
 
@@ -34,41 +32,39 @@ public abstract class GameEvent {
     return type;
   }
 
-  /**
-   * Enumeration of all possible game event types.
-   */
+  /** Enumeration of all possible game event types. */
   public enum EventType {
-    /** Event when a new game is created */
+    /** Event when a new game is created. */
     GAME_CREATED,
-    /** Event when a game starts */
+    /** Event when a game starts. */
     GAME_STARTED,
-    /** Event when a game ends */
+    /** Event when a game ends. */
     GAME_ENDED,
 
-    /** Event when the turn changes to a new player */
+    /** Event when the turn changes to a new player. */
     TURN_CHANGED,
-    /** Event when dice are rolled */
+    /** Event when dice are rolled. */
     DICE_ROLLED,
 
-    /** Event when a player is added to the game */
+    /** Event when a player is added to the game. */
     PLAYER_ADDED,
-    /** Event when a player moves to a new tile */
+    /** Event when a player moves to a new tile. */
     PLAYER_MOVED,
-    /** Event when a player wins the game */
+    /** Event when a player wins the game. */
     PLAYER_WON,
 
-    /** Event when money is transferred between players or bank */
+    /** Event when money is transferred between players or bank. */
     MONEY_TRANSFER,
-    /** Event when a property is purchased */
+    /** Event when a property is purchased. */
     PROPERTY_PURCHASED,
-    /** Event when a player goes bankrupt */
+    /** Event when a player goes bankrupt. */
     PLAYER_BANKRUPT,
 
-    /** Event when a player climbs a ladder */
+    /** Event when a player climbs a ladder. */
     LADDER_CLIMBED,
-    /** Event when a player encounters a snake */
+    /** Event when a player encounters a snake. */
     SNAKE_ENCOUNTERED,
-    /** Event when a player bounces back from the end tile */
+    /** Event when a player bounces back from the end tile. */
     BOUNCE_BACK
   }
 }

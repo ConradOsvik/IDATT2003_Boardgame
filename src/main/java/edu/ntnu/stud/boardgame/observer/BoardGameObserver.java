@@ -2,11 +2,9 @@ package edu.ntnu.stud.boardgame.observer;
 
 /**
  * Observer interface for receiving board game events.
- * 
- * <p>
- * Classes implementing this interface can receive notifications about
- * game state changes, player actions, and other game events.
- * </p>
+ *
+ * <p>Classes implementing this interface can receive notifications about game state changes, player
+ * actions, and other game events.
  */
 public interface BoardGameObserver {
 

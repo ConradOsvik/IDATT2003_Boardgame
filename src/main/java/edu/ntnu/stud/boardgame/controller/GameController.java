@@ -17,11 +17,12 @@ import java.util.logging.Logger;
  * UI and the game model.
  *
  * <p>This class provides methods for:
+ *
  * <ul>
- *   <li>Game selection and initialization</li>
- *   <li>Board management (loading, saving)</li>
- *   <li>Player setup and management</li>
- *   <li>Game flow control (starting games, executing turns)</li>
+ *   <li>Game selection and initialization
+ *   <li>Board management (loading, saving)
+ *   <li>Player setup and management
+ *   <li>Game flow control (starting games, executing turns)
  * </ul>
  *
  * <p>It acts as an intermediary between the {@link MainController} and the {@link BoardGameFacade},
@@ -35,7 +36,6 @@ public class GameController {
   private static final String LOAD_ERROR = "Load Error";
   private static final String GAME_ERROR = "Game Error";
 
-
   private final MainController mainController;
   private final BoardGameFacade gameFacade;
   private final PlayerFileService playerFileService;
@@ -43,11 +43,13 @@ public class GameController {
   /**
    * Creates a new game controller.
    *
-   * @param mainController    the main controller for UI interactions
-   * @param gameFacade        the facade for game logic operations
+   * @param mainController the main controller for UI interactions
+   * @param gameFacade the facade for game logic operations
    * @param playerFileService the service for persisting player data
    */
-  public GameController(MainController mainController, BoardGameFacade gameFacade,
+  public GameController(
+      MainController mainController,
+      BoardGameFacade gameFacade,
       PlayerFileService playerFileService) {
     this.mainController = mainController;
     this.gameFacade = gameFacade;
@@ -90,7 +92,7 @@ public class GameController {
    * Saves a copy of the selected board with a new name.
    *
    * @param selectedBoard the name of the board to save
-   * @param newName       the new name for the saved board
+   * @param newName the new name for the saved board
    * @return {@code true} if the board was saved successfully, {@code false} otherwise
    */
   public boolean saveSelectedBoardAs(String selectedBoard, String newName) {
@@ -144,7 +146,7 @@ public class GameController {
   /**
    * Adds a new player to the current game with the specified piece type.
    *
-   * @param name      the name of the player to add
+   * @param name the name of the player to add
    * @param pieceType the piece type chosen by the player
    * @return {@code true} if the player was added successfully, {@code false} otherwise
    */
@@ -160,8 +162,8 @@ public class GameController {
       }
       for (Player player : gameFacade.getCurrentGame().getPlayers()) {
         if (player.getPiece() == pieceType) {
-          showError(INPUT_ERROR,
-              "The piece " + pieceType + " is already in use by another player.");
+          showError(
+              INPUT_ERROR, "The piece " + pieceType + " is already in use by another player.");
           return false;
         }
       }
@@ -224,8 +226,8 @@ public class GameController {
       showError(LOAD_ERROR, "Failed to load players: " + e.getMessage());
       return false;
     } catch (Exception e) {
-      showError(LOAD_ERROR,
-          "An unexpected error occurred while loading players: " + e.getMessage());
+      showError(
+          LOAD_ERROR, "An unexpected error occurred while loading players: " + e.getMessage());
       return false;
     }
   }
@@ -316,7 +318,7 @@ public class GameController {
   /**
    * Displays an error dialog with the given title and message.
    *
-   * @param title   the title of the error dialog
+   * @param title the title of the error dialog
    * @param message the error message to display
    */
   private void showError(String title, String message) {
@@ -326,7 +328,7 @@ public class GameController {
   /**
    * Displays an information dialog with the given title and message.
    *
-   * @param title   the title of the information dialog
+   * @param title the title of the information dialog
    * @param message the information message to display
    */
   public void showInfo(String title, String message) {

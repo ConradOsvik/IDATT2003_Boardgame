@@ -5,11 +5,9 @@ import edu.ntnu.stud.boardgame.observer.GameEvent;
 
 /**
  * Event fired when money is transferred between players in Monopoly.
- * 
- * <p>
- * Contains details about the transfer including source and destination
- * players, amount, and reason for the transfer.
- * </p>
+ *
+ * <p>Contains details about the transfer including source and destination players, amount, and
+ * reason for the transfer.
  */
 public class MoneyTransferEvent extends GameEvent {
 
@@ -22,9 +20,9 @@ public class MoneyTransferEvent extends GameEvent {
    * Creates a new money transfer event.
    *
    * @param fromPlayer the player sending money (null for bank)
-   * @param toPlayer   the player receiving money (null for bank)
-   * @param amount     the amount of money transferred
-   * @param reason     description of why the transfer occurred
+   * @param toPlayer the player receiving money (null for bank)
+   * @param amount the amount of money transferred
+   * @param reason description of why the transfer occurred
    * @throws IllegalArgumentException if reason is null or empty
    */
   public MoneyTransferEvent(Player fromPlayer, Player toPlayer, int amount, String reason) {

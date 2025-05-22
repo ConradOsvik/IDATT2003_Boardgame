@@ -4,10 +4,8 @@ import edu.ntnu.stud.boardgame.model.enums.PieceType;
 
 /**
  * Represents a player in the game.
- * 
- * <p>
- * Tracks the player's position, piece type, and turn-skipping status.
- * </p>
+ *
+ * <p>Tracks the player's position, piece type, and turn-skipping status.
  */
 public class Player {
 
@@ -19,7 +17,7 @@ public class Player {
   /**
    * Creates a new player.
    *
-   * @param name  player's name
+   * @param name player's name
    * @param piece player's piece type
    * @throws IllegalArgumentException if name is null/empty or piece is null
    */
@@ -53,7 +51,7 @@ public class Player {
    *
    * @param steps number of steps to move
    * @return the destination tile
-   * @throws IllegalStateException    if player is not on a tile
+   * @throws IllegalStateException if player is not on a tile
    * @throws IllegalArgumentException if steps is negative
    */
   public Tile getDestinationTile(int steps) {
@@ -96,6 +94,11 @@ public class Player {
     this.skipNextTurn = skipNextTurn;
   }
 
+  /**
+   * Checks if the player should skip their next turn.
+   *
+   * @return true if the player should skip next turn, false otherwise
+   */
   public boolean shouldSkipNextTurn() {
     return skipNextTurn;
   }

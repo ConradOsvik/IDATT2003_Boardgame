@@ -20,11 +20,9 @@ import java.util.logging.Logger;
 
 /**
  * Implementation of the Monopoly board game.
- * 
- * <p>
- * Handles game mechanics including property ownership, money transactions,
- * and bankruptcy conditions.
- * </p>
+ *
+ * <p>Handles game mechanics including property ownership, money transactions, and bankruptcy
+ * conditions.
  */
 public class MonopolyGame extends BoardGame {
 
@@ -36,9 +34,7 @@ public class MonopolyGame extends BoardGame {
   private final Map<Player, Integer> playerMoney = new HashMap<>();
   private final List<Player> bankruptPlayers = new ArrayList<>();
 
-  /**
-   * Creates a new Monopoly game and registers it with the action registry.
-   */
+  /** Creates a new Monopoly game and registers it with the action registry. */
   public MonopolyGame() {
     super();
     MonopolyActionRegistry.getInstance().registerGame(this);
@@ -73,15 +69,21 @@ public class MonopolyGame extends BoardGame {
 
     Tile fromTile = currentPlayer.getCurrentTile();
     if (fromTile == null) {
-      LOGGER.severe("Current player " + currentPlayer.getName() + " is not on any tile. Cannot play turn.");
+      LOGGER.severe(
+          "Current player " + currentPlayer.getName() + " is not on any tile. Cannot play turn.");
       return;
     }
     int startPosition = fromTile.getTileId();
 
     Tile toTile = currentPlayer.getDestinationTile(steps);
     if (toTile == null) {
-      LOGGER.severe("Player " + currentPlayer.getName() + " could not determine destination tile for steps: " + steps
-          + " from tile " + fromTile.getName());
+      LOGGER.severe(
+          "Player "
+              + currentPlayer.getName()
+              + " could not determine destination tile for steps: "
+              + steps
+              + " from tile "
+              + fromTile.getName());
     }
 
     int endPosition = toTile.getTileId();
@@ -138,7 +140,7 @@ public class MonopolyGame extends BoardGame {
   /**
    * Attempts to purchase a property for a player.
    *
-   * @param player   the player attempting to buy
+   * @param player the player attempting to buy
    * @param property the property tile to buy
    * @return true if purchase was successful
    */
@@ -177,7 +179,7 @@ public class MonopolyGame extends BoardGame {
    * Handles rent payment between players.
    *
    * @param tenant the player paying rent
-   * @param owner  the player receiving rent
+   * @param owner the player receiving rent
    * @param amount the rent amount
    */
   public void payRent(Player tenant, Player owner, int amount) {
@@ -258,9 +260,7 @@ public class MonopolyGame extends BoardGame {
     notifyObservers(new MoneyTransferEvent(null, player, amount, "passing GO"));
   }
 
-  /**
-   * Checks if the game should end due to bankruptcy conditions.
-   */
+  /** Checks if the game should end due to bankruptcy conditions. */
   private void checkGameEnd() {
     int activePlayers = 0;
     Player lastActivePlayer = null;

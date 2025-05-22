@@ -13,28 +13,35 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 /**
- * An advanced implementation of the Monopoly game board with enhanced rendering
- * capabilities.
- * Extends {@link AbstractGameBoard} to provide specific drawing logic for
- * Monopoly tiles,
- * including property ownership colors and special tiles like Tax and Start.
+ * An advanced implementation of the Monopoly game board with enhanced rendering capabilities.
+ * Extends {@link AbstractGameBoard} to provide specific drawing logic for Monopoly tiles, including
+ * property ownership colors and special tiles like Tax and Start.
  *
  * @see AbstractGameBoard
  * @see MonopolyController
  */
 public class MonopolyGameBoard extends AbstractGameBoard {
 
+  private static final Logger LOGGER = Logger.getLogger(MonopolyGameBoard.class.getName());
   private final MonopolyController controller;
   private final Map<TileType, Color> tileColors;
 
-  private static final Logger LOGGER = Logger.getLogger(MonopolyGameBoard.class.getName());
-
+  /**
+   * Konstruktør for MonopolyGameBoard.
+   *
+   * @param controller Kontrolleren som håndterer spillogikken for Monopol
+   */
   public MonopolyGameBoard(MonopolyController controller) {
     super();
     this.controller = controller;
     this.tileColors = initializeTileColors();
   }
 
+  /**
+   * Initialiserer fargekodingen for ulike typer ruter på brettet.
+   *
+   * @return Et kart som kobler rutetyper til deres respektive farger
+   */
   private Map<TileType, Color> initializeTileColors() {
     Map<TileType, Color> colors = new HashMap<>();
     colors.put(TileType.START, Color.GREEN);
@@ -43,6 +50,10 @@ public class MonopolyGameBoard extends AbstractGameBoard {
     return colors;
   }
 
+  /**
+   * Beregner størrelsen på hver rute basert på tilgjengelig plass på lerretet. Justerer padding og
+   * cellestrørrelse for optimal visning av brettet.
+   */
   @Override
   protected void calculateCellSize() {
     if (board == null || boardCanvas.getWidth() <= 0 || boardCanvas.getHeight() <= 0) {
@@ -66,9 +77,12 @@ public class MonopolyGameBoard extends AbstractGameBoard {
     updateAllPiecePositions();
   }
 
+  /** Tegner hele spillbrettet hvis nødvendig. Denne metoden vil bare teg */
   @Override
   protected void drawBoard() {
-    if (board == null || boardCanvas.getWidth() <= 0 || boardCanvas.getHeight() <= 0
+    if (board == null
+        || boardCanvas.getWidth() <= 0
+        || boardCanvas.getHeight() <= 0
         || !needsRedraw) {
       return;
     }
@@ -149,8 +163,8 @@ public class MonopolyGameBoard extends AbstractGameBoard {
     gc.strokeRect(x, y, cellSize, cellSize);
   }
 
-  private void drawTileContent(GraphicsContext gc, Tile tile, int tileId, double x, double y,
-      TileType tileType) {
+  private void drawTileContent(
+      GraphicsContext gc, Tile tile, int tileId, double x, double y, TileType tileType) {
     gc.setFill(Color.BLACK);
     double fontSize = Math.max(8, cellSize / 5);
     gc.setFont(Font.font("Arial", FontWeight.BOLD, fontSize));
@@ -174,6 +188,8 @@ public class MonopolyGameBoard extends AbstractGameBoard {
   }
 
   private enum TileType {
-    START, PROPERTY, TAX
+    START,
+    PROPERTY,
+    TAX
   }
 }

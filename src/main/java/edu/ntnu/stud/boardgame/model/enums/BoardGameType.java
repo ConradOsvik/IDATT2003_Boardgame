@@ -1,10 +1,9 @@
 package edu.ntnu.stud.boardgame.model.enums;
 
-/**
- * Represents the available board game types in the application.
- */
+/** Represents the available board game types in the application. */
 public enum BoardGameType {
-  LADDER("Snakes and Ladders"), MONOPOLY("Monopoly");
+  LADDER("Snakes and Ladders"),
+  MONOPOLY("Monopoly");
 
   private final String displayName;
 

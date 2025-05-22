@@ -15,11 +15,11 @@ import javafx.scene.shape.Circle;
 
 /**
  * A JavaFX component that displays the scoreboard for the Snakes and Ladders
- * game.
- * Shows player information, their current positions, and highlights the active
- * player.
- * Extends {@link VBox} to provide a vertical layout for player entries.
- * 
+ * game. Shows player
+ * information, their current positions, and highlights the active player.
+ * Extends {@link VBox} to
+ * provide a vertical layout for player entries.
+ *
  * @see Player
  * @see VBox
  */
@@ -28,15 +28,16 @@ public class PlayerScoreboard extends VBox {
   private final VBox playersContainer;
   private final Map<Player, HBox> playerRows = new HashMap<>();
 
+  /**
+   * Constructs a new PlayerScoreboard with default styling and layout.
+   * Initializes the title and players container with appropriate CSS classes.
+   */
   public PlayerScoreboard() {
     setPadding(new Insets(15));
     setSpacing(10);
     getStyleClass().add("card");
 
-    Label titleLabel = new LabelBuilder()
-        .text("Players")
-        .styleClass("text-h3")
-        .build();
+    Label titleLabel = new LabelBuilder().text("Players").styleClass("text-h3").build();
 
     playersContainer = new VBox(5);
     playersContainer.getStyleClass().add("list-container");
@@ -44,6 +45,12 @@ public class PlayerScoreboard extends VBox {
     getChildren().addAll(titleLabel, playersContainer);
   }
 
+  /**
+   * Updates the scoreboard with a new list of players.
+   * Clears existing entries and creates new rows for each player.
+   *
+   * @param players the list of {@link Player}s to display
+   */
   public void updatePlayers(List<Player> players) {
     playersContainer.getChildren().clear();
     playerRows.clear();
@@ -55,6 +62,13 @@ public class PlayerScoreboard extends VBox {
     }
   }
 
+  /**
+   * Highlights the currently active player in the scoreboard.
+   * Removes highlight from other players and applies it to the current player.
+   *
+   * @param currentPlayer the {@link Player} whose turn it is, or null if no
+   *                      player is active
+   */
   public void highlightCurrentPlayer(Player currentPlayer) {
     playerRows.values().forEach(row -> row.getStyleClass().remove("current-player"));
 
@@ -66,6 +80,13 @@ public class PlayerScoreboard extends VBox {
     }
   }
 
+  /**
+   * Creates a row in the scoreboard for a single player.
+   * Includes player indicator, name, and position information.
+   *
+   * @param player the {@link Player} to create a row for
+   * @return an {@link HBox} containing the player's information
+   */
   private HBox createPlayerRow(Player player) {
     HBox row = new HBox(10);
     row.setAlignment(Pos.CENTER_LEFT);
@@ -76,14 +97,10 @@ public class PlayerScoreboard extends VBox {
     playerIndicator.getStyleClass().add("player-indicator");
     playerIndicator.getStyleClass().add(player.getPiece().name().toLowerCase() + "-piece");
 
-    Label nameLabel = new LabelBuilder()
-        .text(player.getName())
-        .styleClass("text-body-bold")
+    Label nameLabel = new LabelBuilder().text(player.getName()).styleClass("text-body-bold")
         .build();
 
-    Label positionLabel = new LabelBuilder()
-        .text("Position: Start")
-        .styleClass("text-body")
+    Label positionLabel = new LabelBuilder().text("Position: Start").styleClass("text-body")
         .build();
 
     row.getChildren().addAll(playerIndicator, nameLabel, positionLabel);

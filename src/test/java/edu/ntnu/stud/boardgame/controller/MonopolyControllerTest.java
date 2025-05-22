@@ -26,26 +26,19 @@ import org.mockito.MockitoAnnotations;
 
 class MonopolyControllerTest {
 
-  @Mock
-  private GameController gameController;
+  @Mock private GameController gameController;
 
-  @Mock
-  private MonopolyGame mockMonopolyGame;
+  @Mock private MonopolyGame mockMonopolyGame;
 
-  @Mock
-  private BoardGame mockOtherGame;
+  @Mock private BoardGame mockOtherGame;
 
-  @Mock
-  private Player mockPlayer;
+  @Mock private Player mockPlayer;
 
-  @Mock
-  private Tile mockTile;
+  @Mock private Tile mockTile;
 
-  @Mock
-  private PropertyAction mockPropertyAction;
+  @Mock private PropertyAction mockPropertyAction;
 
-  @Mock
-  private TileAction mockNonPropertyAction;
+  @Mock private TileAction mockNonPropertyAction;
 
   private MonopolyController monopolyController;
 

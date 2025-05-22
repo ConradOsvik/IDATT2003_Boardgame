@@ -2,10 +2,8 @@ package edu.ntnu.stud.boardgame.model;
 
 /**
  * Represents a single six-sided die.
- * 
- * <p>
- * Simulates rolling a die and tracks its last rolled value.
- * </p>
+ *
+ * <p>Simulates rolling a die and tracks its last rolled value.
  */
 public class Die {
 

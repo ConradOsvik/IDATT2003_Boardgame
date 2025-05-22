@@ -17,14 +17,11 @@ class TileTest {
 
   private Tile tile;
 
-  @Mock
-  private Tile nextTile;
+  @Mock private Tile nextTile;
 
-  @Mock
-  private TileAction mockAction;
+  @Mock private TileAction mockAction;
 
-  @Mock
-  private Player mockPlayer;
+  @Mock private Player mockPlayer;
 
   @BeforeEach
   void setUp() {

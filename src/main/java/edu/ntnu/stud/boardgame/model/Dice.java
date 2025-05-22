@@ -5,10 +5,8 @@ import java.util.List;
 
 /**
  * Represents a collection of dice for rolling in board games.
- * 
- * <p>
- * Manages multiple dice and provides methods for rolling them.
- * </p>
+ *
+ * <p>Manages multiple dice and provides methods for rolling them.
  */
 public class Dice {
 

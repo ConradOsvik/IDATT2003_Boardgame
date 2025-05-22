@@ -6,15 +6,15 @@ import edu.ntnu.stud.boardgame.model.action.PropertyAction;
 import edu.ntnu.stud.boardgame.model.game.MonopolyGame;
 
 /**
- * Controller class that handles Monopoly-specific game logic and operations.</p>
+ * Controller class that handles Monopoly-specific game logic and operations.
  *
- * <p>This controller acts as an intermediary between the UI components and the Monopoly game
- * model, handling various game operations such as property purchases, dice rolls, and game state
+ * <p>This controller acts as an intermediary between the UI components and the Monopoly game model,
+ * handling various game operations such as property purchases, dice rolls, and game state
  * management. It provides methods to validate and perform player actions while maintaining game
- * rules and state.</p>
+ * rules and state.
  *
  * <p>The controller contains several inner result classes that encapsulate the outcome of
- * operations with success indicators and descriptive messages.</p>
+ * operations with success indicators and descriptive messages.
  */
 public class MonopolyController {
 
@@ -47,7 +47,7 @@ public class MonopolyController {
    * Attempts to purchase the property on which the current player is standing.
    *
    * @return a PropertyPurchaseResult object containing the result of the purchase attempt and a
-   * descriptive message
+   *     descriptive message
    */
   public PropertyPurchaseResult attemptPropertyPurchase() {
     if (monopolyGame == null) {
@@ -76,7 +76,8 @@ public class MonopolyController {
     if (success) {
       String propertyName = currentTile.getName() != null ? currentTile.getName() : "Property";
       int price = getPropertyPrice(currentTile);
-      return new PropertyPurchaseResult(true,
+      return new PropertyPurchaseResult(
+          true,
           currentPlayer.getName() + " successfully purchased " + propertyName + " for $" + price);
     } else {
       return new PropertyPurchaseResult(false, "Purchase failed - insufficient funds");
@@ -87,7 +88,7 @@ public class MonopolyController {
    * Attempts to roll the dice and complete the current player's turn.
    *
    * @return a DiceRollResult object containing the result of the dice roll attempt and a
-   * descriptive message
+   *     descriptive message
    */
   public DiceRollResult attemptDiceRoll() {
     if (monopolyGame == null) {
@@ -111,18 +112,19 @@ public class MonopolyController {
    * Attempts to restart the game.
    *
    * @return a GameRestartResult object containing the result of the restart attempt and a
-   * descriptive message
+   *     descriptive message
    */
   public GameRestartResult attemptGameRestart() {
     boolean success = gameController.startGame();
-    return new GameRestartResult(success,
-        success ? "Game restarted successfully" : "Failed to restart game");
+    return new GameRestartResult(
+        success, success ? "Game restarted successfully" : "Failed to restart game");
   }
 
   /**
    * Gets the current player's action state, indicating what actions they can perform.
    *
-   * @return a PlayerActionState object with flags for possible actions and a status message
+   * @return a PlayerActionState object containing flags for possible actions and a descriptive
+   *     status message
    */
   public PlayerActionState getCurrentPlayerActionState() {
     if (monopolyGame == null) {
@@ -164,8 +166,8 @@ public class MonopolyController {
       return false;
     }
 
-    return propertyAction.getOwner() == null &&
-        monopolyGame.getPlayerMoney(currentPlayer) >= getPropertyPrice(property);
+    return propertyAction.getOwner() == null
+        && monopolyGame.getPlayerMoney(currentPlayer) >= getPropertyPrice(property);
   }
 
   /**
@@ -185,8 +187,8 @@ public class MonopolyController {
    * Gets the owner of the specified property.
    *
    * @param property the property tile to get the owner for
-   * @return the Player who owns the property, or {@code null} if the property is unowned or the
-   * tile is not a property
+   * @return the Player who owns the property, or {@code null} if the property is unowned or not a
+   *     property tile
    */
   public Player getPropertyOwner(Tile property) {
     if (property == null || !(property.getLandAction() instanceof PropertyAction propertyAction)) {
@@ -198,8 +200,8 @@ public class MonopolyController {
   /**
    * Gets the amount of money the specified player has.
    *
-   * @param player the player to get the money for
-   * @return the amount of money the player has, or 0 if the player or game is invalid
+   * @param player the player whose money balance to retrieve
+   * @return the amount of money the player has, or 0 if the player is invalid or no game is active
    */
   public int getPlayerMoney(Player player) {
     if (monopolyGame == null || player == null) {
@@ -211,9 +213,9 @@ public class MonopolyController {
   /**
    * Checks if the specified player is bankrupt.
    *
-   * @param player the player to check
-   * @return {@code true} if the player is bankrupt, {@code false} otherwise or if the player or
-   * game is invalid
+   * @param player the player to check for bankruptcy status
+   * @return {@code true} if the player is bankrupt, {@code false} if the player is not bankrupt or
+   *     is invalid
    */
   public boolean isPlayerBankrupt(Player player) {
     if (monopolyGame == null || player == null) {
@@ -233,6 +235,9 @@ public class MonopolyController {
 
   /**
    * Represents the result of a property purchase attempt.
+   *
+   * <p>This class encapsulates both the success status of a property purchase attempt and a
+   * descriptive message explaining the outcome.
    */
   public static class PropertyPurchaseResult {
 
@@ -242,8 +247,8 @@ public class MonopolyController {
     /**
      * Creates a new property purchase result.
      *
-     * @param success whether the purchase was successful
-     * @param message a descriptive message about the result
+     * @param success whether the property purchase was successful
+     * @param message a descriptive message explaining the purchase result
      */
     public PropertyPurchaseResult(boolean success, String message) {
       this.success = success;
@@ -251,14 +256,18 @@ public class MonopolyController {
     }
 
     /**
-     * @return {@code true} if the purchase was successful, {@code false} otherwise
+     * Gets whether the property purchase was successful.
+     *
+     * @return {@code true} if the property was successfully purchased, {@code false} otherwise
      */
     public boolean isSuccess() {
       return success;
     }
 
     /**
-     * @return a descriptive message about the result
+     * Gets the descriptive message about the purchase result.
+     *
+     * @return a message explaining the outcome of the purchase attempt
      */
     public String getMessage() {
       return message;
@@ -267,6 +276,9 @@ public class MonopolyController {
 
   /**
    * Represents the result of a dice roll attempt.
+   *
+   * <p>This class encapsulates both the success status of a dice roll attempt and a descriptive
+   * message explaining the outcome.
    */
   public static class DiceRollResult {
 
@@ -276,8 +288,8 @@ public class MonopolyController {
     /**
      * Creates a new dice roll result.
      *
-     * @param success whether the dice roll was successful
-     * @param message a descriptive message about the result
+     * @param success whether the dice roll and subsequent turn actions were successful
+     * @param message a descriptive message explaining the dice roll result
      */
     public DiceRollResult(boolean success, String message) {
       this.success = success;
@@ -285,14 +297,19 @@ public class MonopolyController {
     }
 
     /**
-     * @return {@code true} if the dice roll was successful, {@code false} otherwise
+     * Gets whether the dice roll was successful.
+     *
+     * @return {@code true} if the dice roll and turn were completed successfully, {@code false}
+     *     otherwise
      */
     public boolean isSuccess() {
       return success;
     }
 
     /**
-     * @return a descriptive message about the result
+     * Gets the descriptive message about the dice roll result.
+     *
+     * @return a message explaining the outcome of the dice roll attempt
      */
     public String getMessage() {
       return message;
@@ -301,6 +318,9 @@ public class MonopolyController {
 
   /**
    * Represents the result of a game restart attempt.
+   *
+   * <p>This class encapsulates both the success status of a game restart attempt and a descriptive
+   * message explaining the outcome.
    */
   public static class GameRestartResult {
 
@@ -310,8 +330,8 @@ public class MonopolyController {
     /**
      * Creates a new game restart result.
      *
-     * @param success whether the restart was successful
-     * @param message a descriptive message about the result
+     * @param success whether the game restart was successful
+     * @param message a descriptive message explaining the restart result
      */
     public GameRestartResult(boolean success, String message) {
       this.success = success;
@@ -319,14 +339,18 @@ public class MonopolyController {
     }
 
     /**
-     * @return {@code true} if the restart was successful, {@code false} otherwise
+     * Gets whether the game restart was successful.
+     *
+     * @return {@code true} if the game was successfully restarted, {@code false} otherwise
      */
     public boolean isSuccess() {
       return success;
     }
 
     /**
-     * @return a descriptive message about the result
+     * Gets the descriptive message about the restart result.
+     *
+     * @return a message explaining the outcome of the restart attempt
      */
     public String getMessage() {
       return message;
@@ -334,8 +358,11 @@ public class MonopolyController {
   }
 
   /**
-   * Represents the current state of player actions, indicating what actions the player can
-   * perform.
+   * Represents the current state of player actions, indicating what actions the player can perform.
+   *
+   * <p>This class provides information about which actions are currently available to a player,
+   * such as rolling dice or buying property, along with a status message explaining the current
+   * state.
    */
   public static class PlayerActionState {
 
@@ -346,9 +373,9 @@ public class MonopolyController {
     /**
      * Creates a new player action state.
      *
-     * @param canRoll        whether the player can roll the dice
-     * @param canBuyProperty whether the player can buy the current property
-     * @param statusMessage  a descriptive message about the player's current status
+     * @param canRoll whether the player is allowed to roll the dice
+     * @param canBuyProperty whether the player is allowed to buy the current property
+     * @param statusMessage a descriptive message explaining the current player state
      */
     public PlayerActionState(boolean canRoll, boolean canBuyProperty, String statusMessage) {
       this.canRoll = canRoll;
@@ -357,21 +384,28 @@ public class MonopolyController {
     }
 
     /**
-     * @return {@code true} if the player can roll the dice, {@code false} otherwise
+     * Gets whether the player can roll the dice.
+     *
+     * @return {@code true} if the player is allowed to roll the dice, {@code false} otherwise
      */
     public boolean canRoll() {
       return canRoll;
     }
 
     /**
-     * @return {@code true} if the player can buy the current property, {@code false} otherwise
+     * Gets whether the player can buy the current property.
+     *
+     * @return {@code true} if the player is allowed to buy the current property, {@code false}
+     *     otherwise
      */
     public boolean canBuyProperty() {
       return canBuyProperty;
     }
 
     /**
-     * @return a descriptive message about the player's current status
+     * Gets the descriptive message about the player's current status.
+     *
+     * @return a message explaining the player's current state and available actions
      */
     public String getStatusMessage() {
       return statusMessage;

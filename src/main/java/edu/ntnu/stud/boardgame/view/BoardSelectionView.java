@@ -22,10 +22,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 /**
- * A view for selecting and managing board configurations.
- * Allows users to load predefined boards, save custom configurations,
- * and manage saved board layouts.
- * Extends {@link BorderPane} to organize board selection components.
+ * A view for selecting and managing board configurations. Allows users to load predefined boards,
+ * save custom configurations, and manage saved board layouts. Extends {@link BorderPane} to
+ * organize board selection components.
  *
  * @see MainController
  * @see GameController
@@ -48,14 +47,11 @@ public class BoardSelectionView extends BorderPane implements BoardGameObserver 
   private VBox saveActionsSubContainer;
 
   /**
-   * <p>
    * Creates a new board selection view.
-   * </p>
-   * <p>
-   * Initializes the view with lists of predefined and saved board configurations.
-   * </p>
    *
-   * @param controller     The main application controller
+   * <p>Initializes the view with lists of predefined and saved board configurations.
+   *
+   * @param controller The main application controller
    * @param gameController The game-specific controller
    * @throws IllegalArgumentException if either controller is null
    */
@@ -71,20 +67,22 @@ public class BoardSelectionView extends BorderPane implements BoardGameObserver 
 
     getStyleClass().add("board-selection-view");
 
-    initializeUI();
+    initializeUi();
   }
 
-  private void initializeUI() {
-    Button backButton = new ButtonBuilder()
-        .text("Back")
-        .styleClass("secondary-button")
-        .onClick(event -> controller.showGameSelectionView())
-        .build();
+  private void initializeUi() {
+    Button backButton =
+        new ButtonBuilder()
+            .text("Back")
+            .styleClass("secondary-button")
+            .onClick(event -> controller.showGameSelectionView())
+            .build();
 
-    Label titleLabel = new LabelBuilder()
-        .text("Select or Create a Board Configuration")
-        .styleClass("title")
-        .build();
+    Label titleLabel =
+        new LabelBuilder()
+            .text("Select or Create a Board Configuration")
+            .styleClass("title")
+            .build();
     StackPane titleContainer = new StackPane(titleLabel);
     StackPane.setAlignment(titleLabel, Pos.CENTER);
 
@@ -95,28 +93,27 @@ public class BoardSelectionView extends BorderPane implements BoardGameObserver 
 
     VBox predefinedSection = new VBox(15);
     predefinedSection.setAlignment(Pos.TOP_LEFT);
-    Label predefinedLabel = new LabelBuilder()
-        .text("Available Predefined Boards")
-        .styleClass("section-title")
-        .build();
 
     predefinedBoardListView = new ListView<>(predefinedBoardItems);
     predefinedBoardListView.getStyleClass().add("board-list");
     predefinedBoardListView.setPrefHeight(250);
     VBox.setVgrow(predefinedBoardListView, Priority.ALWAYS);
+    Label predefinedLabel =
+        new LabelBuilder().text("Available Predefined Boards").styleClass("section-title").build();
     predefinedSection.getChildren().addAll(predefinedLabel, predefinedBoardListView);
 
     VBox savedSection = new VBox(15);
     savedSection.setAlignment(Pos.TOP_LEFT);
-    Label savedLabel = new LabelBuilder()
-        .text("Your Saved Board Configurations")
-        .styleClass("section-title")
-        .build();
 
     savedBoardListView = new ListView<>(savedBoardItems);
     savedBoardListView.getStyleClass().add("board-list");
     savedBoardListView.setPrefHeight(250);
     VBox.setVgrow(savedBoardListView, Priority.ALWAYS);
+    Label savedLabel =
+        new LabelBuilder()
+            .text("Your Saved Board Configurations")
+            .styleClass("section-title")
+            .build();
     savedSection.getChildren().addAll(savedLabel, savedBoardListView);
 
     HBox boardsContainer = new HBox(30);
@@ -125,33 +122,31 @@ public class BoardSelectionView extends BorderPane implements BoardGameObserver 
     HBox.setHgrow(predefinedSection, Priority.ALWAYS);
     HBox.setHgrow(savedSection, Priority.ALWAYS);
 
-    loadBoardButton = new ButtonBuilder()
-        .text("Load Selected Board")
-        .styleClass("action-button")
-        .onClick(event -> loadSelectedBoard())
-        .disabled(true)
-        .build();
-
-    Label saveSectionLabel = new LabelBuilder()
-        .text("Save Current Selection As:")
-        .styleClass("text-body-bold")
-        .build();
+    loadBoardButton =
+        new ButtonBuilder()
+            .text("Load Selected Board")
+            .styleClass("action-button")
+            .onClick(event -> loadSelectedBoard())
+            .disabled(true)
+            .build();
 
     saveNameField = new TextField();
     saveNameField.setPromptText("Enter new configuration name");
     saveNameField.setPrefWidth(300);
 
-    saveButton = new ButtonBuilder()
-        .text("Save Configuration")
-        .styleClass("create-button")
-        .onClick(event -> saveBoardAs())
-        .disabled(true)
-        .build();
+    saveButton =
+        new ButtonBuilder()
+            .text("Save Configuration")
+            .styleClass("create-button")
+            .onClick(event -> saveBoardAs())
+            .disabled(true)
+            .build();
 
     HBox saveEntryBox = new HBox(10, saveNameField, saveButton);
     saveEntryBox.setAlignment(Pos.CENTER_LEFT);
     HBox.setHgrow(saveNameField, Priority.ALWAYS);
-
+    Label saveSectionLabel =
+        new LabelBuilder().text("Save Current Selection As:").styleClass("text-body-bold").build();
     saveActionsSubContainer = new VBox(8, saveSectionLabel, saveEntryBox);
     saveActionsSubContainer.setAlignment(Pos.CENTER_LEFT);
     saveActionsSubContainer.setPadding(new Insets(10, 0, 0, 0));
@@ -168,30 +163,36 @@ public class BoardSelectionView extends BorderPane implements BoardGameObserver 
 
     setCenter(contentBox);
 
-    predefinedBoardListView.getSelectionModel().selectedItemProperty()
-        .addListener((obs, oldVal, newVal) -> {
-          if (newVal != null) {
-            savedBoardListView.getSelectionModel().clearSelection();
-            String displayName = getDisplayNameFromPredefined(newVal);
-            saveNameField.setText(displayName);
-            saveNameField.setPromptText("Confirm or change name: '" + displayName + "'");
-            enableActions(true);
-          } else if (savedBoardListView.getSelectionModel().getSelectedItem() == null) {
-            enableActions(false);
-          }
-        });
+    predefinedBoardListView
+        .getSelectionModel()
+        .selectedItemProperty()
+        .addListener(
+            (obs, oldVal, newVal) -> {
+              if (newVal != null) {
+                savedBoardListView.getSelectionModel().clearSelection();
+                String displayName = getDisplayNameFromPredefined(newVal);
+                saveNameField.setText(displayName);
+                saveNameField.setPromptText("Confirm or change name: '" + displayName + "'");
+                enableActions(true);
+              } else if (savedBoardListView.getSelectionModel().getSelectedItem() == null) {
+                enableActions(false);
+              }
+            });
 
-    savedBoardListView.getSelectionModel().selectedItemProperty()
-        .addListener((obs, oldVal, newVal) -> {
-          if (newVal != null) {
-            predefinedBoardListView.getSelectionModel().clearSelection();
-            saveNameField.setText(newVal);
-            saveNameField.setPromptText("Confirm or change name: '" + newVal + "'");
-            enableActions(true);
-          } else if (predefinedBoardListView.getSelectionModel().getSelectedItem() == null) {
-            enableActions(false);
-          }
-        });
+    savedBoardListView
+        .getSelectionModel()
+        .selectedItemProperty()
+        .addListener(
+            (obs, oldVal, newVal) -> {
+              if (newVal != null) {
+                predefinedBoardListView.getSelectionModel().clearSelection();
+                saveNameField.setText(newVal);
+                saveNameField.setPromptText("Confirm or change name: '" + newVal + "'");
+                enableActions(true);
+              } else if (predefinedBoardListView.getSelectionModel().getSelectedItem() == null) {
+                enableActions(false);
+              }
+            });
 
     enableActions(false);
   }
@@ -213,12 +214,9 @@ public class BoardSelectionView extends BorderPane implements BoardGameObserver 
   }
 
   /**
-   * <p>
    * Refreshes the list of available board configurations.
-   * </p>
-   * <p>
-   * Updates both predefined and saved board lists from the game controller.
-   * </p>
+   *
+   * <p>Updates both predefined and saved board lists from the game controller.
    */
   public void refreshBoardList() {
     List<String> availableBoards = gameController.getAvailableBoards();
@@ -248,9 +246,8 @@ public class BoardSelectionView extends BorderPane implements BoardGameObserver 
 
     if (selectedBoard != null && !selectedBoard.isEmpty()) {
       String boardKeyToLoad = selectedBoard;
-      if (selectedBoard.startsWith("Predefined:")) {
+      if (selectedBoard.startsWith("Predefined:")) {}
 
-      }
       gameController.selectBoard(boardKeyToLoad);
     } else {
       controller.showErrorDialog("Selection Error", "Please select a board to load.");
@@ -287,6 +284,5 @@ public class BoardSelectionView extends BorderPane implements BoardGameObserver 
   }
 
   @Override
-  public void onGameEvent(GameEvent event) {
-  }
+  public void onGameEvent(GameEvent event) {}
 }

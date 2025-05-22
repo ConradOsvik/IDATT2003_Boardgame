@@ -14,13 +14,14 @@ import java.util.Map;
  * Factory class for creating Monopoly board game configurations.
  *
  * <p>This class provides methods to create different pre-defined Monopoly board layouts:
+ *
  * <ul>
- *   <li>Standard - Classic monopoly game with 40 spaces</li>
- *   <li>Mini - Smaller version with 24 spaces</li>
- *   <li>Economic - Higher property values and taxes version</li>
+ *   <li>Standard - Classic monopoly game with 40 spaces
+ *   <li>Mini - Smaller version with 24 spaces
+ *   <li>Economic - Higher property values and taxes version
  * </ul>
- * Each board is fully initialized with appropriate tiles, actions, and layout.
- * </p>
+ *
+ * <p>Each board is fully initialized with appropriate tiles, actions, and layout.
  */
 public class MonopolyBoardFactory {
 
@@ -33,8 +34,7 @@ public class MonopolyBoardFactory {
     PREDEFINED_BOARDS.put("Economic", createEconomicBoard());
   }
 
-  private MonopolyBoardFactory() {
-  }
+  private MonopolyBoardFactory() {}
 
   /**
    * Returns a list of all available predefined board names.
@@ -68,9 +68,14 @@ public class MonopolyBoardFactory {
    * @return a configured standard Monopoly board
    */
   private static Board createStandardBoard() {
-    Board board = new Board("Standard Monopoly",
-        "The classic monopoly game with 40 spaces around the board",
-        11, 11, 0, 39);
+    Board board =
+        new Board(
+            "Standard Monopoly",
+            "The classic monopoly game with 40 spaces around the board",
+            11,
+            11,
+            0,
+            39);
 
     initializeStandardBoard(board);
 
@@ -83,8 +88,9 @@ public class MonopolyBoardFactory {
    * @return a configured mini Monopoly board
    */
   private static Board createMiniBoard() {
-    Board board = new Board("Mini Monopoly", "A smaller version with 24 spaces around the board",
-        6, 6, 0, 23);
+    Board board =
+        new Board(
+            "Mini Monopoly", "A smaller version with 24 spaces around the board", 6, 6, 0, 23);
 
     initializeMiniBoard(board);
 
@@ -97,8 +103,7 @@ public class MonopolyBoardFactory {
    * @return a configured economic Monopoly board
    */
   private static Board createEconomicBoard() {
-    Board board = new Board("Economic Monopoly", "Higher property values and taxes",
-        11, 11, 0, 39);
+    Board board = new Board("Economic Monopoly", "Higher property values and taxes", 11, 11, 0, 39);
 
     initializeEconomicBoard(board);
 
@@ -234,7 +239,8 @@ public class MonopolyBoardFactory {
     for (int i = 1; i < 40; i++) {
       Tile tile = new Tile(i);
 
-      int row, col;
+      int row;
+      int col;
       if (i <= 10) {
         row = 10;
         col = 10 - i;
@@ -269,11 +275,10 @@ public class MonopolyBoardFactory {
   /**
    * Sets up the properties for a tile based on its index.
    *
-   * <p>Every 5th tile is a tax tile, while others are property tiles. Property prices increase
-   * with the index.
-   * </p>
+   * <p>Every 5th tile is a tax tile, while others are property tiles. Property prices increase with
+   * the index.
    *
-   * @param tile  the tile to configure
+   * @param tile the tile to configure
    * @param index the position index of the tile
    */
   private static void setupTileProperties(Tile tile, int index) {

@@ -21,15 +21,16 @@ import javafx.stage.Stage;
  * Main controller for the board game application's user interface.
  *
  * <p>This class is responsible for:
+ *
  * <ul>
- *   <li>Managing the primary stage and UI components</li>
- *   <li>Coordinating navigation between different views</li>
- *   <li>Setting up the application window and styling</li>
- *   <li>Displaying dialog messages to the user</li>
+ *   <li>Managing the primary stage and UI components
+ *   <li>Coordinating navigation between different views
+ *   <li>Setting up the application window and styling
+ *   <li>Displaying dialog messages to the user
  * </ul>
  *
- * <p>It serves as the entry point for the UI layer and delegates game logic operations
- * to the {@link GameController}.
+ * <p>It serves as the entry point for the UI layer and delegates game logic operations to the
+ * {@link GameController}.
  */
 public class MainController {
 
@@ -56,8 +57,8 @@ public class MainController {
     this.primaryStage = primaryStage;
     this.mainContainer = new BorderPane();
 
-    this.gameController = new GameController(this, new BoardGameFacade(),
-        PlayerFileService.getInstance());
+    this.gameController =
+        new GameController(this, new BoardGameFacade(), PlayerFileService.getInstance());
 
     setupStage();
   }
@@ -86,18 +87,14 @@ public class MainController {
     showGameSelectionView();
   }
 
-  /**
-   * Initializes all view components for the application.
-   */
+  /** Initializes all view components for the application. */
   private void initializeViews() {
     gameSelectionView = new GameSelectionView(gameController);
     boardSelectionView = new BoardSelectionView(this, gameController);
     playerSetupView = new PlayerSetupView(this, gameController);
   }
 
-  /**
-   * Displays the game selection view where users can choose a game type.
-   */
+  /** Displays the game selection view where users can choose a game type. */
   public void showGameSelectionView() {
     primaryStage.setTitle("Board Game - Select Game Type");
     mainContainer.setCenter(gameSelectionView);
@@ -114,9 +111,7 @@ public class MainController {
     mainContainer.setCenter(boardSelectionView);
   }
 
-  /**
-   * Displays the player setup view where users can configure players.
-   */
+  /** Displays the player setup view where users can configure players. */
   public void showPlayerSetupView() {
     primaryStage.setTitle("Board Game - Player Setup");
     mainContainer.setCenter(playerSetupView);
@@ -125,8 +120,8 @@ public class MainController {
   /**
    * Displays the appropriate game view based on the selected game type.
    *
-   * <p>Creates the game view if it doesn't exist yet, then attempts to start the game.
-   * If the game fails to start, returns to the game selection view.
+   * <p>Creates the game view if it doesn't exist yet, then attempts to start the game. If the game
+   * fails to start, returns to the game selection view.
    */
   public void showGameView() {
     if (gameController.getCurrentGameType() == BoardGameType.LADDER) {
@@ -153,9 +148,7 @@ public class MainController {
     }
   }
 
-  /**
-   * Exits the application by terminating the JavaFX platform.
-   */
+  /** Exits the application by terminating the JavaFX platform. */
   public void exitApplication() {
     Platform.exit();
   }
@@ -163,7 +156,7 @@ public class MainController {
   /**
    * Displays an error dialog with the specified title and message.
    *
-   * @param title   the title of the error dialog
+   * @param title the title of the error dialog
    * @param message the error message to display
    */
   public void showErrorDialog(String title, String message) {
@@ -177,7 +170,7 @@ public class MainController {
   /**
    * Displays an information dialog with the specified title and message.
    *
-   * @param title   the title of the information dialog
+   * @param title the title of the information dialog
    * @param message the information message to display
    */
   public void showInfoDialog(String title, String message) {

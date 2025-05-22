@@ -11,35 +11,35 @@ import org.junit.jupiter.api.Test;
 
 class PlayerWonEventTest {
 
-    @Test
-    void constructor_withValidWinner_shouldCreateEvent() {
-        Player mockWinner = mock(Player.class);
-        PlayerWonEvent event = new PlayerWonEvent(mockWinner);
+  @Test
+  void constructor_withValidWinner_shouldCreateEvent() {
+    Player mockWinner = mock(Player.class);
+    PlayerWonEvent event = new PlayerWonEvent(mockWinner);
 
-        assertNotNull(event);
-        assertEquals(EventType.PLAYER_WON, event.getEventType());
-        assertEquals(mockWinner, event.getWinner());
-    }
+    assertNotNull(event);
+    assertEquals(EventType.PLAYER_WON, event.getEventType());
+    assertEquals(mockWinner, event.getWinner());
+  }
 
-    @Test
-    void constructor_withNullWinner_shouldStillCreateEventButWinnerIsNull() {
-        PlayerWonEvent event = new PlayerWonEvent(null);
+  @Test
+  void constructor_withNullWinner_shouldStillCreateEventButWinnerIsNull() {
+    PlayerWonEvent event = new PlayerWonEvent(null);
 
-        assertNotNull(event);
-        assertEquals(EventType.PLAYER_WON, event.getEventType());
-        assertNull(event.getWinner(), "Winner can be null if constructor allows it.");
-    }
+    assertNotNull(event);
+    assertEquals(EventType.PLAYER_WON, event.getEventType());
+    assertNull(event.getWinner(), "Winner can be null if constructor allows it.");
+  }
 
-    @Test
-    void getWinner_shouldReturnCorrectPlayer() {
-        Player mockWinner = mock(Player.class);
-        PlayerWonEvent event = new PlayerWonEvent(mockWinner);
-        assertEquals(mockWinner, event.getWinner());
-    }
+  @Test
+  void getWinner_shouldReturnCorrectPlayer() {
+    Player mockWinner = mock(Player.class);
+    PlayerWonEvent event = new PlayerWonEvent(mockWinner);
+    assertEquals(mockWinner, event.getWinner());
+  }
 
-    @Test
-    void getWinner_whenConstructedWithNull_shouldReturnNull() {
-        PlayerWonEvent event = new PlayerWonEvent(null);
-        assertNull(event.getWinner());
-    }
+  @Test
+  void getWinner_whenConstructedWithNull_shouldReturnNull() {
+    PlayerWonEvent event = new PlayerWonEvent(null);
+    assertNull(event.getWinner());
+  }
 }

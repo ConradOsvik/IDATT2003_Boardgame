@@ -19,25 +19,40 @@ import java.util.logging.Logger;
 
 /**
  * Abstract base class for board games.
- * 
- * <p>
- * Provides common functionality for managing players, turns, game state,
- * and observer notifications.
- * </p>
+ *
+ * <p>Provides common functionality for managing players, turns, game state, and observer
+ * notifications.
  */
 public abstract class BoardGame {
 
+  /** Logger for the BoardGame class. */
   protected static final Logger LOGGER = Logger.getLogger(BoardGame.class.getName());
 
+  /** List of observers registered to receive game events. */
   protected final List<BoardGameObserver> observers;
+
+  /** List of players participating in the game. */
   protected final List<Player> players;
+
+  /** The game board containing tiles and game state. */
   protected Board board;
+
+  /** The dice used for player moves. */
   protected Dice dice;
+
+  /** Index of the current player in the players list. */
   protected int currentPlayerIndex;
+
+  /** Reference to the current player whose turn it is. */
   protected Player currentPlayer;
+
+  /** Reference to the player who won the game, if any. */
   protected Player winner;
+
+  /** Flag indicating whether the game has ended. */
   protected boolean gameOver;
 
+  /** Constructs a new BoardGame with default values. */
   public BoardGame() {
     this.observers = new ArrayList<>();
     this.players = new ArrayList<>();
@@ -105,14 +120,10 @@ public abstract class BoardGame {
     notifyObservers(new GameStartedEvent(currentPlayer, players, board));
   }
 
-  /**
-   * Executes a turn for the current player.
-   */
+  /** Executes a turn for the current player. */
   public abstract void playTurn();
 
-  /**
-   * Advances to the next player's turn.
-   */
+  /** Advances to the next player's turn. */
   public void nextTurn() {
     if (gameOver) {
       return;
@@ -192,13 +203,16 @@ public abstract class BoardGame {
     }
   }
 
-  /**
-   * Notifies observers that a new game has been created.
-   */
+  /** Notifies observers that a new game has been created. */
   public void notifyGameCreated() {
     notifyObservers(new GameCreatedEvent(board, players));
   }
 
+  /**
+   * Gets the game board.
+   *
+   * @return the current game board
+   */
   public Board getBoard() {
     return board;
   }
@@ -225,18 +239,38 @@ public abstract class BoardGame {
     return new ArrayList<>(players);
   }
 
+  /**
+   * Gets the current player whose turn it is.
+   *
+   * @return the current player
+   */
   public Player getCurrentPlayer() {
     return currentPlayer;
   }
 
+  /**
+   * Checks if the game has ended.
+   *
+   * @return true if the game is over, false otherwise
+   */
   public boolean isGameOver() {
     return gameOver;
   }
 
+  /**
+   * Gets the winning player.
+   *
+   * @return the player who won the game, or null if the game is not over
+   */
   public Player getWinner() {
     return winner;
   }
 
+  /**
+   * Gets the dice used in the game.
+   *
+   * @return the game's dice
+   */
   public Dice getDice() {
     return dice;
   }

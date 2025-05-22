@@ -5,11 +5,8 @@ import edu.ntnu.stud.boardgame.observer.GameEvent;
 
 /**
  * Event fired when a game ends.
- * 
- * <p>
- * Contains the winning player, which may be null in case of a draw
- * or if no player won.
- * </p>
+ *
+ * <p>Contains the winning player, which may be null in case of a draw or if no player won.
  */
 public class GameEndedEvent extends GameEvent {
 

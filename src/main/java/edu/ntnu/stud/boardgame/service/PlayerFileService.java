@@ -6,18 +6,17 @@ import edu.ntnu.stud.boardgame.io.player.PlayerFileReaderCsv;
 import edu.ntnu.stud.boardgame.io.player.PlayerFileWriter;
 import edu.ntnu.stud.boardgame.io.player.PlayerFileWriterCsv;
 import edu.ntnu.stud.boardgame.model.Player;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.io.File;
-import java.util.ArrayList;
 
 /**
- * Singleton Service for handling player file operations such as loading,
- * saving, and listing
+ * Singleton Service for handling player file operations such as loading, saving, and listing
  * available player lists.
  */
 public class PlayerFileService {
@@ -55,7 +54,7 @@ public class PlayerFileService {
    *
    * @param fileName the name of the file
    * @return the loaded list of players
-   * @throws PlayerFileException      if the players cannot be loaded
+   * @throws PlayerFileException if the players cannot be loaded
    * @throws IllegalArgumentException if fileName is null or empty
    */
   public List<Player> loadPlayers(String fileName) throws PlayerFileException {
@@ -82,10 +81,9 @@ public class PlayerFileService {
    * Saves a list of players to a file.
    *
    * @param fileName the name of the file
-   * @param players  the list of players to save
-   * @throws PlayerFileException      if the players cannot be saved
-   * @throws IllegalArgumentException if fileName is null or empty, or if players
-   *                                  is null
+   * @param players the list of players to save
+   * @throws PlayerFileException if the players cannot be saved
+   * @throws IllegalArgumentException if fileName is null or empty, or if players is null
    */
   public void savePlayers(String fileName, List<Player> players) throws PlayerFileException {
     if (fileName == null || fileName.isEmpty()) {
@@ -145,8 +143,7 @@ public class PlayerFileService {
    * Gets a list of available player list file names.
    *
    * @return a list of available player list names (without extension)
-   * @throws PlayerFileException if the player directory cannot be accessed or
-   *                             listed
+   * @throws PlayerFileException if the player directory cannot be accessed or listed
    */
   public List<String> getAvailablePlayerListFileNames() throws PlayerFileException {
     List<String> playerListNames = new ArrayList<>();
@@ -154,15 +151,18 @@ public class PlayerFileService {
     File playersDirFile = playersDirectory.toFile();
 
     if (!playersDirFile.exists() || !playersDirFile.isDirectory()) {
-      LOGGER.warning("Player save directory does not exist or is not a directory: " +
-          playersDirectory.toAbsolutePath());
-      throw new PlayerFileException("Player save directory not found: " + playersDirectory.toAbsolutePath());
+      LOGGER.warning(
+          "Player save directory does not exist or is not a directory: "
+              + playersDirectory.toAbsolutePath());
+      throw new PlayerFileException(
+          "Player save directory not found: " + playersDirectory.toAbsolutePath());
     }
 
     File[] files = playersDirFile.listFiles((dir, name) -> name.toLowerCase().endsWith(".csv"));
 
     if (files == null) {
-      throw new PlayerFileException("Could not list files in player directory: " + playersDirectory.toAbsolutePath());
+      throw new PlayerFileException(
+          "Could not list files in player directory: " + playersDirectory.toAbsolutePath());
     }
 
     for (File file : files) {

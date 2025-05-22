@@ -27,10 +27,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
 /**
- * The main view for the Monopoly game.
- * Handles game board display, player controls, property management, and game
- * event visualization.
- * Extends {@link AbstractGameView} to provide common game view functionality.
+ * The main view for the Monopoly game. Handles game board display, player controls, property
+ * management, and game event visualization. Extends {@link AbstractGameView} to provide common game
+ * view functionality.
  *
  * @see AbstractGameView
  * @see MonopolyGameBoard
@@ -49,13 +48,10 @@ public class MonopolyGameView extends AbstractGameView {
   private final Button buyPropertyButton;
 
   /**
-   * <p>
    * Creates a new Monopoly game view.
-   * </p>
-   * <p>
-   * Initializes the game board, scoreboard, and control buttons.
-   * Sets up the Monopoly-specific controller.
-   * </p>
+   *
+   * <p>Initializes the game board, scoreboard, and control buttons. Sets up the Monopoly-specific
+   * controller.
    *
    * @param mainController The main application controller
    * @param gameController The game-specific controller
@@ -67,25 +63,24 @@ public class MonopolyGameView extends AbstractGameView {
     this.gameBoard = new MonopolyGameBoard(monopolyController);
     this.playerScoreboard = new MonopolyPlayerScoreboard(monopolyController);
 
-    this.statusLabel = new LabelBuilder()
-        .text("Welcome to Monopoly")
-        .styleClass("title")
-        .wrapText(true)
-        .build();
+    this.statusLabel =
+        new LabelBuilder().text("Welcome to Monopoly").styleClass("title").wrapText(true).build();
 
-    this.rollDiceButton = new ButtonBuilder()
-        .text("Roll Dice")
-        .styleClass("action-button")
-        .onClick(e -> handleDiceRollRequest())
-        .disabled(true)
-        .build();
+    this.rollDiceButton =
+        new ButtonBuilder()
+            .text("Roll Dice")
+            .styleClass("action-button")
+            .onClick(e -> handleDiceRollRequest())
+            .disabled(true)
+            .build();
 
-    this.buyPropertyButton = new ButtonBuilder()
-        .text("Buy Property")
-        .styleClass("action-button")
-        .onClick(e -> handlePropertyPurchaseRequest())
-        .disabled(true)
-        .build();
+    this.buyPropertyButton =
+        new ButtonBuilder()
+            .text("Buy Property")
+            .styleClass("action-button")
+            .onClick(e -> handlePropertyPurchaseRequest())
+            .disabled(true)
+            .build();
 
     initializeLayout();
   }
@@ -108,23 +103,18 @@ public class MonopolyGameView extends AbstractGameView {
     controlPanel.setSpacing(15);
     controlPanel.getStyleClass().add("card");
 
-    Label titleLabel = new LabelBuilder()
-        .text("Monopoly")
-        .styleClass("text-h2")
-        .build();
+    Label titleLabel = new LabelBuilder().text("Monopoly").styleClass("text-h2").build();
 
-    Button restartButton = new ButtonBuilder()
-        .text("Restart Game")
-        .styleClass("btn-secondary")
-        .onClick(e -> handleGameRestartRequest())
-        .build();
+    Button restartButton =
+        new ButtonBuilder()
+            .text("Restart Game")
+            .styleClass("btn-secondary")
+            .onClick(e -> handleGameRestartRequest())
+            .build();
 
-    controlPanel.getChildren().addAll(
-        titleLabel,
-        statusLabel,
-        rollDiceButton,
-        buyPropertyButton,
-        restartButton);
+    controlPanel
+        .getChildren()
+        .addAll(titleLabel, statusLabel, rollDiceButton, buyPropertyButton, restartButton);
 
     return controlPanel;
   }
@@ -146,7 +136,7 @@ public class MonopolyGameView extends AbstractGameView {
 
     if (result.isSuccess()) {
       gameBoard.refreshBoard();
-      updateUIState();
+      updateUiState();
     }
   }
 
@@ -161,7 +151,7 @@ public class MonopolyGameView extends AbstractGameView {
   }
 
   // Update UI based on current game state
-  private void updateUIState() {
+  private void updateUiState() {
     PlayerActionState state = monopolyController.getCurrentPlayerActionState();
 
     rollDiceButton.setDisable(!state.canRoll());
@@ -178,7 +168,7 @@ public class MonopolyGameView extends AbstractGameView {
     playerScoreboard.highlightCurrentPlayer(event.getCurrentPlayer());
     victoryScreen.setVisible(false);
 
-    updateUIState();
+    updateUiState();
 
     // Update player positions
     for (Player player : event.getPlayers()) {
@@ -197,11 +187,13 @@ public class MonopolyGameView extends AbstractGameView {
     soundManager.playSound("move");
     gameBoard.animatePlayerMove(event.getPlayer(), event.getFromTile(), event.getToTile());
 
-    String tileName = event.getToTile().getName() != null ? event.getToTile().getName()
-        : "Tile " + event.getToTile().getTileId();
+    String tileName =
+        event.getToTile().getName() != null
+            ? event.getToTile().getName()
+            : "Tile " + event.getToTile().getTileId();
     statusLabel.setText(event.getPlayer().getName() + " moved to " + tileName);
 
-    updateUIState();
+    updateUiState();
   }
 
   private void handleTurnChanged(TurnChangedEvent event) {
@@ -209,19 +201,20 @@ public class MonopolyGameView extends AbstractGameView {
     statusLabel.setText(currentPlayer.getName() + "'s turn");
     playerScoreboard.highlightCurrentPlayer(currentPlayer);
 
-    updateUIState();
+    updateUiState();
   }
 
   private void handlePropertyPurchased(PropertyPurchasedEvent event) {
     soundManager.playSound("receipt");
 
-    String propertyName = event.getProperty().getName() != null ? event.getProperty().getName() : "Property";
-    statusLabel.setText(event.getPlayer().getName() +
-        " bought " + propertyName + " for $" + event.getPrice());
+    String propertyName =
+        event.getProperty().getName() != null ? event.getProperty().getName() : "Property";
+    statusLabel.setText(
+        event.getPlayer().getName() + " bought " + propertyName + " for $" + event.getPrice());
 
     gameBoard.refreshBoard();
     playerScoreboard.updatePlayerMoney(event.getPlayer());
-    updateUIState();
+    updateUiState();
   }
 
   private void handleMoneyTransfer(MoneyTransferEvent event) {
@@ -236,20 +229,33 @@ public class MonopolyGameView extends AbstractGameView {
     // Play appropriate sound and show message
     if (event.getToPlayer() == null) {
       soundManager.playSound("snake");
-      statusLabel.setText(event.getFromPlayer().getName() +
-          " paid $" + event.getAmount() + " in " + event.getReason());
+      statusLabel.setText(
+          event.getFromPlayer().getName()
+              + " paid $"
+              + event.getAmount()
+              + " in "
+              + event.getReason());
     } else if (event.getFromPlayer() == null) {
       soundManager.playSound("cash_incoming");
-      statusLabel.setText(event.getToPlayer().getName() +
-          " received $" + event.getAmount() + " for " + event.getReason());
+      statusLabel.setText(
+          event.getToPlayer().getName()
+              + " received $"
+              + event.getAmount()
+              + " for "
+              + event.getReason());
     } else {
       soundManager.playSound("bounce");
-      statusLabel.setText(event.getFromPlayer().getName() +
-          " paid $" + event.getAmount() + " " + event.getReason() +
-          " to " + event.getToPlayer().getName());
+      statusLabel.setText(
+          event.getFromPlayer().getName()
+              + " paid $"
+              + event.getAmount()
+              + " "
+              + event.getReason()
+              + " to "
+              + event.getToPlayer().getName());
     }
 
-    updateUIState();
+    updateUiState();
   }
 
   private void handlePlayerBankrupt(PlayerBankruptEvent event) {
@@ -257,7 +263,7 @@ public class MonopolyGameView extends AbstractGameView {
     statusLabel.setText(event.getPlayer().getName() + " is bankrupt!");
     playerScoreboard.updatePlayerMoney(event.getPlayer());
 
-    updateUIState();
+    updateUiState();
   }
 
   @Override

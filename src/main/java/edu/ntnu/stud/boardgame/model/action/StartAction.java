@@ -5,10 +5,8 @@ import edu.ntnu.stud.boardgame.model.action.registry.MonopolyActionRegistry;
 
 /**
  * Represents the start tile action in Monopoly.
- * 
- * <p>
- * Awards the player a bonus amount when landing on or passing the start tile.
- * </p>
+ *
+ * <p>Awards the player a bonus amount when landing on or passing the start tile.
  */
 public class StartAction implements TileAction {
 

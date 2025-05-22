@@ -5,10 +5,8 @@ import edu.ntnu.stud.boardgame.model.Tile;
 
 /**
  * Represents a ladder tile action in Snakes and Ladders.
- * 
- * <p>
- * Moves the player up to a specified destination tile.
- * </p>
+ *
+ * <p>Moves the player up to a specified destination tile.
  */
 public class LadderAction implements TileAction {
 

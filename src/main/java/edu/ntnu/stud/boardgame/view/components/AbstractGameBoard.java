@@ -14,10 +14,9 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 
 /**
- * Abstract base class for game board implementations.
- * Provides common functionality for rendering game boards and managing player
- * pieces.
- * Extends {@link StackPane} to layer the board canvas and player pieces.
+ * Abstract base class for game board implementations. Provides common functionality for rendering
+ * game boards and managing player pieces. Extends {@link StackPane} to layer the board canvas and
+ * player pieces.
  *
  * @see GameBoardInterface
  * @see Canvas
@@ -35,12 +34,9 @@ public abstract class AbstractGameBoard extends StackPane implements GameBoardIn
   protected boolean needsRedraw = true;
 
   /**
-   * <p>
    * Initializes the game board with a canvas and pieces layer.
-   * </p>
-   * <p>
-   * Sets up basic layout and resize listeners.
-   * </p>
+   *
+   * <p>Sets up basic layout and resize listeners.
    */
   protected AbstractGameBoard() {
     boardCanvas = new Canvas();
@@ -57,23 +53,23 @@ public abstract class AbstractGameBoard extends StackPane implements GameBoardIn
     getChildren().addAll(boardCanvas, piecesLayer);
   }
 
+  /** Sets up the resizing functionality. */
   protected void setupResize() {
-    ChangeListener<Number> resizeListener = (obs, oldVal, newVal) -> {
-      if (newVal.doubleValue() > 0) {
-        needsRedraw = true;
-        calculateCellSize();
-        Platform.runLater(this::drawBoard);
-      }
-    };
+    ChangeListener<Number> resizeListener =
+        (obs, oldVal, newVal) -> {
+          if (newVal.doubleValue() > 0) {
+            needsRedraw = true;
+            calculateCellSize();
+            Platform.runLater(this::drawBoard);
+          }
+        };
 
     widthProperty().addListener(resizeListener);
     heightProperty().addListener(resizeListener);
   }
 
   /**
-   * <p>
    * Sets the game board model and triggers a redraw.
-   * </p>
    *
    * @param board The board model to use
    */
@@ -86,15 +82,12 @@ public abstract class AbstractGameBoard extends StackPane implements GameBoardIn
   }
 
   /**
-   * <p>
    * Updates a player's position on the board.
-   * </p>
-   * <p>
-   * Creates a new piece for the player if one doesn't exist.
-   * </p>
+   *
+   * <p>Creates a new piece for the player if one doesn't exist.
    *
    * @param player The player to update
-   * @param tile   The tile to move to
+   * @param tile The tile to move to
    */
   @Override
   public void updatePlayerPosition(Player player, Tile tile) {
@@ -102,12 +95,15 @@ public abstract class AbstractGameBoard extends StackPane implements GameBoardIn
       return;
     }
 
-    PlayerPiece piece = playerPieces.computeIfAbsent(player, p -> {
-      PlayerPiece newPiece = new PlayerPiece(p);
-      piecesLayer.getChildren().add(newPiece);
-      newPiece.updateSize(Math.max(15, cellSize * 0.6));
-      return newPiece;
-    });
+    PlayerPiece piece =
+        playerPieces.computeIfAbsent(
+            player,
+            p -> {
+              PlayerPiece newPiece = new PlayerPiece(p);
+              piecesLayer.getChildren().add(newPiece);
+              newPiece.updateSize(Math.max(15, cellSize * 0.6));
+              return newPiece;
+            });
 
     if (tile == null || tile.getTileId() == 0) {
       piece.setVisible(false);
@@ -118,16 +114,13 @@ public abstract class AbstractGameBoard extends StackPane implements GameBoardIn
   }
 
   /**
-   * <p>
    * Animates a player's piece moving from one tile to another.
-   * </p>
-   * <p>
-   * Handles visibility and movement animation for the piece.
-   * </p>
    *
-   * @param player   The player whose piece to animate
+   * <p>Handles visibility and movement animation for the piece.
+   *
+   * @param player The player whose piece to animate
    * @param fromTile The starting tile
-   * @param toTile   The destination tile
+   * @param toTile The destination tile
    */
   @Override
   public void animatePlayerMove(Player player, Tile fromTile, Tile toTile) {
@@ -160,12 +153,9 @@ public abstract class AbstractGameBoard extends StackPane implements GameBoardIn
   }
 
   /**
-   * <p>
    * Removes all player pieces from the board.
-   * </p>
-   * <p>
-   * Clears all animations and piece references.
-   * </p>
+   *
+   * <p>Clears all animations and piece references.
    */
   @Override
   public void clearPlayerPieces() {
@@ -174,21 +164,32 @@ public abstract class AbstractGameBoard extends StackPane implements GameBoardIn
     playerPieces.clear();
   }
 
-  /**
-   * <p>
-   * Forces a redraw of the game board.
-   * </p>
-   */
+  /** Forces a redraw of the game board. */
   @Override
   public void refreshBoard() {
     needsRedraw = true;
     drawBoard();
   }
 
+  /**
+   * Calculates the size of each cell in the game board based on the current dimensions. This method
+   * should be implemented by concrete subclasses to determine appropriate cell sizing for their
+   * specific board layouts.
+   */
   protected abstract void calculateCellSize();
 
+  /**
+   * Draws the game board on the canvas. This method should be implemented by concrete subclasses to
+   * render their specific board layouts and visual elements.
+   */
   protected abstract void drawBoard();
 
+  /**
+   * Positions a player piece at the specified tile location on the board.
+   *
+   * @param piece The player piece to position
+   * @param tile The tile where the piece should be placed
+   */
   protected void positionPieceAtTile(PlayerPiece piece, Tile tile) {
     if (tile == null || tile.getRow() == null || tile.getColumn() == null) {
       return;
@@ -202,21 +203,26 @@ public abstract class AbstractGameBoard extends StackPane implements GameBoardIn
     piece.setTranslateY(y - pieceSize / 2);
   }
 
+  /**
+   * Updates the positions of all player pieces on the board. This includes updating piece sizes
+   * based on the current cell size and managing visibility based on player positions.
+   */
   protected void updateAllPiecePositions() {
     double pieceSize = Math.max(15, cellSize * 0.6);
     playerPieces.values().forEach(piece -> piece.updateSize(pieceSize));
 
-    playerPieces.forEach((player, piece) -> {
-      if (player.getCurrentTile() != null) {
-        if (player.getCurrentTile().getTileId() == 0) {
-          piece.setVisible(false);
-        } else {
-          piece.setVisible(true);
-          positionPieceAtTile(piece, player.getCurrentTile());
-        }
-      } else {
-        piece.setVisible(false);
-      }
-    });
+    playerPieces.forEach(
+        (player, piece) -> {
+          if (player.getCurrentTile() != null) {
+            if (player.getCurrentTile().getTileId() == 0) {
+              piece.setVisible(false);
+            } else {
+              piece.setVisible(true);
+              positionPieceAtTile(piece, player.getCurrentTile());
+            }
+          } else {
+            piece.setVisible(false);
+          }
+        });
   }
 }

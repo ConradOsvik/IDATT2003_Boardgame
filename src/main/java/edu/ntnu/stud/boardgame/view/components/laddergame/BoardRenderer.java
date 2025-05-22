@@ -13,11 +13,10 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
 /**
- * A utility class responsible for rendering the Snakes and Ladders game board
- * using JavaFX Canvas.
- * This class handles the visual representation of the game board, including
- * tiles, snakes, and ladders.
- * 
+ * A utility class responsible for rendering the Snakes and Ladders game board using JavaFX Canvas.
+ * This class handles the visual representation of the game board, including tiles, snakes, and
+ * ladders.
+ *
  * @see Canvas
  * @see Board
  */
@@ -39,6 +38,14 @@ public class BoardRenderer {
   private static final double MIN_FONT_SIZE = 9.0;
   private static final double MAX_FONT_SIZE = 16.0;
 
+  /**
+   * Renders the game board on the provided canvas, including tiles, snakes, and ladders.
+   *
+   * @param canvas the canvas on which the board will be rendered
+   * @param board the game board to be rendered
+   * @param cellSize the size of each cell in the board
+   * @param padding the padding between the cells and the canvas edges
+   */
   public void render(Canvas canvas, Board board, double cellSize, double padding) {
     if (board == null || canvas.getWidth() <= 0 || canvas.getHeight() <= 0) {
       return;
@@ -98,8 +105,8 @@ public class BoardRenderer {
     }
   }
 
-  private void drawSnakesAndLadders(GraphicsContext gc, Board board, double cellSize,
-      double padding) {
+  private void drawSnakesAndLadders(
+      GraphicsContext gc, Board board, double cellSize, double padding) {
     for (Tile tile : board.getTiles().values()) {
       if (tile.getLandAction() instanceof SnakeAction action) {
         drawSnake(gc, tile, action.getDestinationTile(), cellSize, padding);
@@ -109,10 +116,14 @@ public class BoardRenderer {
     }
   }
 
-  private void drawSnake(GraphicsContext gc, Tile fromTile, Tile toTile, double cellSize,
-      double padding) {
-    if (fromTile == null || toTile == null || fromTile.getRow() == null
-        || fromTile.getColumn() == null || toTile.getRow() == null || toTile.getColumn() == null) {
+  private void drawSnake(
+      GraphicsContext gc, Tile fromTile, Tile toTile, double cellSize, double padding) {
+    if (fromTile == null
+        || toTile == null
+        || fromTile.getRow() == null
+        || fromTile.getColumn() == null
+        || toTile.getRow() == null
+        || toTile.getColumn() == null) {
       return;
     }
 
@@ -145,10 +156,14 @@ public class BoardRenderer {
     gc.strokeOval(tailX - tailRadius, tailY - tailRadius, tailRadius * 2, tailRadius * 2);
   }
 
-  private void drawLadder(GraphicsContext gc, Tile fromTile, Tile toTile, double cellSize,
-      double padding) {
-    if (fromTile == null || toTile == null || fromTile.getRow() == null
-        || fromTile.getColumn() == null || toTile.getRow() == null || toTile.getColumn() == null) {
+  private void drawLadder(
+      GraphicsContext gc, Tile fromTile, Tile toTile, double cellSize, double padding) {
+    if (fromTile == null
+        || toTile == null
+        || fromTile.getRow() == null
+        || fromTile.getColumn() == null
+        || toTile.getRow() == null
+        || toTile.getColumn() == null) {
       return;
     }
 
@@ -165,23 +180,23 @@ public class BoardRenderer {
     double dx = topX - bottomX;
     double dy = topY - bottomY;
     double length = Math.sqrt(dx * dx + dy * dy);
-    double xNorm = dx / length;
-    double yNorm = dy / length;
+    double xnorm = dx / length;
+    double ynorm = dy / length;
 
-    double leftBottomX = bottomX - yNorm * ladderSpacing;
-    double leftBottomY = bottomY + xNorm * ladderSpacing;
-    double leftTopX = topX - yNorm * ladderSpacing;
-    double leftTopY = topY + xNorm * ladderSpacing;
+    double leftBottomX = bottomX - ynorm * ladderSpacing;
+    double leftBottomY = bottomY + xnorm * ladderSpacing;
+    double leftTopX = topX - ynorm * ladderSpacing;
+    double leftTopY = topY + xnorm * ladderSpacing;
 
     gc.beginPath();
     gc.moveTo(leftBottomX, leftBottomY);
     gc.lineTo(leftTopX, leftTopY);
     gc.stroke();
 
-    double rightBottomX = bottomX + yNorm * ladderSpacing;
-    double rightBottomY = bottomY - xNorm * ladderSpacing;
-    double rightTopX = topX + yNorm * ladderSpacing;
-    double rightTopY = topY - xNorm * ladderSpacing;
+    double rightBottomX = bottomX + ynorm * ladderSpacing;
+    double rightBottomY = bottomY - xnorm * ladderSpacing;
+    double rightTopX = topX + ynorm * ladderSpacing;
+    double rightTopY = topY - xnorm * ladderSpacing;
 
     gc.beginPath();
     gc.moveTo(rightBottomX, rightBottomY);

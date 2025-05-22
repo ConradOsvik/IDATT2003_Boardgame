@@ -7,10 +7,8 @@ import java.util.List;
 
 /**
  * Event fired when a new game is created.
- * 
- * <p>
- * Contains the initial game state including the board and player list.
- * </p>
+ *
+ * <p>Contains the initial game state including the board and player list.
  */
 public class GameCreatedEvent extends GameEvent {
 
@@ -20,7 +18,7 @@ public class GameCreatedEvent extends GameEvent {
   /**
    * Creates a new game created event.
    *
-   * @param board   the game board
+   * @param board the game board
    * @param players list of players
    * @throws IllegalArgumentException if board or players is null
    */

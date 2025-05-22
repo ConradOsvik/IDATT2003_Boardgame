@@ -5,10 +5,8 @@ import edu.ntnu.stud.boardgame.observer.GameEvent;
 
 /**
  * Event fired when a player goes bankrupt in Monopoly.
- * 
- * <p>
- * Contains the player who has gone bankrupt.
- * </p>
+ *
+ * <p>Contains the player who has gone bankrupt.
  */
 public class PlayerBankruptEvent extends GameEvent {
 

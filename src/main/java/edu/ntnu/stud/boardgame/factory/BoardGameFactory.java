@@ -15,16 +15,16 @@ import java.util.logging.Logger;
  * Factory responsible for creating and configuring different types of board games.
  *
  * <p>This factory provides functionality to:
- * <ul>
- *   <li>Create board games of different types (Ladder, Monopoly)</li>
- *   <li>Load board configurations from predefined templates or from files</li>
- *   <li>List available board configurations for specific game types</li>
- * </ul>
- * </p>
  *
- * <p>The factory relies on a {@link BoardFileService} to handle loading of board
- * configurations from the file system. Predefined boards are provided through
- * specialized board factories for each game type.</p>
+ * <ul>
+ *   <li>Create board games of different types (Ladder, Monopoly)
+ *   <li>Load board configurations from predefined templates or from files
+ *   <li>List available board configurations for specific game types
+ * </ul>
+ *
+ * <p>The factory relies on a {@link BoardFileService} to handle loading of board configurations
+ * from the file system. Predefined boards are provided through specialized board factories for each
+ * game type.
  *
  * @see BoardFileService
  * @see BoardGameType
@@ -52,14 +52,14 @@ public class BoardGameFactory {
   /**
    * Creates and initializes a board game of the specified type with the given board.
    *
-   * <p>The board can be either a predefined board (prefixed with "Predefined:")
-   * or a custom board loaded from the file system. The method sets up the game with the appropriate
-   * board and initializes it with two dice.</p>
+   * <p>The board can be either a predefined board (prefixed with "Predefined:") or a custom board
+   * loaded from the file system. The method sets up the game with the appropriate board and
+   * initializes it with two dice.
    *
-   * @param type      the type of board game to create
+   * @param type the type of board game to create
    * @param boardName the name of the board to use, potentially prefixed with "Predefined:"
    * @return a fully initialized board game
-   * @throws BoardFileException       if there is an error loading the board from files
+   * @throws BoardFileException if there is an error loading the board from files
    * @throws IllegalArgumentException if type is null or boardName is null or empty
    */
   public BoardGame createGame(BoardGameType type, String boardName) throws BoardFileException {
@@ -89,7 +89,7 @@ public class BoardGameFactory {
   /**
    * Retrieves a predefined board template for the specified game type and board name.
    *
-   * @param type      the type of board game
+   * @param type the type of board game
    * @param boardName the name of the predefined board template
    * @return a board instance matching the specified type and name
    */
@@ -103,8 +103,8 @@ public class BoardGameFactory {
   /**
    * Retrieves a list of available board configurations for the specified game type.
    *
-   * <p>The returned list includes both predefined boards (prefixed with "Predefined:")
-   * and custom boards available in the file system.</p>
+   * <p>The returned list includes both predefined boards (prefixed with "Predefined:") and custom
+   * boards available in the file system.
    *
    * @param gameType the type of board game to get available boards for
    * @return a list of board names, where predefined boards are prefixed with "Predefined:"
@@ -116,10 +116,11 @@ public class BoardGameFactory {
     }
     List<String> result = new ArrayList<>();
 
-    List<String> predefinedBoards = switch (gameType) {
-      case LADDER -> LadderGameBoardFactory.getAvailableBoards();
-      case MONOPOLY -> MonopolyBoardFactory.getAvailableBoards();
-    };
+    List<String> predefinedBoards =
+        switch (gameType) {
+          case LADDER -> LadderGameBoardFactory.getAvailableBoards();
+          case MONOPOLY -> MonopolyBoardFactory.getAvailableBoards();
+        };
 
     for (String board : predefinedBoards) {
       result.add("Predefined:" + board);
@@ -134,7 +135,7 @@ public class BoardGameFactory {
   /**
    * Creates an empty game instance of the specified type.
    *
-   * <p>The created game will not have a board or any other configurations set.</p>
+   * <p>The created game will not have a board or any other configurations set.
    *
    * @param type the type of board game to create
    * @return an uninitialized game of the specified type

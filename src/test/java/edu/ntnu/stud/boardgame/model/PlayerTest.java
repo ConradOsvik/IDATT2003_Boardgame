@@ -20,11 +20,9 @@ class PlayerTest {
 
   private Player player;
 
-  @Mock
-  private Tile mockTile;
+  @Mock private Tile mockTile;
 
-  @Mock
-  private Tile mockNextTile;
+  @Mock private Tile mockNextTile;
 
   @BeforeEach
   void setUp() {

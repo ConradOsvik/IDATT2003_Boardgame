@@ -5,10 +5,8 @@ import edu.ntnu.stud.boardgame.observer.GameEvent;
 
 /**
  * Event fired when a player is added to the game.
- * 
- * <p>
- * Contains the newly added player instance.
- * </p>
+ *
+ * <p>Contains the newly added player instance.
  */
 public class PlayerAddedEvent extends GameEvent {
 

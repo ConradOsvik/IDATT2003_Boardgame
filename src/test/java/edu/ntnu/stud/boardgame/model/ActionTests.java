@@ -23,11 +23,9 @@ class ActionTests {
 
     private LadderAction ladderAction;
 
-    @Mock
-    private Tile destinationTile;
+    @Mock private Tile destinationTile;
 
-    @Mock
-    private Player mockPlayer;
+    @Mock private Player mockPlayer;
 
     @BeforeEach
     void setUp() {
@@ -70,11 +68,9 @@ class ActionTests {
 
     private SnakeAction snakeAction;
 
-    @Mock
-    private Tile destinationTile;
+    @Mock private Tile destinationTile;
 
-    @Mock
-    private Player mockPlayer;
+    @Mock private Player mockPlayer;
 
     @BeforeEach
     void setUp() {
@@ -117,8 +113,7 @@ class ActionTests {
 
     private SkipTurnAction skipTurnAction;
 
-    @Mock
-    private Player mockPlayer;
+    @Mock private Player mockPlayer;
 
     @BeforeEach
     void setUp() {

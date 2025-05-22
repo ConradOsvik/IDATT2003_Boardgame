@@ -20,10 +20,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 /**
- * Abstract base class for game view implementations.
- * Provides common functionality for game views including toolbar creation,
- * victory screen management, and game event handling.
- * Extends {@link BorderPane} to organize game components in a border layout.
+ * Abstract base class for game view implementations. Provides common functionality for game views
+ * including toolbar creation, victory screen management, and game event handling. Extends {@link
+ * BorderPane} to organize game components in a border layout.
  *
  * @see MainController
  * @see GameController
@@ -38,13 +37,10 @@ public abstract class AbstractGameView extends BorderPane implements BoardGameOb
   protected final StackPane gameArea;
 
   /**
-   * <p>
    * Creates a new game view with basic layout and controls.
-   * </p>
-   * <p>
-   * Initializes the view with a toolbar, game area, and victory screen.
-   * Registers as an observer for game events.
-   * </p>
+   *
+   * <p>Initializes the view with a toolbar, game area, and victory screen. Registers as an observer
+   * for game events.
    *
    * @param mainController The main application controller
    * @param gameController The game-specific controller
@@ -62,12 +58,9 @@ public abstract class AbstractGameView extends BorderPane implements BoardGameOb
   }
 
   /**
-   * <p>
    * Initializes the basic layout of the game view.
-   * </p>
-   * <p>
-   * Sets up the right panel with audio controls and the central game area.
-   * </p>
+   *
+   * <p>Sets up the right panel with audio controls and the central game area.
    */
   private void initializeBasicLayout() {
     VBox rightPanel = new VBox(20);
@@ -85,27 +78,26 @@ public abstract class AbstractGameView extends BorderPane implements BoardGameOb
   }
 
   /**
-   * <p>
    * Creates the toolbar with navigation and control buttons.
-   * </p>
-   * <p>
-   * Adds Main Menu and Exit buttons with appropriate styling.
-   * </p>
+   *
+   * <p>Adds Main Menu and Exit buttons with appropriate styling.
    */
   private void createToolbar() {
     ToolBar toolbar = new ToolBar();
 
-    Button mainMenuButton = new ButtonBuilder()
-        .text("Main Menu")
-        .styleClass("btn-secondary")
-        .onClick(e -> returnToMenu())
-        .build();
+    Button mainMenuButton =
+        new ButtonBuilder()
+            .text("Main Menu")
+            .styleClass("btn-secondary")
+            .onClick(e -> returnToMenu())
+            .build();
 
-    Button exitButton = new ButtonBuilder()
-        .text("Exit")
-        .styleClass("btn-danger")
-        .onClick(e -> mainController.exitApplication())
-        .build();
+    Button exitButton =
+        new ButtonBuilder()
+            .text("Exit")
+            .styleClass("btn-danger")
+            .onClick(e -> mainController.exitApplication())
+            .build();
 
     Region spacer = new Region();
     HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -114,22 +106,15 @@ public abstract class AbstractGameView extends BorderPane implements BoardGameOb
     setTop(toolbar);
   }
 
-  /**
-   * <p>
-   * Returns to the game selection menu.
-   * </p>
-   */
+  /** Returns to the game selection menu. */
   protected void returnToMenu() {
     mainController.showGameSelectionView();
   }
 
   /**
-   * <p>
    * Displays the victory screen for the winning player.
-   * </p>
-   * <p>
-   * Plays victory sound and shows the victory animation.
-   * </p>
+   *
+   * <p>Plays victory sound and shows the victory animation.
    *
    * @param winner The winning player
    */
@@ -139,30 +124,26 @@ public abstract class AbstractGameView extends BorderPane implements BoardGameOb
   }
 
   /**
-   * <p>
    * Handles game events from the observed game controller.
-   * </p>
-   * <p>
-   * Processes events on the JavaFX Application Thread.
-   * </p>
+   *
+   * <p>Processes events on the JavaFX Application Thread.
    *
    * @param event The game event to handle
    */
   @Override
   public void onGameEvent(GameEvent event) {
-    Platform.runLater(() -> {
-      if (event instanceof GameEndedEvent endedEvent) {
-        handleGameEnded(endedEvent);
-      } else {
-        handleGameEvent(event);
-      }
-    });
+    Platform.runLater(
+        () -> {
+          if (event instanceof GameEndedEvent endedEvent) {
+            handleGameEnded(endedEvent);
+          } else {
+            handleGameEvent(event);
+          }
+        });
   }
 
   /**
-   * <p>
    * Handles game ended events by showing the victory screen.
-   * </p>
    *
    * @param event The game ended event
    */
@@ -174,12 +155,9 @@ public abstract class AbstractGameView extends BorderPane implements BoardGameOb
   }
 
   /**
-   * <p>
    * Abstract method to handle game-specific events.
-   * </p>
-   * <p>
-   * Subclasses must implement this to handle their specific game events.
-   * </p>
+   *
+   * <p>Subclasses must implement this to handle their specific game events.
    *
    * @param event The game event to handle
    */

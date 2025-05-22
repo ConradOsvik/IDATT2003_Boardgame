@@ -7,11 +7,9 @@ import edu.ntnu.stud.boardgame.observer.GameEvent;
 
 /**
  * Event fired when a player moves on the board.
- * 
- * <p>
- * Contains details about the movement including source and destination
- * tiles, number of steps moved, and the current board state.
- * </p>
+ *
+ * <p>Contains details about the movement including source and destination tiles, number of steps
+ * moved, and the current board state.
  */
 public class PlayerMovedEvent extends GameEvent {
 
@@ -24,16 +22,16 @@ public class PlayerMovedEvent extends GameEvent {
   /**
    * Creates a new player moved event with a specific event type.
    *
-   * @param type     event type (for subclass events)
-   * @param player   the player that moved
+   * @param type event type (for subclass events)
+   * @param player the player that moved
    * @param fromTile starting tile
-   * @param toTile   destination tile
-   * @param steps    number of steps moved
-   * @param board    current board state
+   * @param toTile destination tile
+   * @param steps number of steps moved
+   * @param board current board state
    * @throws IllegalArgumentException if any parameter except steps is null
    */
-  public PlayerMovedEvent(EventType type, Player player, Tile fromTile, Tile toTile, int steps,
-      Board board) {
+  public PlayerMovedEvent(
+      EventType type, Player player, Tile fromTile, Tile toTile, int steps, Board board) {
     super(type);
     if (player == null) {
       throw new IllegalArgumentException("Player cannot be null for PlayerMovedEvent.");
@@ -57,11 +55,11 @@ public class PlayerMovedEvent extends GameEvent {
   /**
    * Creates a new standard player moved event.
    *
-   * @param player   the player that moved
+   * @param player the player that moved
    * @param fromTile starting tile
-   * @param toTile   destination tile
-   * @param steps    number of steps moved
-   * @param board    current board state
+   * @param toTile destination tile
+   * @param steps number of steps moved
+   * @param board current board state
    */
   public PlayerMovedEvent(Player player, Tile fromTile, Tile toTile, int steps, Board board) {
     this(EventType.PLAYER_MOVED, player, fromTile, toTile, steps, board);

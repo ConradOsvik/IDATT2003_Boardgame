@@ -6,11 +6,8 @@ import edu.ntnu.stud.boardgame.observer.GameEvent;
 
 /**
  * Event fired when a player purchases a property in Monopoly.
- * 
- * <p>
- * Contains details about the purchase including the player,
- * property tile, and purchase price.
- * </p>
+ *
+ * <p>Contains details about the purchase including the player, property tile, and purchase price.
  */
 public class PropertyPurchasedEvent extends GameEvent {
 
@@ -21,9 +18,9 @@ public class PropertyPurchasedEvent extends GameEvent {
   /**
    * Creates a new property purchased event.
    *
-   * @param player   the player making the purchase
+   * @param player the player making the purchase
    * @param property the property being purchased
-   * @param price    the purchase price
+   * @param price the purchase price
    * @throws IllegalArgumentException if player or property is null
    */
   public PropertyPurchasedEvent(Player player, Tile property, int price) {

@@ -4,10 +4,8 @@ import edu.ntnu.stud.boardgame.model.action.TileAction;
 
 /**
  * Represents a tile on the game board.
- * 
- * <p>
- * Manages tile properties, actions, and connections to other tiles.
- * </p>
+ *
+ * <p>Manages tile properties, actions, and connections to other tiles.
  */
 public class Tile {
 

@@ -5,10 +5,8 @@ import edu.ntnu.stud.boardgame.model.action.registry.MonopolyActionRegistry;
 
 /**
  * Represents a tax tile action in Monopoly.
- * 
- * <p>
- * Charges the player a fixed tax amount when landing on the tile.
- * </p>
+ *
+ * <p>Charges the player a fixed tax amount when landing on the tile.
  */
 public class TaxAction implements TileAction {
 

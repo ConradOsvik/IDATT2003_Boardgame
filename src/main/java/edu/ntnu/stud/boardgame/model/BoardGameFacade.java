@@ -13,11 +13,9 @@ import java.util.List;
 
 /**
  * Facade providing a simplified interface to the board game system.
- * 
- * <p>
- * Coordinates game creation, player management, board operations,
- * and observer notifications. Acts as the main entry point for game operations.
- * </p>
+ *
+ * <p>Coordinates game creation, player management, board operations, and observer notifications.
+ * Acts as the main entry point for game operations.
  */
 public class BoardGameFacade {
 
@@ -27,9 +25,7 @@ public class BoardGameFacade {
   private BoardGame currentGame;
   private BoardGameType currentGameType;
 
-  /**
-   * Creates a new facade with required services.
-   */
+  /** Creates a new facade with required services. */
   public BoardGameFacade() {
     this.boardFileService = BoardFileService.getInstance();
     this.factory = new BoardGameFactory(boardFileService);
@@ -94,7 +90,7 @@ public class BoardGameFacade {
   /**
    * Adds a player to the current game.
    *
-   * @param name      player's name
+   * @param name player's name
    * @param pieceType player's piece type
    * @throws BoardGameException if no game exists
    */

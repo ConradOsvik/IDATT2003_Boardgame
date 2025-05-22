@@ -5,10 +5,8 @@ import edu.ntnu.stud.boardgame.observer.GameEvent;
 
 /**
  * Event fired when a player wins the game.
- * 
- * <p>
- * Contains the winning player instance.
- * </p>
+ *
+ * <p>Contains the winning player instance.
  */
 public class PlayerWonEvent extends GameEvent {
 

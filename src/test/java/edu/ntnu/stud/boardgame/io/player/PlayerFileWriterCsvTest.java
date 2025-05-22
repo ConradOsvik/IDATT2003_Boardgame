@@ -49,12 +49,17 @@ class PlayerFileWriterCsvTest {
       throws PlayerWritingException, IOException {
     StringWriter stringWriter = new StringWriter();
 
-    String expectedCsv = "Alice,RedToken" + System.lineSeparator() +
-        "Bob,BlueToken" + System.lineSeparator() +
-        "Charlie,GreenToken" + System.lineSeparator();
+    String expectedCsv =
+        "Alice,RedToken"
+            + System.lineSeparator()
+            + "Bob,BlueToken"
+            + System.lineSeparator()
+            + "Charlie,GreenToken"
+            + System.lineSeparator();
 
     try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
-      mockedFiles.when(() -> Files.newBufferedWriter(mockPath))
+      mockedFiles
+          .when(() -> Files.newBufferedWriter(mockPath))
           .thenReturn(new BufferedWriter(stringWriter));
 
       playerWriter.writePlayers(mockPath, testPlayers);
@@ -70,16 +75,17 @@ class PlayerFileWriterCsvTest {
 
   @Test
   void writePlayers_nullPlayerList_throwsPlayerWritingException() {
-    PlayerWritingException ex = assertThrows(PlayerWritingException.class,
-        () -> playerWriter.writePlayers(mockPath, null));
+    PlayerWritingException ex =
+        assertThrows(PlayerWritingException.class, () -> playerWriter.writePlayers(mockPath, null));
     assertEquals("Player list is null or empty", ex.getMessage());
   }
 
   @Test
   void writePlayers_emptyPlayerList_throwsPlayerWritingException() {
     List<Player> emptyList = new ArrayList<>();
-    PlayerWritingException ex = assertThrows(PlayerWritingException.class,
-        () -> playerWriter.writePlayers(mockPath, emptyList));
+    PlayerWritingException ex =
+        assertThrows(
+            PlayerWritingException.class, () -> playerWriter.writePlayers(mockPath, emptyList));
     assertEquals("Player list is null or empty", ex.getMessage());
   }
 
@@ -88,16 +94,18 @@ class PlayerFileWriterCsvTest {
 
     try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
       BufferedWriter mockBufferedWriter = mock(BufferedWriter.class);
-      lenient().doThrow(new IOException("Disk is full")).when(mockBufferedWriter)
+      lenient()
+          .doThrow(new IOException("Disk is full"))
+          .when(mockBufferedWriter)
           .write(anyString());
 
       lenient().doThrow(new IOException("Disk is full")).when(mockBufferedWriter).newLine();
 
-      mockedFiles.when(() -> Files.newBufferedWriter(mockPath))
-          .thenReturn(mockBufferedWriter);
+      mockedFiles.when(() -> Files.newBufferedWriter(mockPath)).thenReturn(mockBufferedWriter);
 
-      PlayerWritingException ex = assertThrows(PlayerWritingException.class,
-          () -> playerWriter.writePlayers(mockPath, testPlayers));
+      PlayerWritingException ex =
+          assertThrows(
+              PlayerWritingException.class, () -> playerWriter.writePlayers(mockPath, testPlayers));
       assertTrue(ex.getMessage().contains("Failed to write players to file: Disk is full"));
     }
   }

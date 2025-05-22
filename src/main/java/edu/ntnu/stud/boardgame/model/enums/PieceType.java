@@ -2,9 +2,7 @@ package edu.ntnu.stud.boardgame.model.enums;
 
 import javafx.scene.paint.Color;
 
-/**
- * Represents the available game piece types with their associated colors.
- */
+/** Represents the available game piece types with their associated colors. */
 public enum PieceType {
   RED("RedToken", Color.RED),
   BLUE("BlueToken", Color.BLUE),
@@ -25,12 +23,12 @@ public enum PieceType {
    *
    * @param displayName the display name to match
    * @return the matching PieceType
-   * @throws IllegalArgumentException if no match is found or displayName is
-   *                                  invalid
+   * @throws IllegalArgumentException if no match is found or displayName is invalid
    */
   public static PieceType fromDisplayName(String displayName) {
     if (displayName == null || displayName.trim().isEmpty()) {
-      throw new IllegalArgumentException("Display name cannot be null or empty when parsing PieceType.");
+      throw new IllegalArgumentException(
+          "Display name cannot be null or empty when parsing PieceType.");
     }
     for (PieceType type : values()) {
       if (type.getDisplayName().equalsIgnoreCase(displayName)) {
@@ -59,8 +57,7 @@ public enum PieceType {
   }
 
   /**
-   * Gets a formatted version of the display name with spaces before capital
-   * letters.
+   * Gets a formatted version of the display name with spaces before capital letters.
    *
    * @return the formatted display name
    */

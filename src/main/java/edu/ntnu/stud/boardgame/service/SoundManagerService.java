@@ -9,9 +9,8 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
 /**
- * Singleton Service for managing game sound effects, including loading,
- * caching, and playing sounds.
- * Provides volume control and muting capabilities.
+ * Singleton Service for managing game sound effects, including loading, caching, and playing
+ * sounds. Provides volume control and muting capabilities.
  */
 public class SoundManagerService {
 
@@ -42,9 +41,8 @@ public class SoundManagerService {
   }
 
   /**
-   * Preloads all game sound effects into the sound cache.
-   * This method is called during initialization to ensure sounds are ready to
-   * play.
+   * Preloads all game sound effects into the sound cache. This method is called during
+   * initialization to ensure sounds are ready to play.
    */
   private void preloadSounds() {
     loadSound("dice_roll", "/sounds/dice_roll.wav");
@@ -88,8 +86,7 @@ public class SoundManagerService {
   }
 
   /**
-   * Plays a sound by its name if it exists in the cache and the sound is not
-   * muted.
+   * Plays a sound by its name if it exists in the cache and the sound is not muted.
    *
    * @param name the identifier of the sound to play
    */

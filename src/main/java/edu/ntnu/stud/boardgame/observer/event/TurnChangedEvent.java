@@ -5,10 +5,8 @@ import edu.ntnu.stud.boardgame.observer.GameEvent;
 
 /**
  * Event fired when the turn changes to a new player.
- * 
- * <p>
- * Contains the player whose turn is starting.
- * </p>
+ *
+ * <p>Contains the player whose turn is starting.
  */
 public class TurnChangedEvent extends GameEvent {
 

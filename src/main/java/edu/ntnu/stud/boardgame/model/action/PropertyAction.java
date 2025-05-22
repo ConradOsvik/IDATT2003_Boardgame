@@ -5,10 +5,8 @@ import edu.ntnu.stud.boardgame.model.action.registry.MonopolyActionRegistry;
 
 /**
  * Represents a property tile action in Monopoly.
- * 
- * <p>
- * Handles property ownership and rent payments between players.
- * </p>
+ *
+ * <p>Handles property ownership and rent payments between players.
  */
 public class PropertyAction implements TileAction {
 

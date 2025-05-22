@@ -7,11 +7,9 @@ import java.util.List;
 
 /**
  * Event fired when a game starts.
- * 
- * <p>
- * Contains the initial game state including the current player,
- * all players, and the board configuration.
- * </p>
+ *
+ * <p>Contains the initial game state including the current player, all players, and the board
+ * configuration.
  */
 public class GameStartedEvent extends GameEvent {
 
@@ -23,8 +21,8 @@ public class GameStartedEvent extends GameEvent {
    * Creates a new game started event.
    *
    * @param currentPlayer the starting player
-   * @param players       list of all players
-   * @param board         the game board
+   * @param players list of all players
+   * @param board the game board
    * @throws IllegalArgumentException if any parameter is null
    */
   public GameStartedEvent(Player currentPlayer, List<Player> players, Board board) {

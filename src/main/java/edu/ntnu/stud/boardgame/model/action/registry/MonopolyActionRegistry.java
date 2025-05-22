@@ -7,12 +7,9 @@ import java.util.logging.Logger;
 
 /**
  * Singleton registry for managing Monopoly game actions.
- * 
- * <p>
- * Maintains the current game instance and handles execution of property,
- * tax, and bonus actions. Validates inputs and logs warnings for invalid
- * operations.
- * </p>
+ *
+ * <p>Maintains the current game instance and handles execution of property, tax, and bonus actions.
+ * Validates inputs and logs warnings for invalid operations.
  *
  * @see MonopolyGame
  * @see PropertyAction
@@ -22,8 +19,7 @@ public class MonopolyActionRegistry {
   private static MonopolyActionRegistry instance;
   private MonopolyGame currentGame;
 
-  private MonopolyActionRegistry() {
-  }
+  private MonopolyActionRegistry() {}
 
   /**
    * Gets the singleton instance of the registry.
@@ -50,20 +46,15 @@ public class MonopolyActionRegistry {
     this.currentGame = game;
   }
 
-  /**
-   * Clears the current game instance.
-   */
+  /** Clears the current game instance. */
   public void clearGame() {
     this.currentGame = null;
   }
 
   /**
    * Executes a property action for a player.
-   * 
-   * <p>
-   * Handles rent payments between players. Rent is calculated as 1/5 of the
-   * property price.
-   * </p>
+   *
+   * <p>Handles rent payments between players. Rent is calculated as 1/5 of the property price.
    *
    * @param player the player performing the action
    * @param action the property action to execute

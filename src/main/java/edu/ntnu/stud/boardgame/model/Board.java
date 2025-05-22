@@ -5,10 +5,8 @@ import java.util.Map;
 
 /**
  * Represents a game board with tiles and their connections.
- * 
- * <p>
- * Manages the board's dimensions, tile layout, and start/end positions.
- * </p>
+ *
+ * <p>Manages the board's dimensions, tile layout, and start/end positions.
  */
 public class Board {
 
@@ -23,16 +21,16 @@ public class Board {
   /**
    * Creates a new board with the specified dimensions and properties.
    *
-   * @param name        board name
+   * @param name board name
    * @param description board description
-   * @param rows        number of rows
-   * @param columns     number of columns
+   * @param rows number of rows
+   * @param columns number of columns
    * @param startTileId ID of the starting tile
-   * @param endTileId   ID of the ending tile
+   * @param endTileId ID of the ending tile
    * @throws IllegalArgumentException if any parameter is invalid
    */
-  public Board(String name, String description, int rows, int columns, int startTileId,
-      int endTileId) {
+  public Board(
+      String name, String description, int rows, int columns, int startTileId, int endTileId) {
     if (name == null || name.trim().isEmpty()) {
       throw new IllegalArgumentException("Board name cannot be null or empty.");
     }

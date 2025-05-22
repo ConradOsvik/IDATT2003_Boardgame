@@ -3,12 +3,11 @@ package edu.ntnu.stud.boardgame.view.components.builder;
 import javafx.scene.control.TextField;
 
 /**
- * Builder class for creating and configuring JavaFX {@link TextField}
- * instances.
- * Provides a fluent interface for setting various text field properties.
- * <p>
- * Example usage:
- * 
+ * Builder class for creating and configuring JavaFX {@link TextField} instances. Provides a fluent
+ * interface for setting various text field properties.
+ *
+ * <p>Example usage:
+ *
  * <pre>{@code
  * TextField textField = new TextFieldBuilder()
  *     .promptText("Enter your name")
@@ -17,7 +16,6 @@ import javafx.scene.control.TextField;
  *     .editable(true)
  *     .build();
  * }</pre>
- * </p>
  *
  * @see TextField
  * @see javafx.scene.control.Control
@@ -28,10 +26,9 @@ public class TextFieldBuilder {
 
   /**
    * Creates a new TextFieldBuilder instance with a default {@link TextField}.
-   * <p>
-   * The text field is initialized with default JavaFX properties and can be
-   * customized using the builder methods.
-   * </p>
+   *
+   * <p>The text field is initialized with default JavaFX properties and can be customized using the
+   * builder methods.
    */
   public TextFieldBuilder() {
     this.textField = new TextField();
@@ -39,9 +36,8 @@ public class TextFieldBuilder {
 
   /**
    * Sets the prompt text (placeholder) displayed when the text field is empty.
-   * <p>
-   * The prompt text provides a hint to the user about what should be entered.
-   * </p>
+   *
+   * <p>The prompt text provides a hint to the user about what should be entered.
    *
    * @param text the prompt text to display
    * @return this builder instance for method chaining
@@ -54,9 +50,8 @@ public class TextFieldBuilder {
 
   /**
    * Sets the text content of the text field.
-   * <p>
-   * This sets the actual text value of the field.
-   * </p>
+   *
+   * <p>This sets the actual text value of the field.
    *
    * @param text the text to set
    * @return this builder instance for method chaining
@@ -69,9 +64,8 @@ public class TextFieldBuilder {
 
   /**
    * Adds style classes to the text field.
-   * <p>
-   * These classes should be defined in your CSS stylesheet.
-   * </p>
+   *
+   * <p>These classes should be defined in your CSS stylesheet.
    *
    * @param styleClasses one or more CSS style classes to apply
    * @return this builder instance for method chaining
@@ -84,9 +78,8 @@ public class TextFieldBuilder {
 
   /**
    * Sets the preferred width of the text field.
-   * <p>
-   * The actual width may vary based on the layout constraints.
-   * </p>
+   *
+   * <p>The actual width may vary based on the layout constraints.
    *
    * @param width the preferred width in pixels
    * @return this builder instance for method chaining
@@ -99,12 +92,10 @@ public class TextFieldBuilder {
 
   /**
    * Sets whether the text field is editable.
-   * <p>
-   * When not editable, the text field becomes read-only.
-   * </p>
    *
-   * @param editable true to make the text field editable, false to make it
-   *                 read-only
+   * <p>When not editable, the text field becomes read-only.
+   *
+   * @param editable true to make the text field editable, false to make it read-only
    * @return this builder instance for method chaining
    * @see TextField#setEditable(boolean)
    */
@@ -115,9 +106,8 @@ public class TextFieldBuilder {
 
   /**
    * Builds and returns the configured {@link TextField} instance.
-   * <p>
-   * After this call, the text field is ready to be added to a scene graph.
-   * </p>
+   *
+   * <p>After this call, the text field is ready to be added to a scene graph.
    *
    * @return the configured JavaFX {@link TextField}
    */
