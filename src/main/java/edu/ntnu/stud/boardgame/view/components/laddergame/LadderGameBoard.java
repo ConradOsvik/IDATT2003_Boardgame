@@ -4,6 +4,15 @@ import edu.ntnu.stud.boardgame.model.Player;
 import edu.ntnu.stud.boardgame.model.Tile;
 import edu.ntnu.stud.boardgame.view.components.AbstractGameBoard;
 
+/**
+ * Represents the game board for the Snakes and Ladders game.
+ * Extends {@link AbstractGameBoard} to provide specific rendering and animation
+ * functionality for the Snakes and Ladders game, including ladder climbs and
+ * snake slides.
+ * 
+ * @see AbstractGameBoard
+ * @see BoardRenderer
+ */
 public class LadderGameBoard extends AbstractGameBoard {
 
   private final BoardRenderer boardRenderer;

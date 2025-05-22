@@ -17,6 +17,15 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+/**
+ * A JavaFX component that represents the Monopoly game board.
+ * Handles the rendering of the board, player pieces, and their animations.
+ * Extends {@link StackPane} to layer the board canvas and player pieces.
+ *
+ * @see MonopolyController
+ * @see StackPane
+ * @see Canvas
+ */
 public class MonopolyBoard extends StackPane {
 
   private final Canvas boardCanvas;

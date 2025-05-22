@@ -33,6 +33,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * A view for setting up players before starting a game.
+ * Allows users to add players, select their pieces, and manage player lists.
+ * Extends {@link BorderPane} to organize player setup components.
+ *
+ * @see MainController
+ * @see GameController
+ * @see BoardGameObserver
+ */
 public class PlayerSetupView extends BorderPane implements BoardGameObserver {
 
   private final MainController controller;
@@ -50,6 +59,17 @@ public class PlayerSetupView extends BorderPane implements BoardGameObserver {
   private final List<PieceType> allPieceTypes = new ArrayList<>(Arrays.asList(PieceType.values()));
   private final ObservableList<PieceType> availablePieceTypesObservableList = FXCollections.observableArrayList();
 
+  /**
+   * <p>
+   * Creates a new player setup view.
+   * </p>
+   * <p>
+   * Initializes the view with player creation controls and saved player lists.
+   * </p>
+   *
+   * @param controller     The main application controller
+   * @param gameController The game-specific controller
+   */
   public PlayerSetupView(MainController controller, GameController gameController) {
     this.controller = controller;
     this.gameController = gameController;

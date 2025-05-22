@@ -9,6 +9,15 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 
+/**
+ * A visual representation of a player's game piece.
+ * Loads and displays the player's token image, with fallback to a default
+ * image.
+ * Extends {@link StackPane} to center the piece image and handle resizing.
+ *
+ * @see Player
+ * @see ImageView
+ */
 public class PlayerPiece extends StackPane {
 
   private static final Logger LOGGER = Logger.getLogger(PlayerPiece.class.getName());
@@ -17,6 +26,16 @@ public class PlayerPiece extends StackPane {
   private final ImageView tokenImageView;
   private double currentSize = 30;
 
+  /**
+   * <p>
+   * Creates a new player piece with the specified player's token image.
+   * </p>
+   * <p>
+   * If the player's token image cannot be found, falls back to a default image.
+   * </p>
+   *
+   * @param player The player this piece represents
+   */
   public PlayerPiece(Player player) {
     this.player = player;
     this.tokenImageView = new ImageView();
@@ -47,6 +66,16 @@ public class PlayerPiece extends StackPane {
     tokenImageView.setPickOnBounds(false);
   }
 
+  /**
+   * <p>
+   * Updates the size of the player piece.
+   * </p>
+   * <p>
+   * Maintains the aspect ratio of the token image while resizing.
+   * </p>
+   *
+   * @param size The new size in pixels for both width and height
+   */
   public void updateSize(double size) {
     this.currentSize = size;
     tokenImageView.setFitWidth(size);
@@ -54,6 +83,13 @@ public class PlayerPiece extends StackPane {
     tokenImageView.setPreserveRatio(true);
   }
 
+  /**
+   * <p>
+   * Gets the current size of the player piece.
+   * </p>
+   *
+   * @return The current size in pixels
+   */
   public double getCurrentSize() {
     return currentSize;
   }

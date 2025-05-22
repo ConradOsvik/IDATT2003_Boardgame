@@ -12,6 +12,16 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+/**
+ * An advanced implementation of the Monopoly game board with enhanced rendering
+ * capabilities.
+ * Extends {@link AbstractGameBoard} to provide specific drawing logic for
+ * Monopoly tiles,
+ * including property ownership colors and special tiles like Tax and Start.
+ *
+ * @see AbstractGameBoard
+ * @see MonopolyController
+ */
 public class MonopolyGameBoard extends AbstractGameBoard {
 
   private final MonopolyController controller;

@@ -21,6 +21,16 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
+/**
+ * A view for selecting and managing board configurations.
+ * Allows users to load predefined boards, save custom configurations,
+ * and manage saved board layouts.
+ * Extends {@link BorderPane} to organize board selection components.
+ *
+ * @see MainController
+ * @see GameController
+ * @see BoardGameObserver
+ */
 public class BoardSelectionView extends BorderPane implements BoardGameObserver {
 
   private final MainController controller;
@@ -37,6 +47,18 @@ public class BoardSelectionView extends BorderPane implements BoardGameObserver 
   private TextField saveNameField;
   private VBox saveActionsSubContainer;
 
+  /**
+   * <p>
+   * Creates a new board selection view.
+   * </p>
+   * <p>
+   * Initializes the view with lists of predefined and saved board configurations.
+   * </p>
+   *
+   * @param controller     The main application controller
+   * @param gameController The game-specific controller
+   * @throws IllegalArgumentException if either controller is null
+   */
   public BoardSelectionView(MainController controller, GameController gameController) {
     if (controller == null) {
       throw new IllegalArgumentException("MainController cannot be null.");
@@ -190,6 +212,14 @@ public class BoardSelectionView extends BorderPane implements BoardGameObserver 
     }
   }
 
+  /**
+   * <p>
+   * Refreshes the list of available board configurations.
+   * </p>
+   * <p>
+   * Updates both predefined and saved board lists from the game controller.
+   * </p>
+   */
   public void refreshBoardList() {
     List<String> availableBoards = gameController.getAvailableBoards();
 

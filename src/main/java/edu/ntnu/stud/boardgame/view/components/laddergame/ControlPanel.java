@@ -10,6 +10,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
+/**
+ * A control panel component for the Snakes and Ladders game.
+ * Provides game controls including dice rolling and game restart functionality.
+ * Extends {@link VBox} to arrange controls in a vertical layout.
+ * 
+ * @see GameController
+ * @see VBox
+ */
 public class ControlPanel extends VBox {
 
   private final GameController gameController;
@@ -57,8 +65,7 @@ public class ControlPanel extends VBox {
         playerTurnLabel,
         diceValueLabel,
         rollDiceButton,
-        restartButton
-    );
+        restartButton);
 
     setAlignment(Pos.TOP_CENTER);
   }

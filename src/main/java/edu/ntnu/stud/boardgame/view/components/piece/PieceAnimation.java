@@ -12,6 +12,15 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.util.Duration;
 
+/**
+ * Handles animations for game pieces on the board.
+ * Provides smooth movement animations for regular moves, ladder climbs, snake
+ * slides,
+ * and bounce-back effects. Uses JavaFX path transitions for fluid motion.
+ *
+ * @see PathTransition
+ * @see PlayerPiece
+ */
 public class PieceAnimation {
 
   private static final Duration REGULAR_MOVE_DURATION = Duration.seconds(0.3);
@@ -21,6 +30,21 @@ public class PieceAnimation {
   private final Map<PlayerPiece, Queue<PathTransition>> animationQueues = new HashMap<>();
   private final Map<PlayerPiece, Boolean> isAnimating = new HashMap<>();
 
+  /**
+   * <p>
+   * Animates a piece moving from one tile to another in a regular movement.
+   * </p>
+   * <p>
+   * For moves of more than one step, the piece will move tile by tile.
+   * </p>
+   *
+   * @param piece    The player piece to animate
+   * @param fromTile The starting tile
+   * @param toTile   The destination tile
+   * @param cellSize The size of each board cell
+   * @param padding  The board padding
+   * @param steps    Number of steps in the movement
+   */
   public void animateRegularMove(PlayerPiece piece, Tile fromTile, Tile toTile, double cellSize,
       double padding, int steps) {
     if (fromTile == null || toTile == null) {
@@ -35,6 +59,20 @@ public class PieceAnimation {
     }
   }
 
+  /**
+   * <p>
+   * Animates a piece climbing up a ladder.
+   * </p>
+   * <p>
+   * Creates a curved upward animation path for smooth ladder movement.
+   * </p>
+   *
+   * @param piece    The player piece to animate
+   * @param fromTile The bottom of the ladder
+   * @param toTile   The top of the ladder
+   * @param cellSize The size of each board cell
+   * @param padding  The board padding
+   */
   public void animateLadderClimb(PlayerPiece piece, Tile fromTile, Tile toTile, double cellSize,
       double padding) {
     if (fromTile == null || toTile == null) {
@@ -44,6 +82,20 @@ public class PieceAnimation {
     queueAnimation(piece, path, SPECIAL_MOVE_DURATION);
   }
 
+  /**
+   * <p>
+   * Animates a piece sliding down a snake.
+   * </p>
+   * <p>
+   * Creates a curved downward animation path for smooth snake movement.
+   * </p>
+   *
+   * @param piece    The player piece to animate
+   * @param fromTile The head of the snake
+   * @param toTile   The tail of the snake
+   * @param cellSize The size of each board cell
+   * @param padding  The board padding
+   */
   public void animateSnakeSlide(PlayerPiece piece, Tile fromTile, Tile toTile, double cellSize,
       double padding) {
     if (fromTile == null || toTile == null) {
@@ -71,6 +123,20 @@ public class PieceAnimation {
     }
   }
 
+  /**
+   * <p>
+   * Animates a piece bouncing back to its previous position.
+   * </p>
+   * <p>
+   * Used when a player cannot complete their move (e.g., overshooting the end).
+   * </p>
+   *
+   * @param piece    The player piece to animate
+   * @param fromTile The tile to bounce from
+   * @param toTile   The tile to bounce back to
+   * @param cellSize The size of each board cell
+   * @param padding  The board padding
+   */
   public void animateBounceBack(PlayerPiece piece, Tile fromTile, Tile toTile, double cellSize,
       double padding) {
     if (fromTile == null || toTile == null || fromTile.getRow() == null
@@ -205,6 +271,16 @@ public class PieceAnimation {
     nextAnimation.play();
   }
 
+  /**
+   * <p>
+   * Clears all pending animations for a specific piece.
+   * </p>
+   * <p>
+   * Useful when resetting the game or when a piece needs to be moved immediately.
+   * </p>
+   *
+   * @param piece The player piece whose animations should be cleared
+   */
   public void clearAnimations(PlayerPiece piece) {
     if (animationQueues.containsKey(piece)) {
       animationQueues.get(piece).clear();
@@ -212,6 +288,14 @@ public class PieceAnimation {
     }
   }
 
+  /**
+   * <p>
+   * Clears all pending animations for all pieces.
+   * </p>
+   * <p>
+   * Useful when resetting the game or changing game state.
+   * </p>
+   */
   public void clearAllAnimations() {
     for (Queue<PathTransition> queue : animationQueues.values()) {
       queue.clear();

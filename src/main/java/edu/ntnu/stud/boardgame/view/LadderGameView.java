@@ -20,12 +20,33 @@ import javafx.geometry.Insets;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
+/**
+ * The main view for the Snakes and Ladders game.
+ * Handles game board display, player controls, and game event visualization.
+ * Extends {@link AbstractGameView} to provide common game view functionality.
+ *
+ * @see AbstractGameView
+ * @see LadderGameBoard
+ * @see PlayerScoreboard
+ * @see ControlPanel
+ */
 public class LadderGameView extends AbstractGameView {
 
   private final ControlPanel controlPanel;
   private final PlayerScoreboard scoreboard;
   private final LadderGameBoard gameBoard;
 
+  /**
+   * <p>
+   * Creates a new Snakes and Ladders game view.
+   * </p>
+   * <p>
+   * Initializes the game board, scoreboard, and control panel.
+   * </p>
+   *
+   * @param controller     The main application controller
+   * @param gameController The game-specific controller
+   */
   public LadderGameView(MainController controller, GameController gameController) {
     super(controller, gameController);
 

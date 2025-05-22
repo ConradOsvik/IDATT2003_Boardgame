@@ -26,6 +26,17 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
+/**
+ * The main view for the Monopoly game.
+ * Handles game board display, player controls, property management, and game
+ * event visualization.
+ * Extends {@link AbstractGameView} to provide common game view functionality.
+ *
+ * @see AbstractGameView
+ * @see MonopolyGameBoard
+ * @see MonopolyPlayerScoreboard
+ * @see MonopolyController
+ */
 public class MonopolyGameView extends AbstractGameView {
 
   private final MonopolyController monopolyController;
@@ -37,6 +48,18 @@ public class MonopolyGameView extends AbstractGameView {
   private final Button rollDiceButton;
   private final Button buyPropertyButton;
 
+  /**
+   * <p>
+   * Creates a new Monopoly game view.
+   * </p>
+   * <p>
+   * Initializes the game board, scoreboard, and control buttons.
+   * Sets up the Monopoly-specific controller.
+   * </p>
+   *
+   * @param mainController The main application controller
+   * @param gameController The game-specific controller
+   */
   public MonopolyGameView(MainController mainController, GameController gameController) {
     super(mainController, gameController);
     this.monopolyController = new MonopolyController(gameController);
@@ -192,8 +215,7 @@ public class MonopolyGameView extends AbstractGameView {
   private void handlePropertyPurchased(PropertyPurchasedEvent event) {
     soundManager.playSound("receipt");
 
-    String propertyName = event.getProperty().getName() != null ?
-        event.getProperty().getName() : "Property";
+    String propertyName = event.getProperty().getName() != null ? event.getProperty().getName() : "Property";
     statusLabel.setText(event.getPlayer().getName() +
         " bought " + propertyName + " for $" + event.getPrice());
 
@@ -252,7 +274,8 @@ public class MonopolyGameView extends AbstractGameView {
       case PropertyPurchasedEvent propEvent -> handlePropertyPurchased(propEvent);
       case MoneyTransferEvent transferEvent -> handleMoneyTransfer(transferEvent);
       case PlayerBankruptEvent bankruptEvent -> handlePlayerBankrupt(bankruptEvent);
-      default -> { /* Ignore unknown events */ }
+      default -> {
+        /* Ignore unknown events */ }
     }
   }
 }

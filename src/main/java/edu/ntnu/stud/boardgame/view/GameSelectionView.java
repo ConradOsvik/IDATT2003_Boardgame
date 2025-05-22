@@ -17,11 +17,30 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.Priority;
 
+/**
+ * A view for selecting which board game to play.
+ * Displays available game options with images and descriptions.
+ * Extends {@link BorderPane} to organize game selection cards.
+ *
+ * @see GameController
+ * @see BoardGameType
+ */
 public class GameSelectionView extends BorderPane {
 
   private static final Logger LOGGER = Logger.getLogger(GameSelectionView.class.getName());
   private final GameController controller;
 
+  /**
+   * <p>
+   * Creates a new game selection view with available game options.
+   * </p>
+   * <p>
+   * Initializes the view with game cards for each available game type.
+   * </p>
+   *
+   * @param controller The game controller to handle game type selection
+   * @throws IllegalArgumentException if controller is null
+   */
   public GameSelectionView(GameController controller) {
     if (controller == null) {
       throw new IllegalArgumentException("GameController cannot be null.");

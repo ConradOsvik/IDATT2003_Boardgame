@@ -12,6 +12,15 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 
+/**
+ * A utility class responsible for rendering the Snakes and Ladders game board
+ * using JavaFX Canvas.
+ * This class handles the visual representation of the game board, including
+ * tiles, snakes, and ladders.
+ * 
+ * @see Canvas
+ * @see Board
+ */
 public class BoardRenderer {
 
   private static final Color SNAKE_COLOR = Color.RED;

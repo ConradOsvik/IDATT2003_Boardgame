@@ -18,11 +18,27 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Duration;
 
+/**
+ * A victory screen overlay that appears when a game is won.
+ * Features animated transitions, winner display, and a play again option.
+ * Extends {@link StackPane} to center content and provide overlay
+ * functionality.
+ *
+ * @see GameController
+ * @see StackPane
+ */
 public class VictoryScreen extends StackPane {
 
   private final Label victoryLabel;
   private final Label winnerLabel;
 
+  /**
+   * <p>
+   * Creates a new victory screen with animated elements and play again button.
+   * </p>
+   *
+   * @param gameController The controller to handle game restart
+   */
   public VictoryScreen(GameController gameController) {
 
     setAlignment(Pos.CENTER);
@@ -79,6 +95,16 @@ public class VictoryScreen extends StackPane {
     setVisible(false);
   }
 
+  /**
+   * <p>
+   * Displays the victory screen with the winning player's name.
+   * </p>
+   * <p>
+   * Triggers victory animations and sound effects.
+   * </p>
+   *
+   * @param winner The winning player, or null for a game over state
+   */
   public void showVictory(Player winner) {
     if (winner != null) {
       winnerLabel.setText(winner.getName() + " wins!");
@@ -90,6 +116,11 @@ public class VictoryScreen extends StackPane {
     playVictoryAnimation();
   }
 
+  /**
+   * <p>
+   * Plays the victory screen entrance and celebration animations.
+   * </p>
+   */
   private void playVictoryAnimation() {
     setOpacity(0);
     setScaleX(0.8);

@@ -1,6 +1,6 @@
 package edu.ntnu.stud.boardgame.view.components;
 
-import edu.ntnu.stud.boardgame.util.SoundManager;
+import edu.ntnu.stud.boardgame.service.SoundManagerService;
 import edu.ntnu.stud.boardgame.view.components.builder.ButtonBuilder;
 import edu.ntnu.stud.boardgame.view.components.builder.LabelBuilder;
 import edu.ntnu.stud.boardgame.view.components.builder.SliderBuilder;
@@ -12,15 +12,32 @@ import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+/**
+ * A control panel for managing game audio settings.
+ * Provides volume control, mute functionality, and sound testing.
+ * Extends {@link VBox} to arrange controls vertically.
+ *
+ * @see SoundManagerService
+ * @see VBox
+ */
 public class AudioControlPanel extends VBox {
 
-  private final SoundManager soundManager;
+  private final SoundManagerService soundManager;
   private final Slider volumeSlider;
   private final Button muteButton;
   private final Label volumeLabel;
 
+  /**
+   * <p>
+   * Creates a new audio control panel with volume and mute controls.
+   * </p>
+   * <p>
+   * Initializes the panel with current audio settings from
+   * {@link SoundManagerService}.
+   * </p>
+   */
   public AudioControlPanel() {
-    this.soundManager = SoundManager.getInstance();
+    this.soundManager = SoundManagerService.getInstance();
 
     setPadding(new Insets(15));
     setSpacing(10);
@@ -69,13 +86,11 @@ public class AudioControlPanel extends VBox {
     updateVolumeLabel();
   }
 
-  private void toggleMute() {
-    boolean muted = soundManager.toggleMute();
-    muteButton.setText(muted ? "Unmute" : "Mute");
-    updateVolumeLabel();
-    volumeSlider.setDisable(muted);
-  }
-
+  /**
+   * <p>
+   * Updates the volume label to reflect the current volume level.
+   * </p>
+   */
   private void updateVolumeLabel() {
     if (soundManager.isMuted()) {
       volumeLabel.setText("Volume: Muted");
@@ -83,5 +98,17 @@ public class AudioControlPanel extends VBox {
       int volumePercent = (int) (soundManager.getVolume() * 100);
       volumeLabel.setText("Volume: " + volumePercent + "%");
     }
+  }
+
+  /**
+   * <p>
+   * Toggles the mute state and updates the mute button text.
+   * </p>
+   */
+  private void toggleMute() {
+    boolean muted = soundManager.toggleMute();
+    muteButton.setText(muted ? "Unmute" : "Mute");
+    updateVolumeLabel();
+    volumeSlider.setDisable(muted);
   }
 }

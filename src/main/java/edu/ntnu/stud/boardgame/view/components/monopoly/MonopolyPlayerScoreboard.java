@@ -15,6 +15,17 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
+/**
+ * A scoreboard component for the Monopoly game that displays player
+ * information.
+ * Shows each player's current money, bankruptcy status, and highlights the
+ * active player.
+ * Extends {@link VBox} to arrange player entries vertically with consistent
+ * styling.
+ *
+ * @see MonopolyController
+ * @see VBox
+ */
 public class MonopolyPlayerScoreboard extends VBox {
 
   private final Label titleLabel;

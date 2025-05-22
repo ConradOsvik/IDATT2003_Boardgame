@@ -13,6 +13,16 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 
+/**
+ * A JavaFX component that displays the scoreboard for the Snakes and Ladders
+ * game.
+ * Shows player information, their current positions, and highlights the active
+ * player.
+ * Extends {@link VBox} to provide a vertical layout for player entries.
+ * 
+ * @see Player
+ * @see VBox
+ */
 public class PlayerScoreboard extends VBox {
 
   private final VBox playersContainer;
