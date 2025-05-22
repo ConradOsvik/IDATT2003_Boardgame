@@ -11,7 +11,11 @@ public class MoneyTransferEvent extends GameEvent {
   private final String reason;
 
   public MoneyTransferEvent(Player fromPlayer, Player toPlayer, int amount, String reason) {
-    super(EventType.PLAYER_MOVED);
+    super(EventType.MONEY_TRANSFER);
+    if (reason == null || reason.trim().isEmpty()) {
+      throw new IllegalArgumentException("Reason for money transfer cannot be null or empty.");
+    }
+
     this.fromPlayer = fromPlayer;
     this.toPlayer = toPlayer;
     this.amount = amount;

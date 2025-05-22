@@ -22,12 +22,19 @@ public class MonopolyController {
   public void updateGameReference() {
     if (gameController.getGame() instanceof MonopolyGame) {
       this.monopolyGame = (MonopolyGame) gameController.getGame();
+    } else {
+      this.monopolyGame = null;
     }
   }
 
   public boolean buyProperty(Tile property) {
     if (monopolyGame == null) {
       LOGGER.warning("Cannot buy property: monopoly game is null");
+      return false;
+    }
+
+    if (property == null) {
+      LOGGER.warning("Cannot buy property: tile property is null");
       return false;
     }
 

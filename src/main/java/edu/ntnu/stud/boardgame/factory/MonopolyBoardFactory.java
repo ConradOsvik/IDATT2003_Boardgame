@@ -27,6 +27,9 @@ public class MonopolyBoardFactory {
   }
 
   public static Board createBoard(String boardName) {
+    if (boardName == null || boardName.trim().isEmpty()) {
+      throw new IllegalArgumentException("Board name cannot be null or empty.");
+    }
     if (!PREDEFINED_BOARDS.containsKey(boardName)) {
       throw new IllegalArgumentException("Unknown board name: " + boardName);
     }
@@ -62,7 +65,7 @@ public class MonopolyBoardFactory {
   }
 
   private static void initializeStandardBoard(Board board) {
-    // Create start tile (GO)
+
     Tile startTile = new Tile(0);
     startTile.setRow(10);
     startTile.setColumn(10);

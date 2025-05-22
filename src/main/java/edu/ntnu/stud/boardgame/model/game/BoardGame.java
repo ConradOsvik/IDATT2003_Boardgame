@@ -66,6 +66,10 @@ public abstract class BoardGame {
 
     for (Player player : players) {
       Tile startTile = board.getTile(board.getStartTileId());
+      if (startTile == null) {
+        throw new InvalidGameStateException(
+            "Start tile (ID: " + board.getStartTileId() + ") not found on the board.");
+      }
       player.placeOnTile(startTile);
     }
 
@@ -105,18 +109,30 @@ public abstract class BoardGame {
   }
 
   public void registerObserver(BoardGameObserver observer) {
+    if (observer == null) {
+      LOGGER.warning("Attempted to register a null observer.");
+      return;
+    }
     if (!observers.contains(observer)) {
       observers.add(observer);
     }
   }
 
   public void registerObservers(List<BoardGameObserver> observers) {
+    if (observers == null) {
+      LOGGER.warning("Attempted to register a null list of observers.");
+      return;
+    }
     for (BoardGameObserver observer : observers) {
       registerObserver(observer);
     }
   }
 
   protected void notifyObservers(GameEvent event) {
+    if (event == null) {
+      LOGGER.warning("Attempted to notify observers with a null event.");
+      return;
+    }
     String eventType = event.getClass().getSimpleName();
     LOGGER.info(
         String.format("Notifying %d observers about event: %s", observers.size(), eventType));
@@ -135,6 +151,9 @@ public abstract class BoardGame {
   }
 
   public void setBoard(Board board) {
+    if (board == null) {
+      throw new IllegalArgumentException("Board cannot be set to null.");
+    }
     this.board = board;
   }
 

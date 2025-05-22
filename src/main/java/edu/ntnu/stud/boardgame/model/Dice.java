@@ -8,6 +8,9 @@ public class Dice {
   private final List<Die> dice;
 
   public Dice(int numberOfDice) {
+    if (numberOfDice <= 0) {
+      throw new IllegalArgumentException("Number of dice must be positive.");
+    }
     this.dice = new ArrayList<>();
     for (int i = 0; i < numberOfDice; i++) {
       this.dice.add(new Die());

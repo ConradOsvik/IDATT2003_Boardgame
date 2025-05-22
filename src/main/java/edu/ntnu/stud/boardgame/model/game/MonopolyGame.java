@@ -61,9 +61,18 @@ public class MonopolyGame extends BoardGame {
     notifyObservers(new DiceRolledEvent(steps, currentPlayer));
 
     Tile fromTile = currentPlayer.getCurrentTile();
+    if (fromTile == null) {
+      LOGGER.severe("Current player " + currentPlayer.getName() + " is not on any tile. Cannot play turn.");
+      return;
+    }
     int startPosition = fromTile.getTileId();
 
     Tile toTile = currentPlayer.getDestinationTile(steps);
+    if (toTile == null) {
+      LOGGER.severe("Player " + currentPlayer.getName() + " could not determine destination tile for steps: " + steps
+          + " from tile " + fromTile.getName());
+    }
+
     int endPosition = toTile.getTileId();
 
     if (endPosition < startPosition && endPosition != 0) {
@@ -229,10 +238,18 @@ public class MonopolyGame extends BoardGame {
   }
 
   public int getPlayerMoney(Player player) {
+    if (player == null) {
+      LOGGER.warning("Attempted to get money for a null player. Returning 0.");
+      return 0;
+    }
     return playerMoney.getOrDefault(player, 0);
   }
 
   public boolean isBankrupt(Player player) {
+    if (player == null) {
+      LOGGER.warning("Attempted to check bankruptcy status for a null player. Returning false.");
+      return false;
+    }
     return bankruptPlayers.contains(player);
   }
 

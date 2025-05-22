@@ -7,6 +7,6 @@ import edu.ntnu.stud.boardgame.model.Tile;
 public class LadderClimbedEvent extends PlayerMovedEvent {
 
   public LadderClimbedEvent(Player player, Tile fromTile, Tile toTile, int steps, Board board) {
-    super(player, fromTile, toTile, steps, board);
+    super(EventType.LADDER_CLIMBED, player, fromTile, toTile, steps, board);
   }
 }

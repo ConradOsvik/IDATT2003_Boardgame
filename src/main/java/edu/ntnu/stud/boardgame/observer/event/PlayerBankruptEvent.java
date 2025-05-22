@@ -8,7 +8,10 @@ public class PlayerBankruptEvent extends GameEvent {
   private final Player player;
 
   public PlayerBankruptEvent(Player player) {
-    super(EventType.PLAYER_MOVED);
+    super(EventType.PLAYER_BANKRUPT);
+    if (player == null) {
+      throw new IllegalArgumentException("Player cannot be null for PlayerBankruptEvent.");
+    }
     this.player = player;
   }
 

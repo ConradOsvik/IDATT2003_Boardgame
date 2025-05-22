@@ -38,6 +38,12 @@ public class BoardSelectionView extends BorderPane implements BoardGameObserver 
   private VBox saveActionsSubContainer;
 
   public BoardSelectionView(MainController controller, GameController gameController) {
+    if (controller == null) {
+      throw new IllegalArgumentException("MainController cannot be null.");
+    }
+    if (gameController == null) {
+      throw new IllegalArgumentException("GameController cannot be null.");
+    }
     this.controller = controller;
     this.gameController = gameController;
 
@@ -213,9 +219,7 @@ public class BoardSelectionView extends BorderPane implements BoardGameObserver 
     if (selectedBoard != null && !selectedBoard.isEmpty()) {
       String boardKeyToLoad = selectedBoard;
       if (selectedBoard.startsWith("Predefined:")) {
-        // Assuming gameController.selectBoard expects the raw name or internal ID
-        // This part depends on how gameController.selectBoard expects the board
-        // identifier
+
       }
       gameController.selectBoard(boardKeyToLoad);
     } else {

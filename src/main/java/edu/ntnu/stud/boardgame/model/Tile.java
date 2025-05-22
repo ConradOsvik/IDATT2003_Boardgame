@@ -16,6 +16,9 @@ public class Tile {
   }
 
   public void landPlayer(Player player) {
+    if (player == null) {
+      throw new IllegalArgumentException("Player cannot be null when landing on tile.");
+    }
     if (landAction != null) {
       landAction.perform(player);
     }
@@ -62,6 +65,9 @@ public class Tile {
   }
 
   public void setName(String name) {
+    if (name == null) {
+      throw new IllegalArgumentException("Tile name cannot be null.");
+    }
     this.name = name;
   }
 }

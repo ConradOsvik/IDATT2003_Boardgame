@@ -12,7 +12,11 @@ public class PlayerFileWriterCsv implements PlayerFileWriter {
 
   @Override
   public void writePlayers(Path path, List<Player> players) throws PlayerWritingException {
+    if (path == null) {
+      throw new IllegalArgumentException("Path cannot be null.");
+    }
     if (players == null || players.isEmpty()) {
+
       throw new PlayerWritingException("Player list is null or empty");
     }
 

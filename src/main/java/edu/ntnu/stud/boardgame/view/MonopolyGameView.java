@@ -103,20 +103,27 @@ public class MonopolyGameView extends AbstractGameView {
   }
 
   private void buyProperty() {
+    if (gameController.getGame() == null) {
+      statusLabel.setText("Cannot buy property: No active game.");
+      return;
+    }
     Player currentPlayer = gameController.getGame().getCurrentPlayer();
     if (currentPlayer == null) {
+      statusLabel.setText("Cannot buy property: No current player.");
       return;
     }
 
     Tile currentTile = currentPlayer.getCurrentTile();
     if (currentTile == null) {
+      statusLabel.setText("Cannot buy property: Player not on a tile.");
       return;
     }
 
     boolean purchased = monopolyController.buyProperty(currentTile);
 
     if (purchased) {
-      statusLabel.setText(currentPlayer.getName() + " bought " + currentTile.getName());
+      String tileName = currentTile.getName() != null ? currentTile.getName() : "[Unnamed Tile]";
+      statusLabel.setText(currentPlayer.getName() + " bought " + tileName);
       buyPropertyButton.setDisable(true);
 
       gameBoard.refreshBoard();
@@ -177,14 +184,15 @@ public class MonopolyGameView extends AbstractGameView {
 
   private void handleDiceRolled(DiceRolledEvent event) {
     soundManager.playSound("dice_roll");
-    statusLabel.setText(event.getPlayer().getName() + " rolled " + event.getValue());
+    statusLabel.setText(event.getCurrentPlayer().getName() + " rolled " + event.getDiceValue());
   }
 
   private void handlePlayerMoved(PlayerMovedEvent event) {
     soundManager.playSound("move");
     gameBoard.animatePlayerMove(event.getPlayer(), event.getFromTile(), event.getToTile());
+    String toTileName = event.getToTile().getName() != null ? event.getToTile().getName() : "[Unnamed Tile]";
     statusLabel.setText(event.getPlayer().getName() +
-        " moved to " + event.getToTile().getName());
+        " moved to " + toTileName);
 
     if (event.getPlayer().equals(gameController.getGame().getCurrentPlayer())) {
       updateBuyButton(event.getPlayer());
@@ -202,8 +210,9 @@ public class MonopolyGameView extends AbstractGameView {
 
   private void handlePropertyPurchased(PropertyPurchasedEvent event) {
     soundManager.playSound("receipt");
+    String propertyName = event.getProperty().getName() != null ? event.getProperty().getName() : "[Unnamed Property]";
     statusLabel.setText(event.getPlayer().getName() +
-        " bought " + event.getProperty().getName() +
+        " bought " + propertyName +
         " for $" + event.getPrice());
 
     gameBoard.refreshBoard();

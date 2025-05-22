@@ -14,6 +14,9 @@ public class PlayerFileReaderCsv implements PlayerFileReader {
 
   @Override
   public List<Player> readPlayers(Path path) throws PlayerParsingException {
+    if (path == null) {
+      throw new IllegalArgumentException("Path cannot be null.");
+    }
     List<Player> players = new ArrayList<>();
 
     try (BufferedReader reader = Files.newBufferedReader(path)) {

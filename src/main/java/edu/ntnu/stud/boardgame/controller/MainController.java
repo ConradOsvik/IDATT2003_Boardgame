@@ -1,6 +1,9 @@
 package edu.ntnu.stud.boardgame.controller;
 
+import edu.ntnu.stud.boardgame.model.BoardGameFacade;
 import edu.ntnu.stud.boardgame.model.enums.BoardGameType;
+import edu.ntnu.stud.boardgame.service.PlayerFileService;
+
 import edu.ntnu.stud.boardgame.view.BoardSelectionView;
 import edu.ntnu.stud.boardgame.view.GameSelectionView;
 import edu.ntnu.stud.boardgame.view.LadderGameView;
@@ -30,7 +33,7 @@ public class MainController {
     this.primaryStage = primaryStage;
     this.mainContainer = new BorderPane();
 
-    this.gameController = new GameController(this);
+    this.gameController = new GameController(this, new BoardGameFacade(), PlayerFileService.getInstance());
 
     Scene scene = new Scene(mainContainer, 1200, 900);
     URL cssUrl = getClass().getResource("/styles/styles.css");
@@ -103,17 +106,17 @@ public class MainController {
 
   public void showErrorDialog(String title, String message) {
     Alert alert = new Alert(AlertType.ERROR);
-    alert.setTitle(title);
+    alert.setTitle(title != null ? title : "Error");
     alert.setHeaderText(null);
-    alert.setContentText(message);
+    alert.setContentText(message != null ? message : "An unexpected error occurred.");
     alert.showAndWait();
   }
 
   public void showInfoDialog(String title, String message) {
     Alert alert = new Alert(AlertType.INFORMATION);
-    alert.setTitle(title);
+    alert.setTitle(title != null ? title : "Information");
     alert.setHeaderText(null);
-    alert.setContentText(message);
+    alert.setContentText(message != null ? message : "Information.");
     alert.showAndWait();
   }
 }

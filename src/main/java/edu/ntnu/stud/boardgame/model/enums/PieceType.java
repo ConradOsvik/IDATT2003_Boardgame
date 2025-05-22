@@ -18,6 +18,9 @@ public enum PieceType {
   }
 
   public static PieceType fromDisplayName(String displayName) {
+    if (displayName == null || displayName.trim().isEmpty()) {
+      throw new IllegalArgumentException("Display name cannot be null or empty when parsing PieceType.");
+    }
     for (PieceType type : values()) {
       if (type.getDisplayName().equalsIgnoreCase(displayName)) {
         return type;

@@ -12,6 +12,12 @@ public class GameCreatedEvent extends GameEvent {
 
   public GameCreatedEvent(Board board, List<Player> players) {
     super(EventType.GAME_CREATED);
+    if (board == null) {
+      throw new IllegalArgumentException("Board cannot be null for GameCreatedEvent.");
+    }
+    if (players == null) {
+      throw new IllegalArgumentException("Players list cannot be null for GameCreatedEvent.");
+    }
     this.board = board;
     this.players = players;
   }

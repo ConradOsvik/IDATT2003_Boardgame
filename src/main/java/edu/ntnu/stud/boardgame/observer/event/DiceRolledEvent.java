@@ -5,20 +5,23 @@ import edu.ntnu.stud.boardgame.observer.GameEvent;
 
 public class DiceRolledEvent extends GameEvent {
 
-  private final int value;
-  private final Player player;
+  private final int diceValue;
+  private final Player currentPlayer;
 
-  public DiceRolledEvent(int value, Player player) {
+  public DiceRolledEvent(int diceValue, Player currentPlayer) {
     super(EventType.DICE_ROLLED);
-    this.value = value;
-    this.player = player;
+    if (currentPlayer == null) {
+      throw new IllegalArgumentException("CurrentPlayer cannot be null for DiceRolledEvent.");
+    }
+    this.diceValue = diceValue;
+    this.currentPlayer = currentPlayer;
   }
 
-  public int getValue() {
-    return value;
+  public int getDiceValue() {
+    return diceValue;
   }
 
-  public Player getPlayer() {
-    return player;
+  public Player getCurrentPlayer() {
+    return currentPlayer;
   }
 }
