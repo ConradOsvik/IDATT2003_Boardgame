@@ -10,10 +10,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Factory class for creating Monopoly board game configurations.
+ *
+ * <p>This class provides methods to create different pre-defined Monopoly board layouts:
+ * <ul>
+ *   <li>Standard - Classic monopoly game with 40 spaces</li>
+ *   <li>Mini - Smaller version with 24 spaces</li>
+ *   <li>Economic - Higher property values and taxes version</li>
+ * </ul>
+ * Each board is fully initialized with appropriate tiles, actions, and layout.
+ * </p>
+ */
 public class MonopolyBoardFactory {
 
   private static final Map<String, Board> PREDEFINED_BOARDS = new HashMap<>();
-
   private static final int START_BONUS = 50;
 
   static {
@@ -22,10 +33,25 @@ public class MonopolyBoardFactory {
     PREDEFINED_BOARDS.put("Economic", createEconomicBoard());
   }
 
+  private MonopolyBoardFactory() {
+  }
+
+  /**
+   * Returns a list of all available predefined board names.
+   *
+   * @return list of available board configuration names
+   */
   public static List<String> getAvailableBoards() {
     return Arrays.asList("Standard", "Mini", "Economic");
   }
 
+  /**
+   * Creates a board based on the provided board name.
+   *
+   * @param boardName the name of the board configuration to create
+   * @return the configured board instance
+   * @throws IllegalArgumentException if boardName is null, empty, or not recognized
+   */
   public static Board createBoard(String boardName) {
     if (boardName == null || boardName.trim().isEmpty()) {
       throw new IllegalArgumentException("Board name cannot be null or empty.");
@@ -36,6 +62,11 @@ public class MonopolyBoardFactory {
     return PREDEFINED_BOARDS.get(boardName);
   }
 
+  /**
+   * Creates the standard Monopoly board with 40 spaces.
+   *
+   * @return a configured standard Monopoly board
+   */
   private static Board createStandardBoard() {
     Board board = new Board("Standard Monopoly",
         "The classic monopoly game with 40 spaces around the board",
@@ -46,6 +77,11 @@ public class MonopolyBoardFactory {
     return board;
   }
 
+  /**
+   * Creates a mini version of the Monopoly board with 24 spaces.
+   *
+   * @return a configured mini Monopoly board
+   */
   private static Board createMiniBoard() {
     Board board = new Board("Mini Monopoly", "A smaller version with 24 spaces around the board",
         6, 6, 0, 23);
@@ -55,6 +91,11 @@ public class MonopolyBoardFactory {
     return board;
   }
 
+  /**
+   * Creates an economic variant of the Monopoly board with higher values.
+   *
+   * @return a configured economic Monopoly board
+   */
   private static Board createEconomicBoard() {
     Board board = new Board("Economic Monopoly", "Higher property values and taxes",
         11, 11, 0, 39);
@@ -64,6 +105,11 @@ public class MonopolyBoardFactory {
     return board;
   }
 
+  /**
+   * Initializes the standard Monopoly board with appropriate tiles and actions.
+   *
+   * @param board the board to initialize
+   */
   private static void initializeStandardBoard(Board board) {
 
     Tile startTile = new Tile(0);
@@ -116,6 +162,11 @@ public class MonopolyBoardFactory {
     lastTile.setNextTile(firstTile);
   }
 
+  /**
+   * Initializes the mini Monopoly board with appropriate tiles and actions.
+   *
+   * @param board the board to initialize
+   */
   private static void initializeMiniBoard(Board board) {
     Tile startTile = new Tile(0);
     startTile.setRow(5);
@@ -167,6 +218,11 @@ public class MonopolyBoardFactory {
     lastTile.setNextTile(firstTile);
   }
 
+  /**
+   * Initializes the economic Monopoly board with appropriate tiles and actions.
+   *
+   * @param board the board to initialize
+   */
   private static void initializeEconomicBoard(Board board) {
     Tile startTile = new Tile(0);
     startTile.setRow(10);
@@ -210,6 +266,16 @@ public class MonopolyBoardFactory {
     lastTile.setNextTile(firstTile);
   }
 
+  /**
+   * Sets up the properties for a tile based on its index.
+   *
+   * <p>Every 5th tile is a tax tile, while others are property tiles. Property prices increase
+   * with the index.
+   * </p>
+   *
+   * @param tile  the tile to configure
+   * @param index the position index of the tile
+   */
   private static void setupTileProperties(Tile tile, int index) {
     if (index % 5 == 0) {
       int taxAmount = 100;

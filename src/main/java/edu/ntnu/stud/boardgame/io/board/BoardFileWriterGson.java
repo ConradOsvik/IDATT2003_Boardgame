@@ -18,10 +18,28 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
 
+/**
+ * Implementation of {@link BoardFileWriter} that uses Google's Gson library for JSON
+ * serialization.
+ *
+ * <p>This class provides functionality to serialize {@link Board} objects into JSON format
+ * and save them to the filesystem. It handles the conversion of complex board structures, including
+ * tiles and their associated actions, into a structured JSON representation.</p>
+ *
+ * <p>The writer handles different types of tile actions by converting them to appropriate
+ * JSON objects with type information and relevant properties.</p>
+ *
+ * @see BoardFileWriter
+ * @see Board
+ * @see TileAction
+ */
 public class BoardFileWriterGson implements BoardFileWriter {
 
   private final Gson gson;
 
+  /**
+   * Constructs a new BoardFileWriterGson with a default Gson instance.
+   */
   public BoardFileWriterGson() {
     this.gson = new Gson();
   }
@@ -85,6 +103,26 @@ public class BoardFileWriterGson implements BoardFileWriter {
     return tileObject;
   }
 
+  /**
+   * Writes a board object to the specified file path in JSON format.
+   *
+   * <p>This implementation serializes the board structure including its metadata
+   * (name, description, dimensions), tiles, and actions into a JSON file.</p>
+   *
+   * <p>The JSON structure includes:
+   * <ul>
+   *   <li>Board metadata (name, description, rows, columns)</li>
+   *   <li>Start and end tile references</li>
+   *   <li>An array of all tiles with their properties</li>
+   *   <li>Actions associated with each tile</li>
+   * </ul>
+   * </p>
+   *
+   * @param path  the path where the board should be written
+   * @param board the board object to serialize and save
+   * @throws BoardWritingException    if any errors occur during the writing process
+   * @throws IllegalArgumentException if path or board is null
+   */
   @Override
   public void writeBoard(Path path, Board board) throws BoardWritingException {
     if (path == null) {

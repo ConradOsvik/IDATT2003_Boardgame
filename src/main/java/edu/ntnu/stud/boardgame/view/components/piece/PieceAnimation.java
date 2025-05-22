@@ -176,7 +176,7 @@ public class PieceAnimation {
     PathTransition transition = new PathTransition(duration, path, piece);
     queue.add(transition);
 
-    if (!isAnimating.get(piece)) {
+    if (Boolean.FALSE.equals(isAnimating.get(piece))) {
       playNextAnimation(piece);
     }
   }
@@ -184,7 +184,7 @@ public class PieceAnimation {
   private void playNextAnimation(PlayerPiece piece) {
     Queue<PathTransition> queue = animationQueues.get(piece);
 
-    if (queue.isEmpty()) {
+    if (queue == null || queue.isEmpty()) {
       isAnimating.put(piece, false);
       return;
     }
@@ -192,7 +192,16 @@ public class PieceAnimation {
     isAnimating.put(piece, true);
     PathTransition nextAnimation = queue.poll();
 
-    nextAnimation.setOnFinished(e -> playNextAnimation(piece));
+    if (nextAnimation == null) {
+      isAnimating.put(piece, false);
+      return;
+    }
+
+    nextAnimation.setOnFinished(e -> {
+      if (animationQueues.containsKey(piece)) {
+        playNextAnimation(piece);
+      }
+    });
     nextAnimation.play();
   }
 

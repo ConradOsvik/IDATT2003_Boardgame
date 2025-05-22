@@ -27,7 +27,7 @@ public abstract class AbstractGameView extends BorderPane implements BoardGameOb
   protected final SoundManager soundManager;
   protected final StackPane gameArea;
 
-  public AbstractGameView(MainController mainController, GameController gameController) {
+  protected AbstractGameView(MainController mainController, GameController gameController) {
     this.mainController = mainController;
     this.gameController = gameController;
     this.gameController.registerObserver(this);

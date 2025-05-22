@@ -25,7 +25,7 @@ public abstract class AbstractGameBoard extends StackPane implements GameBoardIn
   protected double padding = 20;
   protected boolean needsRedraw = true;
 
-  public AbstractGameBoard() {
+  protected AbstractGameBoard() {
     boardCanvas = new Canvas();
     piecesLayer = new Pane();
     pieceAnimation = new PieceAnimation();
@@ -67,14 +67,12 @@ public abstract class AbstractGameBoard extends StackPane implements GameBoardIn
       return;
     }
 
-    PlayerPiece piece = playerPieces.get(player);
-
-    if (piece == null) {
-      piece = new PlayerPiece(player);
-      playerPieces.put(player, piece);
-      piecesLayer.getChildren().add(piece);
-      piece.updateSize(Math.max(15, cellSize * 0.6));
-    }
+    PlayerPiece piece = playerPieces.computeIfAbsent(player, p -> {
+      PlayerPiece newPiece = new PlayerPiece(p);
+      piecesLayer.getChildren().add(newPiece);
+      newPiece.updateSize(Math.max(15, cellSize * 0.6));
+      return newPiece;
+    });
 
     if (tile == null || tile.getTileId() == 0) {
       piece.setVisible(false);

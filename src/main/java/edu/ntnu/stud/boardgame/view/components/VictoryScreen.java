@@ -22,12 +22,8 @@ public class VictoryScreen extends StackPane {
 
   private final Label victoryLabel;
   private final Label winnerLabel;
-  private final Label messageLabel;
-  private final Rectangle background;
-  private final GameController gameController;
 
   public VictoryScreen(GameController gameController) {
-    this.gameController = gameController;
 
     setAlignment(Pos.CENTER);
 
@@ -37,7 +33,7 @@ public class VictoryScreen extends StackPane {
     setPrefWidth(400);
     setPrefHeight(300);
 
-    background = new Rectangle();
+    Rectangle background = new Rectangle();
     background.setFill(Color.rgb(0, 0, 0, 0.7));
     background.setArcWidth(20);
     background.setArcHeight(20);
@@ -63,7 +59,8 @@ public class VictoryScreen extends StackPane {
     winnerLabel = new LabelBuilder().text("").styleClass("winner-label").build();
     winnerLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;");
 
-    messageLabel = new LabelBuilder().text("Congratulations on winning the game!").wrapText(true)
+    Label messageLabel = new LabelBuilder().text("Congratulations on winning the game!")
+        .wrapText(true)
         .textAlignment(TextAlignment.CENTER).styleClass("victory-message").build();
     messageLabel.setStyle("-fx-font-size: 18px; -fx-text-fill: white;");
 
