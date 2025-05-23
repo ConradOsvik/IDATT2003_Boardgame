@@ -11,6 +11,12 @@ import edu.ntnu.stud.boardgame.service.BoardFileService;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Facade providing a simplified interface to the board game system.
+ *
+ * <p>Coordinates game creation, player management, board operations, and observer notifications.
+ * Acts as the main entry point for game operations.
+ */
 public class BoardGameFacade {
 
   private final BoardGameFactory factory;
@@ -19,12 +25,19 @@ public class BoardGameFacade {
   private BoardGame currentGame;
   private BoardGameType currentGameType;
 
+  /** Creates a new facade with required services. */
   public BoardGameFacade() {
     this.boardFileService = BoardFileService.getInstance();
     this.factory = new BoardGameFactory(boardFileService);
     this.observers = new ArrayList<>();
   }
 
+  /**
+   * Creates a new game with the specified board.
+   *
+   * @param boardName name of the board to use
+   * @throws BoardGameException if game type not selected or creation fails
+   */
   public void createGame(String boardName) throws BoardGameException {
     if (currentGameType == null) {
       throw new InvalidGameStateException("No game type has been selected");
@@ -39,6 +52,12 @@ public class BoardGameFacade {
     }
   }
 
+  /**
+   * Saves the current board to a file.
+   *
+   * @param fileName name of the file to save to
+   * @throws BoardGameException if no game exists or save fails
+   */
   public void saveCurrentBoard(String fileName) throws BoardGameException {
     if (currentGame == null || currentGame.getBoard() == null) {
       throw new BoardGameException("No game has been created");
@@ -51,6 +70,11 @@ public class BoardGameFacade {
     }
   }
 
+  /**
+   * Starts the current game.
+   *
+   * @throws BoardGameException if no game exists or start fails
+   */
   public void startGame() throws BoardGameException {
     if (currentGame == null) {
       throw new BoardGameException("No game has been created");
@@ -63,6 +87,13 @@ public class BoardGameFacade {
     }
   }
 
+  /**
+   * Adds a player to the current game.
+   *
+   * @param name player's name
+   * @param pieceType player's piece type
+   * @throws BoardGameException if no game exists
+   */
   public void addPlayer(String name, PieceType pieceType) throws BoardGameException {
     if (currentGame == null) {
       throw new BoardGameException("No game has been created");
@@ -72,6 +103,11 @@ public class BoardGameFacade {
     currentGame.addPlayer(player);
   }
 
+  /**
+   * Executes a turn in the current game.
+   *
+   * @throws BoardGameException if no game exists or game is over
+   */
   public void playTurn() throws BoardGameException {
     if (currentGame == null) {
       throw new BoardGameException("No game has been created");
@@ -100,6 +136,12 @@ public class BoardGameFacade {
     this.currentGameType = currentGameType;
   }
 
+  /**
+   * Gets a list of available board configurations.
+   *
+   * @return list of board names
+   * @throws InvalidGameStateException if no game type selected
+   */
   public List<String> getAvailableGameBoards() {
     if (currentGameType == null) {
       throw new InvalidGameStateException("No game type has been selected");
@@ -108,7 +150,16 @@ public class BoardGameFacade {
     return factory.getAvailableGameBoards(currentGameType);
   }
 
+  /**
+   * Registers an observer for game events.
+   *
+   * @param observer the observer to register
+   */
   public void registerObserver(BoardGameObserver observer) {
+    if (observer == null) {
+      System.err.println("Attempted to register a null observer in BoardGameFacade.");
+      return;
+    }
     observers.add(observer);
 
     if (currentGame != null) {

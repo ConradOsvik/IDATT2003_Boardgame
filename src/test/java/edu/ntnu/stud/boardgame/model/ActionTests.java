@@ -1,11 +1,12 @@
-package edu.ntnu.stud.boardgame.model.action;
+package edu.ntnu.stud.boardgame.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 
-import edu.ntnu.stud.boardgame.model.Player;
-import edu.ntnu.stud.boardgame.model.Tile;
+import edu.ntnu.stud.boardgame.model.action.LadderAction;
+import edu.ntnu.stud.boardgame.model.action.SkipTurnAction;
+import edu.ntnu.stud.boardgame.model.action.SnakeAction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -22,11 +23,9 @@ class ActionTests {
 
     private LadderAction ladderAction;
 
-    @Mock
-    private Tile destinationTile;
+    @Mock private Tile destinationTile;
 
-    @Mock
-    private Player mockPlayer;
+    @Mock private Player mockPlayer;
 
     @BeforeEach
     void setUp() {
@@ -69,11 +68,9 @@ class ActionTests {
 
     private SnakeAction snakeAction;
 
-    @Mock
-    private Tile destinationTile;
+    @Mock private Tile destinationTile;
 
-    @Mock
-    private Player mockPlayer;
+    @Mock private Player mockPlayer;
 
     @BeforeEach
     void setUp() {
@@ -116,8 +113,7 @@ class ActionTests {
 
     private SkipTurnAction skipTurnAction;
 
-    @Mock
-    private Player mockPlayer;
+    @Mock private Player mockPlayer;
 
     @BeforeEach
     void setUp() {

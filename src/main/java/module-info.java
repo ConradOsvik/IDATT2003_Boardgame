@@ -23,6 +23,18 @@ module edu.ntnu.stud.boardgame {
   exports edu.ntnu.stud.boardgame.observer;
   exports edu.ntnu.stud.boardgame.observer.event;
   exports edu.ntnu.stud.boardgame.service;
-  exports edu.ntnu.stud.boardgame.util;
   exports edu.ntnu.stud.boardgame.factory;
+
+  opens edu.ntnu.stud.boardgame.io.board;
+  opens edu.ntnu.stud.boardgame.io.player;
+  opens edu.ntnu.stud.boardgame.model;
+  opens edu.ntnu.stud.boardgame.model.action;
+  opens edu.ntnu.stud.boardgame.model.enums;
+  opens edu.ntnu.stud.boardgame.model.game;
+  opens edu.ntnu.stud.boardgame.exception;
+  opens edu.ntnu.stud.boardgame.exception.files;
+  opens edu.ntnu.stud.boardgame.observer;
+  opens edu.ntnu.stud.boardgame.observer.event;
+  opens edu.ntnu.stud.boardgame.service;
+  opens edu.ntnu.stud.boardgame.factory;
 }

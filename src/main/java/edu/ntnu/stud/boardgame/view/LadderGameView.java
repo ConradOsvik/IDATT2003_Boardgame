@@ -20,12 +20,30 @@ import javafx.geometry.Insets;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
+/**
+ * The main view for the Snakes and Ladders game. Handles game board display, player controls, and
+ * game event visualization. Extends {@link AbstractGameView} to provide common game view
+ * functionality.
+ *
+ * @see AbstractGameView
+ * @see LadderGameBoard
+ * @see PlayerScoreboard
+ * @see ControlPanel
+ */
 public class LadderGameView extends AbstractGameView {
 
   private final ControlPanel controlPanel;
   private final PlayerScoreboard scoreboard;
   private final LadderGameBoard gameBoard;
 
+  /**
+   * Creates a new Snakes and Ladders game view.
+   *
+   * <p>Initializes the game board, scoreboard, and control panel.
+   *
+   * @param controller The main application controller
+   * @param gameController The game-specific controller
+   */
   public LadderGameView(MainController controller, GameController gameController) {
     super(controller, gameController);
 
@@ -65,42 +83,26 @@ public class LadderGameView extends AbstractGameView {
 
   private void handleDiceRolled(DiceRolledEvent event) {
     soundManager.playSound("dice_roll");
-    controlPanel.updateDiceValue(event.getValue());
+    controlPanel.updateDiceValue(event.getDiceValue());
   }
 
   private void handleLadderClimbed(LadderClimbedEvent event) {
     soundManager.playSound("ladder");
-    gameBoard.animatePlayerLadderClimb(
-        event.getPlayer(),
-        event.getFromTile(),
-        event.getToTile()
-    );
+    gameBoard.animatePlayerLadderClimb(event.getPlayer(), event.getFromTile(), event.getToTile());
   }
 
   private void handleSnakeEncountered(SnakeEncounteredEvent event) {
     soundManager.playSound("snake");
-    gameBoard.animatePlayerSnakeSlide(
-        event.getPlayer(),
-        event.getFromTile(),
-        event.getToTile()
-    );
+    gameBoard.animatePlayerSnakeSlide(event.getPlayer(), event.getFromTile(), event.getToTile());
   }
 
   private void handleBounceBack(BounceBackEvent event) {
     soundManager.playSound("bounce");
-    gameBoard.animatePlayerBounceBack(
-        event.getPlayer(),
-        event.getFromTile(),
-        event.getToTile()
-    );
+    gameBoard.animatePlayerBounceBack(event.getPlayer(), event.getFromTile(), event.getToTile());
   }
 
   private void handlePlayerMoved(PlayerMovedEvent event) {
-    gameBoard.animatePlayerMove(
-        event.getPlayer(),
-        event.getFromTile(),
-        event.getToTile()
-    );
+    gameBoard.animatePlayerMove(event.getPlayer(), event.getFromTile(), event.getToTile());
   }
 
   private void handleTurnChanged(TurnChangedEvent event) {

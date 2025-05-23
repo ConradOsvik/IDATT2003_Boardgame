@@ -3,8 +3,11 @@ package edu.ntnu.stud.boardgame.view;
 import edu.ntnu.stud.boardgame.controller.GameController;
 import edu.ntnu.stud.boardgame.controller.MainController;
 import edu.ntnu.stud.boardgame.controller.MonopolyController;
+import edu.ntnu.stud.boardgame.controller.MonopolyController.DiceRollResult;
+import edu.ntnu.stud.boardgame.controller.MonopolyController.GameRestartResult;
+import edu.ntnu.stud.boardgame.controller.MonopolyController.PlayerActionState;
+import edu.ntnu.stud.boardgame.controller.MonopolyController.PropertyPurchaseResult;
 import edu.ntnu.stud.boardgame.model.Player;
-import edu.ntnu.stud.boardgame.model.Tile;
 import edu.ntnu.stud.boardgame.observer.GameEvent;
 import edu.ntnu.stud.boardgame.observer.event.DiceRolledEvent;
 import edu.ntnu.stud.boardgame.observer.event.GameStartedEvent;
@@ -23,16 +26,36 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
+/**
+ * The main view for the Monopoly game. Handles game board display, player controls, property
+ * management, and game event visualization. Extends {@link AbstractGameView} to provide common game
+ * view functionality.
+ *
+ * @see AbstractGameView
+ * @see MonopolyGameBoard
+ * @see MonopolyPlayerScoreboard
+ * @see MonopolyController
+ */
 public class MonopolyGameView extends AbstractGameView {
 
   private final MonopolyController monopolyController;
   private final MonopolyGameBoard gameBoard;
   private final MonopolyPlayerScoreboard playerScoreboard;
 
+  // UI Components
   private final Label statusLabel;
   private final Button rollDiceButton;
   private final Button buyPropertyButton;
 
+  /**
+   * Creates a new Monopoly game view.
+   *
+   * <p>Initializes the game board, scoreboard, and control buttons. Sets up the Monopoly-specific
+   * controller.
+   *
+   * @param mainController The main application controller
+   * @param gameController The game-specific controller
+   */
   public MonopolyGameView(MainController mainController, GameController gameController) {
     super(mainController, gameController);
     this.monopolyController = new MonopolyController(gameController);
@@ -40,53 +63,30 @@ public class MonopolyGameView extends AbstractGameView {
     this.gameBoard = new MonopolyGameBoard(monopolyController);
     this.playerScoreboard = new MonopolyPlayerScoreboard(monopolyController);
 
-    this.statusLabel = new LabelBuilder()
-        .text("Welcome to Monopoly")
-        .styleClass("title")
-        .wrapText(true)
-        .build();
+    this.statusLabel =
+        new LabelBuilder().text("Welcome to Monopoly").styleClass("title").wrapText(true).build();
 
-    this.rollDiceButton = new ButtonBuilder()
-        .text("Roll Dice")
-        .styleClass("action-button")
-        .onClick(e -> rollDice())
-        .disabled(true)
-        .build();
+    this.rollDiceButton =
+        new ButtonBuilder()
+            .text("Roll Dice")
+            .styleClass("action-button")
+            .onClick(e -> handleDiceRollRequest())
+            .disabled(true)
+            .build();
 
-    this.buyPropertyButton = new ButtonBuilder()
-        .text("Buy Property")
-        .styleClass("action-button")
-        .onClick(e -> buyProperty())
-        .disabled(true)
-        .build();
+    this.buyPropertyButton =
+        new ButtonBuilder()
+            .text("Buy Property")
+            .styleClass("action-button")
+            .onClick(e -> handlePropertyPurchaseRequest())
+            .disabled(true)
+            .build();
 
     initializeLayout();
   }
 
   private void initializeLayout() {
-    VBox controlPanel = new VBox(15);
-    controlPanel.setPadding(new Insets(15));
-    controlPanel.setSpacing(15);
-    controlPanel.getStyleClass().add("card");
-
-    Label titleLabel = new LabelBuilder()
-        .text("Monopoly")
-        .styleClass("text-h2")
-        .build();
-
-    Button restartButton = new ButtonBuilder()
-        .text("Restart Game")
-        .styleClass("btn-secondary")
-        .onClick(e -> restartGame())
-        .build();
-
-    controlPanel.getChildren().addAll(
-        titleLabel,
-        statusLabel,
-        rollDiceButton,
-        buyPropertyButton,
-        restartButton
-    );
+    VBox controlPanel = createControlPanel();
 
     VBox leftPanel = new VBox(20);
     leftPanel.setPadding(new Insets(10));
@@ -94,81 +94,83 @@ public class MonopolyGameView extends AbstractGameView {
     leftPanel.setPrefWidth(300);
 
     gameArea.getChildren().add(0, gameBoard);
-
     setLeft(leftPanel);
   }
 
-  private void rollDice() {
-    monopolyController.rollDice();
-    buyPropertyButton.setDisable(true);
+  private VBox createControlPanel() {
+    VBox controlPanel = new VBox(15);
+    controlPanel.setPadding(new Insets(15));
+    controlPanel.setSpacing(15);
+    controlPanel.getStyleClass().add("card");
+
+    Label titleLabel = new LabelBuilder().text("Monopoly").styleClass("text-h2").build();
+
+    Button restartButton =
+        new ButtonBuilder()
+            .text("Restart Game")
+            .styleClass("btn-secondary")
+            .onClick(e -> handleGameRestartRequest())
+            .build();
+
+    controlPanel
+        .getChildren()
+        .addAll(titleLabel, statusLabel, rollDiceButton, buyPropertyButton, restartButton);
+
+    return controlPanel;
   }
 
-  private void buyProperty() {
-    Player currentPlayer = gameController.getGame().getCurrentPlayer();
-    if (currentPlayer == null) {
-      return;
+  // Pure UI event handlers - no business logic
+  private void handleDiceRollRequest() {
+    DiceRollResult result = monopolyController.attemptDiceRoll();
+
+    if (!result.isSuccess()) {
+      statusLabel.setText(result.getMessage());
     }
+    // Success handling happens through game events
+  }
 
-    Tile currentTile = currentPlayer.getCurrentTile();
-    if (currentTile == null) {
-      return;
-    }
+  private void handlePropertyPurchaseRequest() {
+    PropertyPurchaseResult result = monopolyController.attemptPropertyPurchase();
 
-    boolean purchased = monopolyController.buyProperty(currentTile);
+    statusLabel.setText(result.getMessage());
 
-    if (purchased) {
-      statusLabel.setText(currentPlayer.getName() + " bought " + currentTile.getName());
-      buyPropertyButton.setDisable(true);
-
+    if (result.isSuccess()) {
       gameBoard.refreshBoard();
-      playerScoreboard.updatePlayerMoney(currentPlayer);
+      updateUiState();
     }
   }
 
-  private void restartGame() {
-    try {
-      gameController.startGame();
-      statusLabel.setText("Game restarted");
-      buyPropertyButton.setDisable(true);
-    } catch (Exception e) {
-      statusLabel.setText("Error restarting game");
+  private void handleGameRestartRequest() {
+    GameRestartResult result = monopolyController.attemptGameRestart();
+
+    if (result.isSuccess()) {
+      statusLabel.setText("Game restarted successfully");
+    } else {
+      statusLabel.setText("Failed to restart game");
     }
   }
 
-  private void updateBuyButton(Player player) {
-    if (player == null) {
-      buyPropertyButton.setDisable(true);
-      return;
-    }
+  // Update UI based on current game state
+  private void updateUiState() {
+    PlayerActionState state = monopolyController.getCurrentPlayerActionState();
 
-    if (monopolyController.isPlayerBankrupt(player)) {
-      buyPropertyButton.setDisable(true);
-      return;
-    }
-
-    Tile currentTile = player.getCurrentTile();
-    if (currentTile == null) {
-      buyPropertyButton.setDisable(true);
-      return;
-    }
-
-    boolean canBuy = monopolyController.canBuyProperty(currentTile);
-    buyPropertyButton.setDisable(!canBuy);
+    rollDiceButton.setDisable(!state.canRoll());
+    buyPropertyButton.setDisable(!state.canBuyProperty());
   }
 
+  // Event handlers - focused on presentation only
   private void handleGameStarted(GameStartedEvent event) {
     gameBoard.clearPlayerPieces();
-
     gameBoard.setBoard(event.getBoard());
     playerScoreboard.updatePlayers(event.getPlayers());
-    statusLabel.setText("Game Started - Roll the Dice");
 
-    Player currentPlayer = event.getCurrentPlayer();
-    playerScoreboard.highlightCurrentPlayer(currentPlayer);
-    rollDiceButton.setDisable(false);
-    updateBuyButton(currentPlayer);
+    statusLabel.setText("Game Started - Roll the Dice");
+    playerScoreboard.highlightCurrentPlayer(event.getCurrentPlayer());
     victoryScreen.setVisible(false);
 
+    updateUiState();
+
+    // Update player positions
     for (Player player : event.getPlayers()) {
       if (player.getCurrentTile() != null) {
         gameBoard.updatePlayerPosition(player, player.getCurrentTile());
@@ -178,18 +180,20 @@ public class MonopolyGameView extends AbstractGameView {
 
   private void handleDiceRolled(DiceRolledEvent event) {
     soundManager.playSound("dice_roll");
-    statusLabel.setText(event.getPlayer().getName() + " rolled " + event.getValue());
+    statusLabel.setText(event.getCurrentPlayer().getName() + " rolled " + event.getDiceValue());
   }
 
   private void handlePlayerMoved(PlayerMovedEvent event) {
     soundManager.playSound("move");
     gameBoard.animatePlayerMove(event.getPlayer(), event.getFromTile(), event.getToTile());
-    statusLabel.setText(event.getPlayer().getName() +
-        " moved to " + event.getToTile().getName());
 
-    if (event.getPlayer().equals(gameController.getGame().getCurrentPlayer())) {
-      updateBuyButton(event.getPlayer());
-    }
+    String tileName =
+        event.getToTile().getName() != null
+            ? event.getToTile().getName()
+            : "Tile " + event.getToTile().getTileId();
+    statusLabel.setText(event.getPlayer().getName() + " moved to " + tileName);
+
+    updateUiState();
   }
 
   private void handleTurnChanged(TurnChangedEvent event) {
@@ -197,46 +201,61 @@ public class MonopolyGameView extends AbstractGameView {
     statusLabel.setText(currentPlayer.getName() + "'s turn");
     playerScoreboard.highlightCurrentPlayer(currentPlayer);
 
-    rollDiceButton.setDisable(monopolyController.isPlayerBankrupt(currentPlayer));
-    updateBuyButton(currentPlayer);
+    updateUiState();
   }
 
   private void handlePropertyPurchased(PropertyPurchasedEvent event) {
     soundManager.playSound("receipt");
-    statusLabel.setText(event.getPlayer().getName() +
-        " bought " + event.getProperty().getName() +
-        " for $" + event.getPrice());
+
+    String propertyName =
+        event.getProperty().getName() != null ? event.getProperty().getName() : "Property";
+    statusLabel.setText(
+        event.getPlayer().getName() + " bought " + propertyName + " for $" + event.getPrice());
 
     gameBoard.refreshBoard();
     playerScoreboard.updatePlayerMoney(event.getPlayer());
+    updateUiState();
   }
 
   private void handleMoneyTransfer(MoneyTransferEvent event) {
+    // Update player money displays
     if (event.getFromPlayer() != null) {
       playerScoreboard.updatePlayerMoney(event.getFromPlayer());
     }
-
     if (event.getToPlayer() != null) {
       playerScoreboard.updatePlayerMoney(event.getToPlayer());
     }
 
+    // Play appropriate sound and show message
     if (event.getToPlayer() == null) {
       soundManager.playSound("snake");
-      statusLabel.setText(event.getFromPlayer().getName() +
-          " paid $" + event.getAmount() +
-          " in " + event.getReason());
+      statusLabel.setText(
+          event.getFromPlayer().getName()
+              + " paid $"
+              + event.getAmount()
+              + " in "
+              + event.getReason());
     } else if (event.getFromPlayer() == null) {
       soundManager.playSound("cash_incoming");
-      statusLabel.setText(event.getToPlayer().getName() +
-          " received $" + event.getAmount() +
-          " for " + event.getReason());
+      statusLabel.setText(
+          event.getToPlayer().getName()
+              + " received $"
+              + event.getAmount()
+              + " for "
+              + event.getReason());
     } else {
       soundManager.playSound("bounce");
-      statusLabel.setText(event.getFromPlayer().getName() +
-          " paid $" + event.getAmount() +
-          " " + event.getReason() +
-          " to " + event.getToPlayer().getName());
+      statusLabel.setText(
+          event.getFromPlayer().getName()
+              + " paid $"
+              + event.getAmount()
+              + " "
+              + event.getReason()
+              + " to "
+              + event.getToPlayer().getName());
     }
+
+    updateUiState();
   }
 
   private void handlePlayerBankrupt(PlayerBankruptEvent event) {
@@ -244,30 +263,25 @@ public class MonopolyGameView extends AbstractGameView {
     statusLabel.setText(event.getPlayer().getName() + " is bankrupt!");
     playerScoreboard.updatePlayerMoney(event.getPlayer());
 
-    if (event.getPlayer().equals(gameController.getGame().getCurrentPlayer())) {
-      rollDiceButton.setDisable(true);
-      buyPropertyButton.setDisable(true);
-    }
+    updateUiState();
   }
 
   @Override
   protected void handleGameEvent(GameEvent event) {
+    // Update controller's game reference
     monopolyController.updateGameReference();
 
-    if (event instanceof GameStartedEvent startedEvent) {
-      handleGameStarted(startedEvent);
-    } else if (event instanceof DiceRolledEvent diceEvent) {
-      handleDiceRolled(diceEvent);
-    } else if (event instanceof PlayerMovedEvent moveEvent) {
-      handlePlayerMoved(moveEvent);
-    } else if (event instanceof TurnChangedEvent turnEvent) {
-      handleTurnChanged(turnEvent);
-    } else if (event instanceof PropertyPurchasedEvent propEvent) {
-      handlePropertyPurchased(propEvent);
-    } else if (event instanceof MoneyTransferEvent transferEvent) {
-      handleMoneyTransfer(transferEvent);
-    } else if (event instanceof PlayerBankruptEvent bankruptEvent) {
-      handlePlayerBankrupt(bankruptEvent);
+    // Handle events with simple delegation
+    switch (event) {
+      case GameStartedEvent startedEvent -> handleGameStarted(startedEvent);
+      case DiceRolledEvent diceEvent -> handleDiceRolled(diceEvent);
+      case PlayerMovedEvent moveEvent -> handlePlayerMoved(moveEvent);
+      case TurnChangedEvent turnEvent -> handleTurnChanged(turnEvent);
+      case PropertyPurchasedEvent propEvent -> handlePropertyPurchased(propEvent);
+      case MoneyTransferEvent transferEvent -> handleMoneyTransfer(transferEvent);
+      case PlayerBankruptEvent bankruptEvent -> handlePlayerBankrupt(bankruptEvent);
+      default -> {
+        /* Ignore unknown events */ }
     }
   }
 }

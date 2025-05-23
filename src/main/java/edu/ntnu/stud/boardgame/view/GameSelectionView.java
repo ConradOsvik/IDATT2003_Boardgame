@@ -5,7 +5,7 @@ import edu.ntnu.stud.boardgame.model.enums.BoardGameType;
 import edu.ntnu.stud.boardgame.view.components.builder.ButtonBuilder;
 import edu.ntnu.stud.boardgame.view.components.builder.LabelBuilder;
 import java.io.InputStream;
-import javafx.geometry.Insets;
+import java.util.logging.Logger;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,105 +13,147 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.TextAlignment;
 
+/**
+ * A view for selecting which board game to play. Displays available game options with images and
+ * descriptions. Extends {@link BorderPane} to organize game selection cards.
+ *
+ * @see GameController
+ * @see BoardGameType
+ */
 public class GameSelectionView extends BorderPane {
 
+  private static final Logger LOGGER = Logger.getLogger(GameSelectionView.class.getName());
   private final GameController controller;
 
+  /**
+   * Creates a new game selection view with available game options.
+   *
+   * <p>Initializes the view with game cards for each available game type.
+   *
+   * @param controller The game controller to handle game type selection
+   * @throws IllegalArgumentException if controller is null
+   */
   public GameSelectionView(GameController controller) {
+    if (controller == null) {
+      throw new IllegalArgumentException("GameController cannot be null.");
+    }
     this.controller = controller;
 
     getStyleClass().add("game-selection-view");
 
-    initializeUI();
+    initializeUi();
   }
 
-  private void initializeUI() {
-    Label titleLabel = new LabelBuilder()
-        .text("Select a Game")
-        .styleClass("title")
-        .build();
+  private void initializeUi() {
+    Label titleLabel =
+        new LabelBuilder().text("Choose Your Adventure!").styleClass("title").build();
 
-    HBox gameOptionsContainer = new HBox(30);
+    HBox gameOptionsContainer = new HBox(40);
     gameOptionsContainer.setAlignment(Pos.CENTER);
-    gameOptionsContainer.setPadding(new Insets(30));
 
-    VBox ladderGameCard = createGameCard(
-        "Snakes and Ladders",
-        "/images/games/ladder_game.png",
-        "Play the classic game of Snakes and Ladders! Roll the dice, climb the ladders, and avoid"
-            + " the snakes.",
-        event -> controller.selectGameType(BoardGameType.LADDER)
-    );
+    VBox ladderGameCard =
+        createGameCard(
+            "Snakes & Ladders",
+            "/images/games/ladder_game.png",
+            "Classic fun! Roll the dice, climb ladders, and dodge those sneaky snakes to reach"
+                + " the finish line first.",
+            event -> controller.selectGameType(BoardGameType.LADDER));
 
-    VBox monopolyGameCard = createGameCard(
-        "Monopoly",
-        "/images/games/monopoly_game.png",
-        "Play a simplified version of Monopoly! Buy properties, collect rent, and become the "
-            + "richest player.",
-        event -> controller.selectGameType(BoardGameType.MONOPOLY)
-    );
+    VBox monopolyGameCard =
+        createGameCard(
+            "Monopoly Lite",
+            "/images/games/monopoly_game.png",
+            "Become a property tycoon! Buy, sell, and trade your way to riches in this fast-paced"
+                + " version of Monopoly.",
+            event -> controller.selectGameType(BoardGameType.MONOPOLY));
 
     gameOptionsContainer.getChildren().addAll(ladderGameCard, monopolyGameCard);
 
-    setTop(createCenteredNode(titleLabel));
-    setCenter(gameOptionsContainer);
+    VBox mainLayout = new VBox(30, titleLabel, gameOptionsContainer);
+    mainLayout.setAlignment(Pos.TOP_CENTER);
+
+    setCenter(mainLayout);
   }
 
-  private VBox createGameCard(String title, String imagePath, String description,
+  private VBox createGameCard(
+      String title,
+      String imagePath,
+      String description,
       javafx.event.EventHandler<javafx.event.ActionEvent> onSelect) {
-    VBox card = new VBox(15);
-    card.getStyleClass().add("game-card");
-    card.setAlignment(Pos.CENTER);
-    card.setPadding(new Insets(20));
-    card.setMaxHeight(USE_PREF_SIZE);
 
-    Label gameTitle = new LabelBuilder()
-        .text(title)
-        .styleClass("game-title")
-        .build();
-
-    ImageView imageView = new ImageView();
-    try {
-      InputStream is = getClass().getResourceAsStream(imagePath);
-      if (is != null) {
-        Image image = new Image(is);
-        imageView.setImage(image);
-        imageView.getStyleClass().add("game-image");
-        imageView.setFitHeight(150);
-        imageView.setFitWidth(150);
-        imageView.setPreserveRatio(true);
-      } else {
-        System.err.println("Could not find image at " + imagePath);
-      }
-    } catch (Exception e) {
-      System.err.println("Failed to load image: " + imagePath);
-      e.printStackTrace();
+    String cardTitle = (title == null || title.trim().isEmpty()) ? "Untitled Game" : title;
+    if (title == null || title.trim().isEmpty()) {
+      LOGGER.warning("Game card title is null or empty. Using default.");
     }
 
-    Label descriptionLabel = new LabelBuilder()
-        .text(description)
-        .wrapText(true)
-        .textAlignment(TextAlignment.CENTER)
-        .styleClass("game-description")
-        .build();
+    if (description == null || description.trim().isEmpty()) {
+      LOGGER.warning(
+          "Game card description is null or empty. Using default for title: " + cardTitle);
+    }
 
-    Button selectButton = new ButtonBuilder()
-        .text("Select")
-        .styleClass("action-button")
-        .onClick(onSelect)
-        .build();
+    if (onSelect == null) {
+      LOGGER.severe(
+          "onSelect event handler is null for game card: "
+              + cardTitle
+              + ". Button will be unresponsive.");
+    }
 
-    card.getChildren().addAll(gameTitle, imageView, descriptionLabel, selectButton);
+    VBox card = new VBox();
+    card.getStyleClass().add("game-card");
+    card.setAlignment(Pos.CENTER);
+
+    Label gameTitle = new LabelBuilder().text(cardTitle).styleClass("game-title").build();
+
+    ImageView imageView = new ImageView();
+    if (imagePath != null && !imagePath.trim().isEmpty()) {
+      try {
+        InputStream is = getClass().getResourceAsStream(imagePath);
+        if (is != null) {
+          Image image = new Image(is);
+          imageView.setImage(image);
+          imageView.getStyleClass().add("game-image");
+          imageView.setPreserveRatio(true);
+        } else {
+          LOGGER.warning("Could not find image at " + imagePath);
+          Label errorLabel = new Label("Image not found");
+          card.getChildren().add(errorLabel);
+        }
+      } catch (Exception e) {
+        LOGGER.severe("Failed to load image: " + imagePath);
+        e.printStackTrace();
+        Label errorLabel = new Label("Error loading image");
+        card.getChildren().add(errorLabel);
+      }
+    } else {
+      LOGGER.warning("Image path is null or empty for game card: " + cardTitle);
+      Label errorLabel = new Label("Image not provided");
+      card.getChildren().add(errorLabel);
+    }
+    String cardDescription =
+        (description == null || description.trim().isEmpty())
+            ? "No description available."
+            : description;
+    Label descriptionLabel =
+        new LabelBuilder()
+            .text(cardDescription)
+            .wrapText(true)
+            .styleClass("game-description")
+            .build();
+    descriptionLabel.setMinHeight(Label.USE_PREF_SIZE);
+
+    Button selectButton =
+        new ButtonBuilder().text("Play Now!").styleClass("action-button").onClick(onSelect).build();
+
+    if (imageView.getImage() != null) {
+      card.getChildren().addAll(gameTitle, imageView, descriptionLabel, selectButton);
+    } else {
+      card.getChildren().addAll(gameTitle, descriptionLabel, selectButton);
+    }
+    VBox.setVgrow(descriptionLabel, Priority.ALWAYS);
+
     return card;
-  }
-
-  private BorderPane createCenteredNode(javafx.scene.Node node) {
-    BorderPane pane = new BorderPane();
-    pane.setCenter(node);
-    pane.setPadding(new Insets(20, 0, 0, 0));
-    return pane;
   }
 }

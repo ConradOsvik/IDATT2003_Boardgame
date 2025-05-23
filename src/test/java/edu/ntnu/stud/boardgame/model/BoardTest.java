@@ -18,11 +18,9 @@ class BoardTest {
 
   private Board board;
 
-  @Mock
-  private Tile mockTile1;
+  @Mock private Tile mockTile1;
 
-  @Mock
-  private Tile mockTile2;
+  @Mock private Tile mockTile2;
 
   @BeforeEach
   void setUp() {

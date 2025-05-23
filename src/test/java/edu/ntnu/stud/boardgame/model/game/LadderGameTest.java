@@ -1,304 +1,332 @@
-//package edu.ntnu.stud.boardgame.model.game;
-//
-//import static org.junit.jupiter.api.Assertions.assertEquals;
-//import static org.junit.jupiter.api.Assertions.assertFalse;
-//import static org.junit.jupiter.api.Assertions.assertNotNull;
-//import static org.junit.jupiter.api.Assertions.assertNull;
-//import static org.junit.jupiter.api.Assertions.assertTrue;
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.Mockito.atLeastOnce;
-//import static org.mockito.Mockito.mock;
-//import static org.mockito.Mockito.verify;
-//import static org.mockito.Mockito.when;
-//
-//import edu.ntnu.stud.boardgame.model.Board;
-//import edu.ntnu.stud.boardgame.model.Dice;
-//import edu.ntnu.stud.boardgame.model.Player;
-//import edu.ntnu.stud.boardgame.model.Tile;
-//import edu.ntnu.stud.boardgame.model.action.LadderAction;
-//import edu.ntnu.stud.boardgame.model.action.SnakeAction;
-//import edu.ntnu.stud.boardgame.model.enums.PieceType;
-//import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
-//import edu.ntnu.stud.boardgame.observer.GameEvent;
-//import java.util.ArrayList;
-//import java.util.List;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Nested;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.Mock;
-//import org.mockito.MockitoAnnotations;
-//
-//@DisplayName("LadderGame Tests")
-//class LadderGameTest {
-//
-//  private LadderGame ladderGame;
-//
-//  @Mock
-//  private Board mockBoard;
-//
-//  @Mock
-//  private Dice mockDice;
-//
-//  @Mock
-//  private Tile mockStartTile;
-//
-//  @Mock
-//  private Tile mockEndTile;
-//
-//  @Mock
-//  private Tile mockMiddleTile;
-//
-//  @Mock
-//  private BoardGameObserver mockObserver;
-//
-//  private Player player1;
-//  private Player player2;
-//
-//  @BeforeEach
-//  void setUp() {
-//    MockitoAnnotations.openMocks(this);
-//
-//    ladderGame = new LadderGame();
-//    ladderGame.setBoard(mockBoard);
-//    ladderGame.createDice(2);
-//
-//    ladderGame.dice = mockDice;
-//
-//    when(mockBoard.getStartTileId()).thenReturn(0);
-//    when(mockBoard.getEndTileId()).thenReturn(90);
-//    when(mockBoard.getTile(0)).thenReturn(mockStartTile);
-//    when(mockBoard.getTile(90)).thenReturn(mockEndTile);
-//    when(mockBoard.getTile(45)).thenReturn(mockMiddleTile);
-//
-//    when(mockMiddleTile.getTileId()).thenReturn(45);
-//    when(mockEndTile.getTileId()).thenReturn(90);
-//
-//    ladderGame.registerObserver(mockObserver);
-//
-//    player1 = new Player("Player 1", PieceType.RED);
-//    player2 = new Player("Player 2", PieceType.BLUE);
-//  }
-//
-//  @Test
-//  @DisplayName("createDefaultBoard should create valid board with correct structure")
-//  void createDefaultBoard_noParameters_createsValidBoard() {
-//    Board board = ladderGame.createDefaultBoard();
-//
-//    assertNotNull(board);
-//    assertEquals("Classic Snakes and Ladders", board.getName());
-//    assertEquals(10, board.getRows());
-//    assertEquals(9, board.getColumns());
-//    assertEquals(0, board.getStartTileId());
-//    assertEquals(90, board.getEndTileId());
-//
-//    for (int i = 0; i <= 90; i++) {
-//      assertNotNull(board.getTile(i));
-//    }
-//
-//    for (int i = 0; i < 90; i++) {
-//      Tile tile = board.getTile(i);
-//      Tile nextTile = board.getTile(i + 1);
-//      assertEquals(nextTile, tile.getNextTile());
-//    }
-//  }
-//
-//  @Nested
-//  @DisplayName("Game Initialization Tests")
-//  class GameInitializationTests {
-//
-//    @Test
-//    @DisplayName("startGame should initialize game state correctly")
-//    void startGame_withPlayers_initializesGameStateCorrectly() {
-//      ladderGame.addPlayer(player1);
-//      ladderGame.addPlayer(player2);
-//
-//      ladderGame.startGame();
-//
-//      assertEquals(player1, ladderGame.getCurrentPlayer());
-//      assertEquals(mockStartTile, player1.getCurrentTile());
-//      assertEquals(mockStartTile, player2.getCurrentTile());
-//      assertFalse(ladderGame.isGameOver());
-//      assertNull(ladderGame.getWinner());
-//    }
-//  }
-//
-//  @Nested
-//  @DisplayName("Game Play Tests")
-//  class GamePlayTests {
-//
-//    @Test
-//    @DisplayName("playTurn with normal move should move player correctly")
-//    void playTurn_normalMove_movesPlayerCorrectly() {
-//      ladderGame.addPlayer(player1);
-//      ladderGame.startGame();
-//
-//      player1.setCurrentTile(mockStartTile);
-//      when(mockDice.roll()).thenReturn(5);
-//      when(mockStartTile.getTileId()).thenReturn(0);
-//      when(mockStartTile.getNextTile()).thenReturn(mockMiddleTile);
-//
-//      ladderGame.playTurn();
-//
-//      verify(mockDice).roll();
-//      assertEquals(mockMiddleTile, player1.getCurrentTile());
-//    }
-//
-//    @Test
-//    @DisplayName("playTurn with ladder should trigger ladder action")
-//    void playTurn_landOnLadder_triggersLadderAction() {
-//      ladderGame.addPlayer(player1);
-//      ladderGame.startGame();
-//
-//      Tile ladderDestination = mock(Tile.class);
-//      LadderAction ladderAction = mock(LadderAction.class);
-//      when(mockMiddleTile.getLandAction()).thenReturn(ladderAction);
-//      when(ladderAction.getDestinationTile()).thenReturn(ladderDestination);
-//
-//      player1.setCurrentTile(mockStartTile);
-//      when(mockDice.roll()).thenReturn(5);
-//      when(mockStartTile.getTileId()).thenReturn(0);
-//      when(mockStartTile.getNextTile()).thenReturn(mockMiddleTile);
-//
-//      ladderGame.playTurn();
-//
-//      verify(mockDice).roll();
-//      verify(mockMiddleTile).landPlayer(player1);
-//    }
-//
-//    @Test
-//    @DisplayName("playTurn with snake should trigger snake action")
-//    void playTurn_landOnSnake_triggersSnakeAction() {
-//      ladderGame.addPlayer(player1);
-//      ladderGame.startGame();
-//
-//      Tile snakeDestination = mock(Tile.class);
-//      SnakeAction snakeAction = mock(SnakeAction.class);
-//      when(mockMiddleTile.getLandAction()).thenReturn(snakeAction);
-//      when(snakeAction.getDestinationTile()).thenReturn(snakeDestination);
-//
-//      player1.setCurrentTile(mockStartTile);
-//      when(mockDice.roll()).thenReturn(5);
-//      when(mockStartTile.getTileId()).thenReturn(0);
-//      when(mockStartTile.getNextTile()).thenReturn(mockMiddleTile);
-//
-//      ladderGame.playTurn();
-//
-//      verify(mockDice).roll();
-//      verify(mockMiddleTile).landPlayer(player1);
-//    }
-//
-//    @Test
-//    @DisplayName("playTurn when player reaches end should end game")
-//    void playTurn_playerReachesEnd_endsGame() {
-//      ladderGame.addPlayer(player1);
-//      ladderGame.startGame();
-//
-//      Tile nearEndTile = mock(Tile.class);
-//      when(nearEndTile.getTileId()).thenReturn(89);
-//      when(nearEndTile.getNextTile()).thenReturn(mockEndTile);
-//      player1.setCurrentTile(nearEndTile);
-//
-//      when(mockDice.roll()).thenReturn(1);
-//
-//      ladderGame.playTurn();
-//
-//      verify(mockDice).roll();
-//      assertEquals(mockEndTile, player1.getCurrentTile());
-//      assertTrue(ladderGame.isGameOver());
-//      assertEquals(player1, ladderGame.getWinner());
-//    }
-//  }
-//
-//  @Nested
-//  @DisplayName("Turn Management Tests")
-//  class TurnManagementTests {
-//
-//    @Test
-//    @DisplayName("nextTurn should cycle through players")
-//    void nextTurn_multiplePlayers_cyclesThroughPlayers() {
-//      ladderGame.addPlayer(player1);
-//      ladderGame.addPlayer(player2);
-//      ladderGame.startGame();
-//
-//      assertEquals(player1, ladderGame.getCurrentPlayer());
-//
-//      ladderGame.nextTurn();
-//
-//      assertEquals(player2, ladderGame.getCurrentPlayer());
-//
-//      ladderGame.nextTurn();
-//
-//      assertEquals(player1, ladderGame.getCurrentPlayer());
-//    }
-//
-//    @Test
-//    @DisplayName("nextTurn should skip player with skipNextTurn flag")
-//    void nextTurn_playerShouldSkip_skipsPlayer() {
-//      ladderGame.addPlayer(player1);
-//      ladderGame.addPlayer(player2);
-//      Player player3 = new Player("Player 3", PieceType.GREEN);
-//      ladderGame.addPlayer(player3);
-//      ladderGame.startGame();
-//
-//      player2.setSkipNextTurn(true);
-//
-//      assertEquals(player1, ladderGame.getCurrentPlayer());
-//
-//      ladderGame.nextTurn();
-//
-//      assertEquals(player3, ladderGame.getCurrentPlayer());
-//      assertFalse(player2.shouldSkipNextTurn());
-//    }
-//
-//    @Test
-//    @DisplayName("nextTurn should do nothing if game is over")
-//    void nextTurn_gameIsOver_doesNothing() {
-//      ladderGame.addPlayer(player1);
-//      ladderGame.addPlayer(player2);
-//      ladderGame.startGame();
-//
-//      ladderGame.endGame(player1);
-//
-//      Player initialCurrentPlayer = ladderGame.getCurrentPlayer();
-//
-//      ladderGame.nextTurn();
-//
-//      assertEquals(initialCurrentPlayer, ladderGame.getCurrentPlayer());
-//    }
-//  }
-//
-//  @Nested
-//  @DisplayName("Observer Tests")
-//  class ObserverTests {
-//
-//    @Test
-//    @DisplayName("registerObserver should add observer")
-//    void registerObserver_newObserver_addsObserver() {
-//      BoardGameObserver newObserver = mock(BoardGameObserver.class);
-//
-//      ladderGame.registerObserver(newObserver);
-//      ladderGame.endGame(player1);
-//
-//      verify(mockObserver, atLeastOnce()).onGameEvent(any(GameEvent.class));
-//      verify(newObserver, atLeastOnce()).onGameEvent(any(GameEvent.class));
-//    }
-//
-//    @Test
-//    @DisplayName("registerObservers should add multiple observers")
-//    void registerObservers_listOfObservers_addsAllObservers() {
-//      BoardGameObserver observer1 = mock(BoardGameObserver.class);
-//      BoardGameObserver observer2 = mock(BoardGameObserver.class);
-//      List<BoardGameObserver> observers = new ArrayList<>();
-//      observers.add(observer1);
-//      observers.add(observer2);
-//
-//      ladderGame.registerObservers(observers);
-//      ladderGame.endGame(player1);
-//
-//      verify(mockObserver, atLeastOnce()).onGameEvent(any(GameEvent.class));
-//      verify(observer1, atLeastOnce()).onGameEvent(any(GameEvent.class));
-//      verify(observer2, atLeastOnce()).onGameEvent(any(GameEvent.class));
-//    }
-//  }
-//}
+package edu.ntnu.stud.boardgame.model.game;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import edu.ntnu.stud.boardgame.exception.InvalidGameStateException;
+import edu.ntnu.stud.boardgame.model.Board;
+import edu.ntnu.stud.boardgame.model.Dice;
+import edu.ntnu.stud.boardgame.model.Player;
+import edu.ntnu.stud.boardgame.model.Tile;
+import edu.ntnu.stud.boardgame.model.action.LadderAction;
+import edu.ntnu.stud.boardgame.model.action.SnakeAction;
+import edu.ntnu.stud.boardgame.observer.BoardGameObserver;
+import edu.ntnu.stud.boardgame.observer.event.BounceBackEvent;
+import edu.ntnu.stud.boardgame.observer.event.DiceRolledEvent;
+import edu.ntnu.stud.boardgame.observer.event.GameEndedEvent;
+import edu.ntnu.stud.boardgame.observer.event.LadderClimbedEvent;
+import edu.ntnu.stud.boardgame.observer.event.PlayerMovedEvent;
+import edu.ntnu.stud.boardgame.observer.event.PlayerWonEvent;
+import edu.ntnu.stud.boardgame.observer.event.SnakeEncounteredEvent;
+import java.util.concurrent.atomic.AtomicReference;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+
+class LadderGameTest {
+
+  private LadderGame game;
+  private Board mockBoard;
+  private Dice mockDice;
+  private Player mockPlayer;
+  private BoardGameObserver mockObserver;
+  private Tile mockStartTile,
+      mockRegularTile,
+      mockEndTile,
+      mockLadderTile,
+      mockSnakeTile,
+      mockBounceTargetTile;
+  private AtomicReference<Tile> playerTileRef;
+
+  @BeforeEach
+  void setUp() {
+    game = new LadderGame();
+    mockBoard = mock(Board.class);
+    mockDice = mock(Dice.class);
+    mockPlayer = mock(Player.class);
+    mockObserver = mock(BoardGameObserver.class);
+    playerTileRef = new AtomicReference<>();
+
+    game.setBoard(mockBoard);
+    game.dice = mockDice;
+    game.addPlayer(mockPlayer);
+    game.registerObserver(mockObserver);
+
+    mockStartTile = mock(Tile.class);
+    when(mockStartTile.getTileId()).thenReturn(0);
+    mockRegularTile = mock(Tile.class);
+    when(mockRegularTile.getTileId()).thenReturn(5);
+    mockEndTile = mock(Tile.class);
+    when(mockEndTile.getTileId()).thenReturn(10);
+    mockLadderTile = mock(Tile.class);
+    when(mockLadderTile.getTileId()).thenReturn(3);
+    mockSnakeTile = mock(Tile.class);
+    when(mockSnakeTile.getTileId()).thenReturn(8);
+    mockBounceTargetTile = mock(Tile.class);
+    when(mockBounceTargetTile.getTileId()).thenReturn(9);
+
+    when(mockPlayer.getName()).thenReturn("TestPlayer");
+
+    doAnswer(
+            invocation -> {
+              playerTileRef.set(invocation.getArgument(0));
+              return null;
+            })
+        .when(mockPlayer)
+        .setCurrentTile(any(Tile.class));
+    when(mockPlayer.getCurrentTile()).thenAnswer(invocation -> playerTileRef.get());
+
+    doAnswer(
+            invocation -> {
+              Tile tile = invocation.getArgument(0);
+              playerTileRef.set(tile);
+              return null;
+            })
+        .when(mockPlayer)
+        .placeOnTile(any(Tile.class));
+
+    when(mockBoard.getStartTileId()).thenReturn(0);
+    when(mockBoard.getTile(0)).thenReturn(mockStartTile);
+    when(mockBoard.getEndTileId()).thenReturn(10);
+    when(mockBoard.getTile(10)).thenReturn(mockEndTile);
+
+    game.startGame();
+  }
+
+  @Test
+  void playTurn_basicMove_shouldMovePlayerAndNotifyEvents() {
+    when(mockDice.roll()).thenReturn(3);
+    when(mockPlayer.getDestinationTile(3)).thenReturn(mockLadderTile);
+    when(mockLadderTile.getLandAction()).thenReturn(null);
+
+    game.playTurn();
+
+    verify(mockPlayer).setCurrentTile(mockLadderTile);
+    ArgumentCaptor<DiceRolledEvent> diceEventCaptor =
+        ArgumentCaptor.forClass(DiceRolledEvent.class);
+    verify(mockObserver).onGameEvent(diceEventCaptor.capture());
+    assertEquals(3, diceEventCaptor.getValue().getDiceValue());
+
+    ArgumentCaptor<PlayerMovedEvent> moveEventCaptor =
+        ArgumentCaptor.forClass(PlayerMovedEvent.class);
+    verify(mockObserver, atLeastOnce()).onGameEvent(moveEventCaptor.capture());
+    PlayerMovedEvent capturedMoveEvent =
+        moveEventCaptor.getAllValues().stream()
+            .filter(
+                e -> e.getToTile().equals(mockLadderTile) && e.getFromTile().equals(mockStartTile))
+            .findFirst()
+            .orElse(null);
+    assertNotNull(capturedMoveEvent, "PlayerMovedEvent for initial move not found");
+    assertEquals(mockPlayer, capturedMoveEvent.getPlayer());
+    assertEquals(mockStartTile, capturedMoveEvent.getFromTile());
+    assertEquals(mockLadderTile, capturedMoveEvent.getToTile());
+    assertEquals(3, capturedMoveEvent.getSteps());
+
+    assertFalse(game.isGameOver());
+  }
+
+  @Test
+  void playTurn_landOnEndTile_shouldEndGameAndNotify() {
+    when(mockDice.roll()).thenReturn(10);
+    when(mockPlayer.getDestinationTile(10)).thenReturn(mockEndTile);
+    when(mockEndTile.getLandAction()).thenReturn(null);
+
+    game.playTurn();
+
+    verify(mockPlayer).setCurrentTile(mockEndTile);
+    assertTrue(game.isGameOver());
+    assertEquals(mockPlayer, game.getWinner());
+    verify(mockObserver).onGameEvent(any(PlayerWonEvent.class));
+    verify(mockObserver, atLeastOnce()).onGameEvent(any(GameEndedEvent.class));
+  }
+
+  @Test
+  void playTurn_overshootEndTile_shouldBounceBackAndNotify() {
+    when(mockDice.roll()).thenReturn(12);
+    Tile mockBounceOrigin = mockEndTile;
+    Tile mockBouncedToTile = mockSnakeTile;
+    when(mockBoard.getTile(8)).thenReturn(mockBouncedToTile);
+    when(mockBouncedToTile.getLandAction()).thenReturn(null);
+
+    game.playTurn();
+
+    verify(mockPlayer, times(1)).setCurrentTile(mockBounceOrigin);
+    verify(mockPlayer, times(1)).setCurrentTile(mockBouncedToTile);
+
+    ArgumentCaptor<PlayerMovedEvent> moveCaptor = ArgumentCaptor.forClass(PlayerMovedEvent.class);
+    verify(mockObserver, atLeastOnce()).onGameEvent(moveCaptor.capture());
+    assertTrue(
+        moveCaptor.getAllValues().stream().anyMatch(e -> e.getToTile().equals(mockBounceOrigin)),
+        "Move to end tile before bounce not found");
+
+    ArgumentCaptor<BounceBackEvent> bounceCaptor = ArgumentCaptor.forClass(BounceBackEvent.class);
+    verify(mockObserver).onGameEvent(bounceCaptor.capture());
+    assertEquals(mockPlayer, bounceCaptor.getValue().getPlayer());
+    assertEquals(mockBounceOrigin, bounceCaptor.getValue().getFromTile());
+    assertEquals(mockBouncedToTile, bounceCaptor.getValue().getToTile());
+
+    assertFalse(game.isGameOver());
+  }
+
+  @Test
+  void playTurn_landOnLadder_shouldClimbAndNotify() {
+    when(mockDice.roll()).thenReturn(3);
+    when(mockPlayer.getDestinationTile(3)).thenReturn(mockLadderTile);
+    LadderAction mockLadderAction = mock(LadderAction.class);
+    when(mockLadderTile.getLandAction()).thenReturn(mockLadderAction);
+
+    Tile mockLadderTopTile = mockRegularTile;
+
+    doAnswer(
+            invocation -> {
+              Player p = invocation.getArgument(0);
+              p.setCurrentTile(mockLadderTopTile);
+              return null;
+            })
+        .when(mockLadderTile)
+        .landPlayer(mockPlayer);
+
+    game.playTurn();
+
+    verify(mockLadderTile).landPlayer(mockPlayer);
+    ArgumentCaptor<LadderClimbedEvent> ladderEventCaptor =
+        ArgumentCaptor.forClass(LadderClimbedEvent.class);
+    verify(mockObserver).onGameEvent(ladderEventCaptor.capture());
+    assertEquals(mockPlayer, ladderEventCaptor.getValue().getPlayer());
+    assertEquals(mockLadderTile, ladderEventCaptor.getValue().getFromTile());
+    assertEquals(mockLadderTopTile, ladderEventCaptor.getValue().getToTile());
+    assertFalse(game.isGameOver());
+  }
+
+  @Test
+  void playTurn_landOnSnake_shouldSlideAndNotify() {
+    when(mockDice.roll()).thenReturn(8);
+    when(mockPlayer.getDestinationTile(8)).thenReturn(mockSnakeTile);
+
+    SnakeAction mockSnakeAction = mock(SnakeAction.class);
+    when(mockSnakeTile.getLandAction()).thenReturn(mockSnakeAction);
+
+    doAnswer(
+            invocation -> {
+              Player p = invocation.getArgument(0);
+              p.setCurrentTile(mockLadderTile);
+              return null;
+            })
+        .when(mockSnakeTile)
+        .landPlayer(mockPlayer);
+
+    game.playTurn();
+
+    verify(mockSnakeTile).landPlayer(mockPlayer);
+
+    ArgumentCaptor<SnakeEncounteredEvent> snakeEventCaptor =
+        ArgumentCaptor.forClass(SnakeEncounteredEvent.class);
+    verify(mockObserver).onGameEvent(snakeEventCaptor.capture());
+    assertEquals(mockPlayer, snakeEventCaptor.getValue().getPlayer());
+    assertEquals(mockSnakeTile, snakeEventCaptor.getValue().getFromTile());
+    assertEquals(mockLadderTile, snakeEventCaptor.getValue().getToTile());
+    assertFalse(game.isGameOver());
+  }
+
+  @Test
+  void playTurn_playerSkipsTurn_shouldNotMovePlayer() {
+    when(mockPlayer.shouldSkipNextTurn()).thenReturn(true);
+
+    game.playTurn();
+
+    verify(mockPlayer).setSkipNextTurn(false);
+    verify(mockDice, never()).roll();
+    verify(mockPlayer, never()).getDestinationTile(anyInt());
+    verify(mockObserver, never()).onGameEvent(any(DiceRolledEvent.class));
+    verify(mockObserver, never()).onGameEvent(any(PlayerMovedEvent.class));
+    assertFalse(game.isGameOver());
+  }
+
+  @Test
+  void playTurn_destinationTileIsNull_shouldThrowException() {
+    when(mockDice.roll()).thenReturn(5);
+    when(mockPlayer.getDestinationTile(5)).thenReturn(null);
+
+    Exception exception = assertThrows(InvalidGameStateException.class, () -> game.playTurn());
+    assertTrue(exception.getMessage().contains("attempted to move to a null tile"));
+    verify(mockObserver, never()).onGameEvent(any(PlayerMovedEvent.class));
+  }
+
+  @Test
+  void playTurn_playerDoesNotBounceBackExactlyToStart_whenLandingOnEndTileWithExactRoll() {
+    when(mockDice.roll()).thenReturn(10);
+    when(mockPlayer.getDestinationTile(10)).thenReturn(mockEndTile);
+    when(mockEndTile.getLandAction()).thenReturn(null);
+
+    game.playTurn();
+
+    verify(mockObserver, never()).onGameEvent(any(BounceBackEvent.class));
+    assertTrue(game.isGameOver());
+  }
+
+  @Test
+  void playTurn_overshootByOne_bouncesToOneBeforeEnd() {
+    when(mockDice.roll()).thenReturn(11);
+    when(mockBoard.getTile(9)).thenReturn(mockBounceTargetTile);
+    when(mockBounceTargetTile.getLandAction()).thenReturn(null);
+
+    game.playTurn();
+
+    ArgumentCaptor<BounceBackEvent> bounceCaptor = ArgumentCaptor.forClass(BounceBackEvent.class);
+    verify(mockObserver).onGameEvent(bounceCaptor.capture());
+    assertEquals(mockBounceTargetTile, bounceCaptor.getValue().getToTile());
+  }
+
+  @Test
+  void playTurn_withNullPlayerDestinationTile_shouldThrowAndNotNotifyMove() {
+    when(mockDice.roll()).thenReturn(3);
+    when(mockPlayer.getDestinationTile(3)).thenReturn(null);
+
+    assertThrows(InvalidGameStateException.class, () -> game.playTurn());
+
+    verify(mockObserver, never()).onGameEvent(any(PlayerMovedEvent.class));
+    verify(mockObserver, never()).onGameEvent(any(LadderClimbedEvent.class));
+    verify(mockObserver, never()).onGameEvent(any(SnakeEncounteredEvent.class));
+    verify(mockObserver, never()).onGameEvent(any(PlayerWonEvent.class));
+    verify(mockObserver, never()).onGameEvent(any(BounceBackEvent.class));
+  }
+
+  @Test
+  void playTurn_endTileNotFound_throwsInvalidGameStateException() {
+    when(mockBoard.getTile(mockBoard.getEndTileId())).thenReturn(null);
+    when(mockDice.roll()).thenReturn(3);
+
+    Exception exception = assertThrows(InvalidGameStateException.class, () -> game.playTurn());
+    assertTrue(exception.getMessage().contains("End tile (ID: 10) not found on the board"));
+  }
+
+  @Test
+  void playTurn_bouncedToNonExistentTile_throwsInvalidGameStateException() {
+    when(mockDice.roll()).thenReturn(12);
+    when(mockBoard.getTile(8)).thenReturn(null);
+
+    Exception exception = assertThrows(InvalidGameStateException.class, () -> game.playTurn());
+    assertTrue(exception.getMessage().contains("Bounced to a non-existent tile"));
+  }
+
+  @Test
+  void playTurn_destinationTileIsNull_throwsInvalidGameStateException() {
+    when(mockDice.roll()).thenReturn(5);
+    when(mockPlayer.getDestinationTile(5)).thenReturn(null);
+
+    Exception exception = assertThrows(InvalidGameStateException.class, () -> game.playTurn());
+    assertTrue(exception.getMessage().contains("attempted to move to a null tile"));
+  }
+}

@@ -3,22 +3,47 @@ package edu.ntnu.stud.boardgame.observer.event;
 import edu.ntnu.stud.boardgame.model.Player;
 import edu.ntnu.stud.boardgame.observer.GameEvent;
 
+/**
+ * Event fired when dice are rolled during a player's turn.
+ *
+ * <p>Contains the dice roll value and the player who rolled.
+ */
 public class DiceRolledEvent extends GameEvent {
 
-  private final int value;
-  private final Player player;
+  private final int diceValue;
+  private final Player currentPlayer;
 
-  public DiceRolledEvent(int value, Player player) {
+  /**
+   * Creates a new dice rolled event.
+   *
+   * @param diceValue the value rolled on the dice
+   * @param currentPlayer the player who rolled
+   * @throws IllegalArgumentException if currentPlayer is null
+   */
+  public DiceRolledEvent(int diceValue, Player currentPlayer) {
     super(EventType.DICE_ROLLED);
-    this.value = value;
-    this.player = player;
+    if (currentPlayer == null) {
+      throw new IllegalArgumentException("CurrentPlayer cannot be null for DiceRolledEvent.");
+    }
+    this.diceValue = diceValue;
+    this.currentPlayer = currentPlayer;
   }
 
-  public int getValue() {
-    return value;
+  /**
+   * Gets the dice roll value.
+   *
+   * @return the value rolled
+   */
+  public int getDiceValue() {
+    return diceValue;
   }
 
-  public Player getPlayer() {
-    return player;
+  /**
+   * Gets the player who rolled.
+   *
+   * @return the current player
+   */
+  public Player getCurrentPlayer() {
+    return currentPlayer;
   }
 }
