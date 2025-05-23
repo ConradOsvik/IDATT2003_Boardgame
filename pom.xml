@@ -18,11 +18,12 @@
     <maven.surefire.version>3.2.5</maven.surefire.version>
     <maven.javadoc.version>3.6.3</maven.javadoc.version>
     <maven.shade.version>3.6.0</maven.shade.version>
-    <jacoco.version>0.8.12</jacoco.version>
     <javafx.version>23.0.1</javafx.version>
     <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
+    <gson.version>2.10.1</gson.version>
     <junit.version>5.11.4</junit.version>
     <mockito.version>5.8.0</mockito.version>
+    <jacoco.version>0.8.12</jacoco.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
@@ -79,7 +80,7 @@
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
-      <version>2.10.1</version>
+      <version>${gson.version}</version>
     </dependency>
   </dependencies>
 
