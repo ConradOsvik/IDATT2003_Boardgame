@@ -1,13 +1,17 @@
 # IDATT2003 - Boardgame
 
 ## Students
-| Name                | Student ID |
-|---------------------|------------|
-| Conrad Tinius Osvik | 590789     |
+
+| Name                       | Student ID |
+|----------------------------|------------|
+| Conrad Tinius Osvik        | 590789     |
 | Embret Olav Rasmussen Roås | 111762     |
 
 ## Project Description
-This project is a GUI-based board game application that supports multiple board game types. Built with JavaFX, the application allows users to play various board games with customizable features. It includes player management, game state tracking, and support for different game rules and actions.
+
+This project is a GUI-based board game application that supports multiple board game types. Built
+with JavaFX, the application allows users to play various board games with customizable features. It
+includes player management, game state tracking, and support for different game rules and actions.
 
 The application currently supports:
 
@@ -26,11 +30,13 @@ The application currently supports:
 - 🏗️ Extensible architecture using design patterns
 
 ## System Requirements
+
 - Java JDK 21 or higher
 - JavaFX 23.0.1 or higher
 - Maven 3.6.0 or higher for building and running (alternatively, IDE with Maven support)
 
 ## Project Structure
+
 ```
 .
 ├── data/                          # Game data storage
@@ -48,6 +54,8 @@ The application currently supports:
 │   │   │       ├── factory/       # Game creation factories
 │   │   │       ├── io/            # File I/O operations
 │   │   │       ├── model/         # Game models and logic
+│   │   │       ├── observer/      # Observer pattern implementation
+│   │   │       ├── service/       # Game services
 │   │   │       └── view/          # JavaFX UI components
 │   │   └── resources/             # Application resources
 │   │       ├── fonts/             # Custom fonts
@@ -61,32 +69,52 @@ The application currently supports:
 ```
 
 ## Link to Repository
+
 [Boardgame Project Repository](https://github.com/ConradOsvik/IDATT2003_Boardgame)
 
 ## How to Run the Project
 
+Clone the repository and navigate to the project directory. You can run the project using Maven
+
 ### Compile
+
 ```bash
 mvn clean compile
 ```
 
 ### Run tests
+
 ```bash
 mvn clean test
 ```
 
 ### Package project
+
 ```bash
 mvn clean package
 ```
 
+Builds a Shaded JAR file with all dependencies included. The JAR file will be located in the `target/`
+
 ### Run JavaFX
+
 ```bash
-mvn javafx:run
+mvn clean javafx:run
 ```
 
-### Generate JavaDocs
+### Generate JavaDoc
+
 ```bash
-mvn javadoc:javadoc
+mvn clean javadoc:javadoc
 ```
+
 After running this command, JavaDocs will be available in the `target/site/apidocs/` directory.
+
+### Generate JaCoCo report
+
+```bash
+mvn clean test jacoco:report
+```
+
+After running this command, the JaCoCo report will be available in the `target/site/jacoco/`
+directory.
