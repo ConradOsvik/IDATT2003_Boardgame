@@ -7,8 +7,9 @@ import java.nio.file.Path;
 /**
  * Interface for reading board game configurations from files.
  *
- * <p>Implementations of this interface are responsible for parsing and loading board data from
- * various file formats into {@link Board} objects.
+ * <p>Implementations of this interface are responsible for parsing and loading
+ * board data from various file formats into {@link Board} objects.
+ * </p>
  *
  * @see Board
  * @see BoardParsingException
@@ -23,13 +24,4 @@ public interface BoardFileReader {
    * @throws BoardParsingException if the file cannot be read or contains invalid board data
    */
   Board readBoard(Path path) throws BoardParsingException;
-
-  /**
-   * Reads a board from a string.
-   *
-   * @param boardData the JSON string containing board data
-   * @return the board parsed from the string
-   * @throws BoardParsingException if the data cannot be parsed
-   */
-  Board readBoardFromString(String boardData) throws BoardParsingException;
 }

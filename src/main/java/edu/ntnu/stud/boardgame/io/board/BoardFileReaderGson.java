@@ -1,7 +1,5 @@
 package edu.ntnu.stud.boardgame.io.board;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -26,26 +24,6 @@ import java.nio.file.Path;
 /**
  * Implementation of {@link BoardFileReader} that reads board configurations from JSON files using
  * the Gson library.
- *
- * <p>This class parses JSON formatted board files and converts them into {@link Board} objects with
- * appropriate tiles and actions. The expected JSON structure includes board properties (name,
- * description, dimensions) and an array of tiles with their respective properties and actions.
- *
- * <p>Supported tile actions include:
- *
- * <ul>
- *   <li>LadderAction - moves player to a specified destination tile
- *   <li>SnakeAction - moves player to a specified destination tile
- *   <li>SkipTurnAction - causes player to skip their next turn
- *   <li>PropertyAction - represents purchasable property with a price
- *   <li>TaxAction - charges player a specified amount
- *   <li>StartAction - awards player a specified amount
- * </ul>
- *
- * @see BoardFileReader
- * @see Board
- * @see Tile
- * @see TileAction
  */
 public class BoardFileReaderGson implements BoardFileReader {
 
@@ -56,30 +34,55 @@ public class BoardFileReaderGson implements BoardFileReader {
   private static final String LADDER_ACTION = "LadderAction";
   private static final String SNAKE_ACTION = "SnakeAction";
 
-  private final Gson gson;
-
-  /** Creates a new BoardFileReaderGson. */
-  public BoardFileReaderGson() {
-    this.gson = new GsonBuilder().create();
-  }
-
   /**
-   * Reads a board configuration from a JSON file at the specified path.
+   * Implementation of {@link BoardFileReader} that reads board configurations from JSON files using
+   * the Gson library.
    *
-   * <p>The method parses the JSON file, extracts board properties, creates tiles, and sets up their
-   * connections and actions according to the JSON specification.
+   * <p>This class parses JSON formatted board files and converts them into {@link Board} objects
+   * with appropriate tiles and actions. The expected JSON structure includes board properties
+   * (name, description, dimensions) and an array of tiles with their respective properties and
+   * actions.
+   * </p>
    *
-   * @param path the file path to the JSON board configuration
-   * @return a fully initialized {@link Board} object with all tiles and actions
-   * @throws BoardParsingException if the file cannot be read, contains invalid JSON, or the board
-   *     configuration is incomplete or invalid
-   * @throws IllegalArgumentException if the path is null
+   * <p>Supported tile actions include:
+   * <ul>
+   *   <li>LadderAction - moves player to a specified destination tile</li>
+   *   <li>SnakeAction - moves player to a specified destination tile</li>
+   *   <li>SkipTurnAction - causes player to skip their next turn</li>
+   *   <li>PropertyAction - represents purchasable property with a price</li>
+   *   <li>TaxAction - charges player a specified amount</li>
+   *   <li>StartAction - awards player a specified amount</li>
+   * </ul>
+   * </p>
+   *
+   * @see BoardFileReader
+   * @see Board
+   * @see Tile
+   * @see TileAction
    */
   @Override
   public Board readBoard(Path path) throws BoardParsingException {
-    validatePath(path);
+    if (path == null) {
+      throw new IllegalArgumentException("Path cannot be null.");
+    }
 
     try (Reader reader = Files.newBufferedReader(path)) {
+      return parseBoard(reader);
+    } catch (IOException e) {
+      throw new BoardParsingException("Failed to read board file: " + e.getMessage(), e);
+    }
+  }
+
+  /**
+   * Parses a board configuration from a Reader. This method contains pure parsing logic and can be
+   * tested without file I/O.
+   *
+   * @param reader the reader containing JSON board configuration
+   * @return a fully initialized Board object
+   * @throws BoardParsingException if parsing fails
+   */
+  public Board parseBoard(Reader reader) throws BoardParsingException {
+    try {
       JsonObject boardJson = JsonParser.parseReader(reader).getAsJsonObject();
       Board board = createBoardFromJson(boardJson);
       JsonArray tilesArray = getTilesArray(boardJson);
@@ -88,8 +91,6 @@ public class BoardFileReaderGson implements BoardFileReader {
       connectTilesAndAddActions(board, tilesArray);
 
       return board;
-    } catch (IOException e) {
-      throw new BoardParsingException("Failed to read board file: " + e.getMessage(), e);
     } catch (JsonSyntaxException e) {
       throw new BoardParsingException("Invalid JSON syntax: " + e.getMessage(), e);
     } catch (JsonParseException e) {
@@ -101,18 +102,32 @@ public class BoardFileReaderGson implements BoardFileReader {
     }
   }
 
-  @Override
-  public Board readBoardFromString(String boardData) throws BoardParsingException {
+  /**
+   * Parses a board configuration from a JSON string. Convenience method for testing with string
+   * input.
+   *
+   * @param jsonString the JSON string containing board configuration
+   * @return a fully initialized Board object
+   * @throws BoardParsingException if parsing fails
+   */
+  public Board parseBoard(String jsonString) throws BoardParsingException {
     try {
-      return gson.fromJson(boardData, Board.class);
-    } catch (Exception e) {
-      throw new BoardParsingException("Failed to parse board data: " + e.getMessage(), e);
-    }
-  }
+      JsonObject boardJson = JsonParser.parseString(jsonString).getAsJsonObject();
+      Board board = createBoardFromJson(boardJson);
+      JsonArray tilesArray = getTilesArray(boardJson);
 
-  private void validatePath(Path path) {
-    if (path == null) {
-      throw new IllegalArgumentException("Path cannot be null.");
+      createTiles(board, tilesArray);
+      connectTilesAndAddActions(board, tilesArray);
+
+      return board;
+    } catch (JsonSyntaxException e) {
+      throw new BoardParsingException("Invalid JSON syntax: " + e.getMessage(), e);
+    } catch (JsonParseException e) {
+      throw new BoardParsingException("Failed to parse JSON: " + e.getMessage(), e);
+    } catch (BoardParsingException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new BoardParsingException("Unexpected error: " + e.getMessage(), e);
     }
   }
 
@@ -130,11 +145,8 @@ public class BoardFileReaderGson implements BoardFileReader {
   }
 
   private void validateBoardProperties(JsonObject boardJson) throws BoardParsingException {
-    if (!boardJson.has("rows")
-        || !boardJson.has("columns")
-        || !boardJson.has("name")
-        || !boardJson.has("description")
-        || !boardJson.has("startTileId")
+    if (!boardJson.has("rows") || !boardJson.has("columns") || !boardJson.has("name")
+        || !boardJson.has("description") || !boardJson.has("startTileId")
         || !boardJson.has("endTileId")) {
       throw new BoardParsingException("Board must have name, description, rows, and columns");
     }
